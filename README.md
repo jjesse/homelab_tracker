@@ -21,12 +21,14 @@ This web application allows you to store details about your home lab devices. Yo
 ### Local Setup
 
 1. Clone the repository:
+
    ```sh
    git clone https://github.com/yourusername/homelab.git
    cd homelab
    ```
 
 2. Install dependencies:
+
    ```sh
    npm install
    ```
@@ -35,6 +37,7 @@ This web application allows you to store details about your home lab devices. Yo
    Make sure you have MongoDB installed and running. The app uses a local MongoDB instance by default.
 
 4. Start the application:
+
    ```sh
    npm start
    ```
@@ -44,17 +47,20 @@ This web application allows you to store details about your home lab devices. Yo
 ### Docker Setup
 
 1. Clone the repository:
+
    ```sh
    git clone https://github.com/yourusername/homelab.git
    cd homelab
    ```
 
 2. Build the Docker image:
+
    ```sh
    docker-compose build
    ```
 
 3. Start the Docker container:
+
    ```sh
    docker-compose up
    ```

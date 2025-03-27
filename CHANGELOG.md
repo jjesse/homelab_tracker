@@ -20,3 +20,4 @@
 ### Changed
 
 - Documented setup and usage in README.md.
+- Improved security by moving sensitive environment variables to .env file

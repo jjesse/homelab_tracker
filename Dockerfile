@@ -1,5 +1,5 @@
 # Use the official Node.js image as the base image
-FROM node:14
+FROM node:latest
 
 # Set the working directory
 WORKDIR /app
@@ -14,11 +14,7 @@ RUN npm install
 COPY . .
 
 # Expose the port the app runs on
-EXPOSE 5000
-
-# Set environment variables for authentication
-ENV JWT_SECRET=your_jwt_secret_here
-ENV AUTH_TOKEN_EXPIRY=24h
+EXPOSE 3000
 
 # Start the application
 CMD ["npm", "start"]
