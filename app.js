@@ -4,6 +4,8 @@ const passport = require('passport');
 const session = require('express-session');
 const flash = require('connect-flash');
 const helmet = require('helmet');
+const https = require('https');
+const fs = require('fs');
 const app = express();
 
 // Passport Config
@@ -52,6 +54,14 @@ app.use((req, res, next) => {
 app.use('/', require('./routes/index'));
 app.use('/users', require('./routes/users'));
 
+// SSL options
+const options = {
+  key: fs.readFileSync(process.env.SSL_KEY_PATH || './certs/server.key'),
+  cert: fs.readFileSync(process.env.SSL_CERT_PATH || './certs/server.crt')
+};
+
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, console.log(`Server started on port ${PORT}`));
+https.createServer(options, app).listen(PORT, () => {
+  console.log(`HTTPS Server started on port ${PORT}`);
+});

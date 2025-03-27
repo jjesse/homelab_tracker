@@ -85,6 +85,8 @@ The following environment variables are required:
 | AUTH_TOKEN_EXPIRY | JWT token expiry time (e.g., "1d" for one day) | "1d" |
 | MONGODB_URI | MongoDB connection string | "mongodb://localhost:27017/homelab" |
 | PORT | Application port | 5000 |
+| SSL_KEY_PATH | Path to SSL private key file | "./certs/server.key" |
+| SSL_CERT_PATH | Path to SSL certificate file | "./certs/server.crt" |
 
 Create a `.env` file in the project root with these variables:
 
@@ -93,6 +95,8 @@ JWT_SECRET=your_secret_key_here
 AUTH_TOKEN_EXPIRY=1d
 MONGODB_URI=mongodb://localhost:27017/homelab
 PORT=5000
+SSL_KEY_PATH=./certs/server.key
+SSL_CERT_PATH=./certs/server.crt
 ```
 
 ### Setting JWT_SECRET
@@ -114,6 +118,24 @@ Copy the generated string to your .env file:
 ```sh
 JWT_SECRET=generated_random_string_from_above_command
 ```
+
+### SSL Configuration
+
+1. Generate self-signed certificates (for development):
+
+   ```sh
+   mkdir certs
+   cd certs
+   openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out server.crt
+   ```
+
+2. Add certificate paths to .env:
+   ```sh
+   SSL_KEY_PATH=./certs/server.key
+   SSL_CERT_PATH=./certs/server.crt
+   ```
+
+3. For production, replace with valid SSL certificates from a trusted provider.
 
 ## File Structure
 

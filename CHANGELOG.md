@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation for required environment variables in README.md
 - .env.example template file for environment configuration
 - Better Docker setup instructions including environment configuration steps
+- Added HTTPS support with SSL certificate configuration
+- Added SSL certificate generation instructions
+- Added SSL environment variables
 
 ### Changed
 
@@ -36,3 +39,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed Docker build issues by correctly ordering Dockerfile operations
 - Fixed missing package.json causing Docker build failures
 - Fixed Docker container port configuration to use port 5000
+
+### Security
+- Implemented HTTPS for secure connections
