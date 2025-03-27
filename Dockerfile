@@ -16,5 +16,9 @@ COPY . .
 # Expose the port the app runs on
 EXPOSE 5000
 
+# Set environment variables for authentication
+ENV JWT_SECRET=your_jwt_secret_here
+ENV AUTH_TOKEN_EXPIRY=24h
+
 # Start the application
 CMD ["npm", "start"]

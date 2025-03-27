@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+
 - Initial setup of the Home Lab web app.
 - User authentication (login and registration) using Passport.js.
 - MongoDB models for User and Device.
@@ -14,6 +15,8 @@
 - Added new attributes to Device model: Hostname, Network, System Role, Hypervisor Installed On, Domain User Signed In, Zscaler User Signed In, Zscaler App Segment, Notes.
 - Added `ensureGuest` middleware to prevent authenticated users from accessing login and register pages.
 - Added helmet middleware to enhance security by setting various HTTP headers.
+- User-specific dashboards - each user now sees only their own devices and labs
 
 ### Changed
+
 - Documented setup and usage in README.md.
