@@ -9,6 +9,7 @@
     <div><%= error_msg %></div>
   <% } %>
   <form action="/users/login" method="POST">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <div>
       <label for="email">Email:</label>
       <input type="email" name="email" required>

@@ -15,6 +15,11 @@ This web application allows you to store details about your home lab devices. Yo
 - Passport.js
 - EJS
 - Docker
+- express-validator
+- helmet
+- express-rate-limit
+- csurf
+- morgan
 
 ## Installation
 
@@ -74,6 +79,8 @@ This web application allows you to store details about your home lab devices. Yo
    ```
 
 5. Open your browser and navigate to `http://localhost:5000`.
+
+   **Note:** The Docker setup now includes a defined network for service communication and a health check for the MongoDB service.
 
 ## Environment Variables
 
@@ -198,7 +205,12 @@ JWT_SECRET=generated_random_string_from_above_command
 
 - Added `ensureGuest` middleware to prevent authenticated users from accessing login and register pages.
 - Added helmet middleware to enhance security by setting various HTTP headers.
-- Added input validation to the login and registration processes to prevent potential injection attacks.
+- Implemented input validation using `express-validator` to prevent injection attacks.
+- Implemented CSRF protection to prevent cross-site request forgery attacks.
+- Implemented rate limiting to protect against brute-force attacks.
+- Improved password hashing using `bcryptjs`.
+- Enhanced session security with `httpOnly`, `secure`, and `sameSite` options.
+- Utilized `morgan` for logging.
 
 ## Contributing
 

@@ -28,11 +28,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added HTTPS support with SSL certificate configuration
 - Added SSL certificate generation instructions
 - Added SSL environment variables
+- Input validation using `express-validator`.
+- CSRF protection to forms.
+- Rate limiting middleware.
+- Logging middleware using `morgan`.
+- Defined network in `docker-compose.yml` for service communication.
+- Added health check for MongoDB service in `docker-compose.yml`.
 
 ### Changed
 
 - Documented setup and usage in README.md.
 - Improved security by moving sensitive environment variables to .env file
+- Improved password hashing using `bcryptjs`.
+- Enhanced session management with secure options.
+- Refactored user registration logic.
+- Improved Docker setup with network and health check configurations.
 
 ### Fixed
 
@@ -51,3 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - Implemented HTTPS for secure connections
+- Implemented CSRF protection.
+- Implemented rate limiting to protect against brute-force attacks.
+- Improved password hashing.
+- Enhanced session security.
