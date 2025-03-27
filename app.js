@@ -98,6 +98,11 @@ app.use((req, res, next) => {
 // Logging middleware
 app.use(morgan('dev'));
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK' });
+});
+
 // Routes
 app.use('/', require('./routes/index'));
 app.use('/users', require('./routes/users'));
