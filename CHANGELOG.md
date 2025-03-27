@@ -33,3 +33,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Docker build issues related to missing environment variables
 - Improved documentation for Docker deployment
+- Fixed Docker build issues by correctly ordering Dockerfile operations
+- Fixed missing package.json causing Docker build failures
+- Fixed Docker container port configuration to use port 5000

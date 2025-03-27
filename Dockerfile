@@ -1,10 +1,8 @@
-# Use the official Node.js image as the base image
 FROM node:latest
 
-# Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package files first
 COPY package*.json ./
 
 # Install dependencies
@@ -13,8 +11,10 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
-# Expose the port the app runs on
-EXPOSE 3000
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=5000
 
-# Start the application
+EXPOSE 5000
+
 CMD ["npm", "start"]

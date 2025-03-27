@@ -95,6 +95,26 @@ MONGODB_URI=mongodb://localhost:27017/homelab
 PORT=5000
 ```
 
+### Setting JWT_SECRET
+
+The JWT_SECRET should be:
+- At least 32 characters long
+- Random and unpredictable
+- Unique for each environment
+- Never committed to version control
+
+You can generate a secure secret using Node.js:
+
+```sh
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+Copy the generated string to your .env file:
+
+```sh
+JWT_SECRET=generated_random_string_from_above_command
+```
+
 ## File Structure
 
 ```
