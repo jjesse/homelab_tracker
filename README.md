@@ -92,6 +92,7 @@ The following environment variables are required:
 | AUTH_TOKEN_EXPIRY | JWT token expiry time (e.g., "1d" for one day) | "1d" |
 | MONGODB_URI | MongoDB connection string | "mongodb://localhost:27017/homelab" |
 | PORT | Application port | 5000 |
+| SESSION_SECRET | Secret for express-session | Required |
 | SSL_KEY_PATH | Path to SSL private key file | "./certs/server.key" |
 | SSL_CERT_PATH | Path to SSL certificate file | "./certs/server.crt" |
 
@@ -102,6 +103,7 @@ JWT_SECRET=your_secret_key_here
 AUTH_TOKEN_EXPIRY=1d
 MONGODB_URI=mongodb://localhost:27017/homelab
 PORT=5000
+SESSION_SECRET=your_session_secret_here
 SSL_KEY_PATH=./certs/server.key
 SSL_CERT_PATH=./certs/server.crt
 ```

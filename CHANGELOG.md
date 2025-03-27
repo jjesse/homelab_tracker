@@ -57,6 +57,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed Docker volume configuration by using named volumes
 - Improved container security by running as non-root user
 - Fixed MongoDB container restart policy
+- Fixed user registration by properly handling async/await in passport.js
+- Fixed missing session secret environment variable
+- Fixed missing dependencies in package.json
 
 ### Security
 

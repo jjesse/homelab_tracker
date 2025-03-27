@@ -10,7 +10,13 @@ const User = require('../models/User');
 
 // Register
 router.get('/register', ensureGuest, (req, res) => {
-  res.render('register', { errors: [] });
+  res.render('register', { 
+    errors: [],
+    name: '',
+    email: '',
+    password: '',
+    password2: ''
+  });
 });
 
 // Login
