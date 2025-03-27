@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+</head>
+<body>
+  <h1>Dashboard</h1>
+  <p>Welcome, <%= user.name %></p>
+  <a href="/users/logout">Logout</a>
+  <h2>Add Device</h2>
+  <form action="/devices/add" method="POST">
+    <div>
+      <label for="name">Device Name:</label>
+      <input type="text" name="name" required>
+    </div>
+    <div>
+      <label for="ipAddress">IP Address:</label>
+      <input type="text" name="ipAddress" required>
+    </div>
+    <div>
+      <label for="operatingSystem">Operating System:</label>
+      <input type="text" name="operatingSystem" required>
+    </div>
+    <!-- New fields -->
+    <div>
+      <label for="hostname">Hostname:</label>
+      <input type="text" name="hostname" required>
+    </div>
+    <div>
+      <label for="network">Network:</label>
+      <input type="text" name="network" required>
+    </div>
+    <div>
+      <label for="systemRole">System Role:</label>
+      <input type="text" name="systemRole" required>
+    </div>
+    <div>
+      <label for="hypervisorInstalledOn">Hypervisor Installed On:</label>
+      <input type="text" name="hypervisorInstalledOn" required>
+    </div>
+    <div>
+      <label for="domainUserSignedIn">Domain User Signed In:</label>
+      <input type="text" name="domainUserSignedIn" required>
+    </div>
+    <div>
+      <label for="zscalerUserSignedIn">Zscaler User Signed In:</label>
+      <input type="text" name="zscalerUserSignedIn" required>
+    </div>
+    <div>
+      <label for="zscalerAppSegment">Zscaler App Segment:</label>
+      <input type="text" name="zscalerAppSegment" required>
+    </div>
+    <div>
+      <label for="notes">Notes:</label>
+      <textarea name="notes"></textarea>
+    </div>
+    <!-- End of new fields -->
+    <button type="submit">Add Device</button>
+  </form>
+  <h2>Your Devices</h2>
+  <ul>
+    <% user.devices.forEach(function(device) { %>
+      <li><%= device.name %> - <%= device.ipAddress %> - <%= device.operatingSystem %> - <%= device.hostname %> - <%= device.network %> - <%= device.systemRole %> - <%= device.hypervisorInstalledOn %> - <%= device.domainUserSignedIn %> - <%= device.zscalerUserSignedIn %> - <%= device.zscalerAppSegment %> - <%= device.notes %></li>
+    <% }) %>
+  </ul>
+</body>
+</html>
