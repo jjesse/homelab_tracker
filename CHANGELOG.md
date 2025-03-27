@@ -44,6 +44,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed Docker volume configuration issues
 - Added proper volume mapping for SSL certificates
 - Fixed MongoDB data persistence in Docker setup
+- Fixed Docker volume configuration by using named volumes
+- Improved container security by running as non-root user
+- Fixed MongoDB container restart policy
 
 ### Security
 

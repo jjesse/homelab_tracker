@@ -2,7 +2,7 @@ FROM node:latest
 
 WORKDIR /app
 
-# Create certs directory
+# Create required directories
 RUN mkdir -p certs
 
 # Copy package files first
@@ -14,7 +14,12 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
-# Set environment variables
+# Set proper permissions
+RUN chown -R node:node /app
+
+# Switch to non-root user
+USER node
+
 ENV NODE_ENV=production
 ENV PORT=5000
 
