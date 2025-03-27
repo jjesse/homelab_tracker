@@ -2,6 +2,9 @@ FROM node:latest
 
 WORKDIR /app
 
+# Create certs directory
+RUN mkdir -p certs
+
 # Copy package files first
 COPY package*.json ./
 

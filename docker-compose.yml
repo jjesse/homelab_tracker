@@ -9,21 +9,20 @@ services:
       - .env
     environment:
       - NODE_ENV=development
-      - MONGODB_URI=mongodb://mongodb:27017/homelab
-      - JWT_SECRET=${JWT_SECRET}
-      - AUTH_TOKEN_EXPIRY=${AUTH_TOKEN_EXPIRY}
+      - MONGODB_URI=mongodb://mongo:27017/homelab
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - ./certs:/app/certs
     depends_on:
       - mongo
-    volumes:
-      - .:/app
-      - /app/node_modules
 
   mongo:
     image: mongo:4.4
     ports:
       - "27017:27017"
     volumes:
-      - mongo-data:/data/db
+      - mongodb_data:/data/db
 
 volumes:
-  mongo-data:
+  mongodb_data:

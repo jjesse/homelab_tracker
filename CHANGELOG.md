@@ -1,4 +1,5 @@
 # Changelog
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
@@ -34,11 +35,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved security by moving sensitive environment variables to .env file
 
 ### Fixed
+
 - Docker build issues related to missing environment variables
 - Improved documentation for Docker deployment
 - Fixed Docker build issues by correctly ordering Dockerfile operations
 - Fixed missing package.json causing Docker build failures
 - Fixed Docker container port configuration to use port 5000
+- Fixed Docker volume configuration issues
+- Added proper volume mapping for SSL certificates
+- Fixed MongoDB data persistence in Docker setup
 
 ### Security
+
 - Implemented HTTPS for secure connections
