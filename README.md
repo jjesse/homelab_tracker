@@ -53,19 +53,47 @@ This web application allows you to store details about your home lab devices. Yo
    cd homelab
    ```
 
-2. Build the Docker image:
+2. Create a .env file:
+
+   ```sh
+   cp .env.example .env
+   ```
+
+   Then edit the .env file with your settings.
+
+3. Build the Docker image:
 
    ```sh
    docker-compose build
    ```
 
-3. Start the Docker container:
+4. Start the Docker container:
 
    ```sh
    docker-compose up
    ```
 
-4. Open your browser and navigate to `http://localhost:5000`.
+5. Open your browser and navigate to `http://localhost:5000`.
+
+## Environment Variables
+
+The following environment variables are required:
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| JWT_SECRET | Secret key for JWT token generation | Required |
+| AUTH_TOKEN_EXPIRY | JWT token expiry time (e.g., "1d" for one day) | "1d" |
+| MONGODB_URI | MongoDB connection string | "mongodb://localhost:27017/homelab" |
+| PORT | Application port | 5000 |
+
+Create a `.env` file in the project root with these variables:
+
+```sh
+JWT_SECRET=your_secret_key_here
+AUTH_TOKEN_EXPIRY=1d
+MONGODB_URI=mongodb://localhost:27017/homelab
+PORT=5000
+```
 
 ## File Structure
 
@@ -129,6 +157,14 @@ This web application allows you to store details about your home lab devices. Yo
 - Added `ensureGuest` middleware to prevent authenticated users from accessing login and register pages.
 - Added helmet middleware to enhance security by setting various HTTP headers.
 - Added input validation to the login and registration processes to prevent potential injection attacks.
+
+## Contributing
+
+Please read through our contributing guidelines. Included are directions for opening issues, coding standards, and notes on development.
+
+## Changelog
+
+All notable changes to this project are documented in the [CHANGELOG.md](CHANGELOG.md) file.
 
 ## License
 
