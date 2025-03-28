@@ -60,6 +60,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed user registration by properly handling async/await in passport.js
 - Fixed missing session secret environment variable
 - Fixed missing dependencies in package.json
+- Enhanced container health checks with better timeout and retry settings
+- Improved wait-for-it.sh script with maximum attempts and better error handling
+- Added more comprehensive health check endpoint with MongoDB connection status
 
 ### Security
 
@@ -68,3 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implemented rate limiting to protect against brute-force attacks.
 - Improved password hashing.
 - Enhanced session security.
+
+### Verified
+
+- Confirmed docker-compose.yml `depends_on` configuration is correctly set up for app service dependency on MongoDB with health check condition
