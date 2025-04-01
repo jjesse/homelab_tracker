@@ -9,7 +9,7 @@ services:
       - .env
     environment:
       - NODE_ENV=development
-      - MONGODB_URI=mongodb://mongo:27017/homelab
+      - MONGODB_URI=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo:27017/homelab?authSource=admin
     depends_on:
       mongo:
         condition: service_healthy
@@ -22,17 +22,21 @@ services:
       retries: 5
       start_period: 60s
     command: sh -c './wait-for-it.sh mongo:27017 -- npm start'
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 256M
+    mem_limit: 512m
+    cpus: 0.5
+    mem_reservation: 256m
+    volumes:
+      - .:/app
+      - /app/node_modules
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped
 
   mongo:
-    image: mongo:4.4
+    image: mongo:latest
     restart: always
     ports:
       - "27017:27017"
@@ -40,23 +44,25 @@ services:
       - mongodb_data:/data/db
     networks:
       - homelab_network
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 60s
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 1G
-        reservations:
-          cpus: '0.5'
-          memory: 512M
+    mem_limit: 1g
+    cpus: 1.0
+    mem_reservation: 512m
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
-  app_data:
   mongodb_data:
 
 networks:

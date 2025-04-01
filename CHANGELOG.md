@@ -34,6 +34,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Logging middleware using `morgan`.
 - Defined network in `docker-compose.yml` for service communication.
 - Added health check for MongoDB service in `docker-compose.yml`.
+- Docker Compose configuration with:
+  - Node.js application container with resource limits (512MB RAM, 0.5 CPU)
+  - MongoDB container with resource limits (1GB RAM, 1.0 CPU)
+  - Health checks for both services
+  - Container logging configuration with rotation (10MB max size, 3 files)
+  - Volume mounting for persistent MongoDB data
+  - Bridge network configuration
+  - Wait-for-it script implementation for proper service startup order
 
 ### Changed
 

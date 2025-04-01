@@ -82,6 +82,46 @@ This web application allows you to store details about your home lab devices. Yo
 
    **Note:** The Docker setup now includes a defined network for service communication and a health check for the MongoDB service.
 
+## Docker Configuration
+
+The application is containerized using Docker with the following features:
+
+### Services
+
+- **Application**: Node.js application running on port 5000
+  - Memory: 512MB (256MB reserved)
+  - CPU: 0.5 cores
+  - Auto-restart enabled
+  - Health check endpoint: `/health`
+
+- **MongoDB**: Latest version running on port 27017
+  - Memory: 1GB (512MB reserved)
+  - CPU: 1.0 cores
+  - Persistent data storage
+  - Health check enabled
+
+### Environment Setup
+
+1. Create a `.env` file with the following variables:
+
+   ```
+   MONGO_USERNAME=your_username
+   MONGO_PASSWORD=your_password
+   ```
+
+2. Start the services:
+
+   ```bash
+   docker-compose up -d
+   ```
+
+### Logging
+
+Both services use JSON file logging with automatic rotation:
+
+- Maximum file size: 10MB
+- Maximum number of files: 3
+
 ## Environment Variables
 
 The following environment variables are required:
@@ -111,6 +151,7 @@ SSL_CERT_PATH=./certs/server.crt
 ### Setting JWT_SECRET
 
 The JWT_SECRET should be:
+
 - At least 32 characters long
 - Random and unpredictable
 - Unique for each environment
@@ -139,6 +180,7 @@ JWT_SECRET=generated_random_string_from_above_command
    ```
 
 2. Add certificate paths to .env:
+
    ```sh
    SSL_KEY_PATH=./certs/server.key
    SSL_CERT_PATH=./certs/server.crt
