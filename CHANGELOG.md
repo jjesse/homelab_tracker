@@ -71,6 +71,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced container health checks with better timeout and retry settings
 - Improved wait-for-it.sh script with maximum attempts and better error handling
 - Added more comprehensive health check endpoint with MongoDB connection status
+- Fixed MongoDB container restart issues by:
+  - Added proper authentication to MongoDB healthcheck
+  - Adjusted MongoDB cache size for container environment
+  - Added file descriptor limits for MongoDB stability
+  - Modified healthcheck timing for better reliability
 
 ### Security
 
