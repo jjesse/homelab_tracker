@@ -36,31 +36,28 @@ services:
     restart: unless-stopped
 
   mongo:
-    image: mongo:latest
-    restart: always
-    command: ["mongod", "--bind_ip_all", "--wiredTigerCacheSizeGB", "0.25"]
+    image: mongo:6.0
+    restart: unless-stopped
+    command: mongod --auth
     ports:
       - "27017:27017"
     volumes:
-      - mongodb_data:/data/db
+      - type: volume
+        source: mongodb_data
+        target: /data/db
     networks:
       - homelab_network
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
     healthcheck:
-      test: ["CMD", "mongosh", "admin", "--eval", "db.auth('${MONGO_USERNAME}', '${MONGO_PASSWORD}'); db.adminCommand('ping')"]
-      interval: 30s
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
       timeout: 10s
-      retries: 3
-      start_period: 30s
+      retries: 5
+      start_period: 40s
     mem_limit: 1g
     cpus: 1.0
-    mem_reservation: 512m
-    ulimits:
-      nofile:
-        soft: 64000
-        hard: 64000
     logging:
       driver: "json-file"
       options:
@@ -69,6 +66,7 @@ services:
 
 volumes:
   mongodb_data:
+    name: homelab_mongodb_data
 
 networks:
   homelab_network:
