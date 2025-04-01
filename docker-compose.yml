@@ -9,27 +9,65 @@ services:
       - .env
     environment:
       - NODE_ENV=development
-      - MONGODB_URI=mongodb://mongo:27017/homelab
-    volumes:
-      - app_data:/app
-      - ./certs:/app/certs:ro
+      - MONGODB_URI=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo:27017/homelab?authSource=admin
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     networks:
       - homelab_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    command: sh -c './wait-for-it.sh mongo:27017 -- npm start'
+    mem_limit: 512m
+    cpus: 0.5
+    mem_reservation: 256m
+    volumes:
+      - .:/app
+      - /app/node_modules
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped
 
   mongo:
-    image: mongo:4.4
+    image: mongo:latest
     restart: always
+    command: ["mongod", "--bind_ip_all", "--wiredTigerCacheSizeGB", "0.25"]
     ports:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
     networks:
       - homelab_network
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mongosh", "admin", "--eval", "db.auth('${MONGO_USERNAME}', '${MONGO_PASSWORD}'); db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    mem_limit: 1g
+    cpus: 1.0
+    mem_reservation: 512m
+    ulimits:
+      nofile:
+        soft: 64000
+        hard: 64000
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
-  app_data:
   mongodb_data:
 
 networks:

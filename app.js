@@ -26,12 +26,27 @@ const limiter = rateLimit({
 const csrfProtection = csrf();
 
 // DB Config
-const db = process.env.MONGO_URI;
+const db = process.env.MONGODB_URI;
 
-// Connect to MongoDB
-mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true })
+// Connect to MongoDB with retry logic
+const connectWithRetry = () => {
+  mongoose.connect(db, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 5000,
+    // Wait 5 seconds before timing out
+    socketTimeoutMS: 45000,
+    // Close sockets after 45 seconds of inactivity
+  })
   .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.log(err));
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+    console.log('Retrying in 5 seconds...');
+    setTimeout(connectWithRetry, 5000);
+  });
+};
+
+connectWithRetry();
 
 // EJS
 app.use(expressLayouts);
@@ -82,6 +97,26 @@ app.use((req, res, next) => {
 
 // Logging middleware
 app.use(morgan('dev'));
+
+// Health check endpoint
+app.get('/health', async (req, res) => {
+  try {
+    // Check MongoDB connection
+    await mongoose.connection.db.admin().ping();
+    res.status(200).json({ 
+      status: 'OK',
+      mongodb: 'Connected',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(503).json({ 
+      status: 'ERROR',
+      mongodb: 'Disconnected',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
 
 // Routes
 app.use('/', require('./routes/index'));

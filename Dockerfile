@@ -1,5 +1,8 @@
 FROM node:latest
 
+# Install curl for health checks
+RUN apt-get update && apt-get install -y curl
+
 WORKDIR /app
 
 # Create required directories
@@ -10,6 +13,10 @@ COPY package*.json ./
 
 # Install dependencies
 RUN npm install
+
+# Copy wait-for-it script
+COPY wait-for-it.sh .
+RUN chmod +x wait-for-it.sh
 
 # Copy the rest of the application code
 COPY . .

@@ -34,6 +34,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Logging middleware using `morgan`.
 - Defined network in `docker-compose.yml` for service communication.
 - Added health check for MongoDB service in `docker-compose.yml`.
+- Docker Compose configuration with:
+  - Node.js application container with resource limits (512MB RAM, 0.5 CPU)
+  - MongoDB container with resource limits (1GB RAM, 1.0 CPU)
+  - Health checks for both services
+  - Container logging configuration with rotation (10MB max size, 3 files)
+  - Volume mounting for persistent MongoDB data
+  - Bridge network configuration
+  - Wait-for-it script implementation for proper service startup order
 
 ### Changed
 
@@ -60,6 +68,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed user registration by properly handling async/await in passport.js
 - Fixed missing session secret environment variable
 - Fixed missing dependencies in package.json
+- Enhanced container health checks with better timeout and retry settings
+- Improved wait-for-it.sh script with maximum attempts and better error handling
+- Added more comprehensive health check endpoint with MongoDB connection status
+- Fixed MongoDB container restart issues by:
+  - Added proper authentication to MongoDB healthcheck
+  - Adjusted MongoDB cache size for container environment
+  - Added file descriptor limits for MongoDB stability
+  - Modified healthcheck timing for better reliability
 
 ### Security
 
@@ -68,3 +84,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implemented rate limiting to protect against brute-force attacks.
 - Improved password hashing.
 - Enhanced session security.
+
+### Verified
+
+- Confirmed docker-compose.yml `depends_on` configuration is correctly set up for app service dependency on MongoDB with health check condition
