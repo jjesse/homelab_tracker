@@ -4,7 +4,8 @@ services:
   app:
     build: .
     ports:
-      - "5000:5000"
+      - "443:5000"
+      - "80:5000"
     env_file:
       - .env
     environment:
@@ -36,6 +37,7 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
+      - ./certs:/app/certs
     logging:
       driver: "json-file"
       options:

@@ -189,14 +189,34 @@ SESSION_SECRET=generated_session_secret_from_above_command
    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out server.crt
    ```
 
-2. Add certificate paths to .env:
+   When prompted, fill in the certificate details. For local development, you can use:
+   - Common Name (CN): localhost
+   - Organization Name (O): HomeLabDev
+   - The rest can be left as default
+
+2. Set proper permissions (Unix systems):
+   ```sh
+   chmod 600 server.key
+   chmod 644 server.crt
+   ```
+
+3. Add certificate paths to .env:
 
    ```sh
    SSL_KEY_PATH=./certs/server.key
    SSL_CERT_PATH=./certs/server.crt
    ```
 
-3. For production, replace with valid SSL certificates from a trusted provider.
+4. For production:
+   - Replace with valid SSL certificates from a trusted provider
+   - Never use self-signed certificates in production
+   - Consider using Let's Encrypt for free SSL certificates
+
+#### Troubleshooting SSL
+
+- **Certificate Not Trusted**: When using self-signed certificates, your browser will show a warning. This is normal in development. Click "Advanced" and "Proceed" to continue.
+- **Certificate Not Found**: Make sure the certificates are properly mounted in Docker by checking the volume mapping in docker-compose.yml
+- **Permission Issues**: Ensure the certificates are readable by the node process in the container
 
 ## File Structure
 

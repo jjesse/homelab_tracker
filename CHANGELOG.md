@@ -63,6 +63,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improved MongoDB healthcheck using mongosh
   - Added explicit memory and CPU limits
   - Added logging configuration with rotation
+- Implemented full HTTPS support with automatic HTTP to HTTPS redirection
+- Updated Docker configuration to handle HTTPS traffic
 
 ### Fixed
 
