@@ -8,6 +8,9 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const csrf = require('csurf');
 const morgan = require('morgan');
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -50,6 +53,7 @@ connectWithRetry();
 
 // EJS
 app.use(expressLayouts);
+app.set('layout', 'layout'); // add this line
 app.set('view engine', 'ejs');
 
 // Static Files
@@ -60,7 +64,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // Session
 app.use(session({
-  secret: process.env.SESSION_SECRET,
+  secret: process.env.SESSION_SECRET || 'fallback_secret_do_not_use_in_production',
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -129,6 +133,22 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!');
 });
 
+// Redirect HTTP to HTTPS
+app.use((req, res, next) => {
+  if (!req.secure) {
+    return res.redirect(`https://${req.headers.host}${req.url}`);
+  }
+  next();
+});
+
+// HTTPS Configuration
+const sslOptions = {
+  key: fs.readFileSync(process.env.SSL_KEY_PATH || path.join(__dirname, 'certs/server.key')),
+  cert: fs.readFileSync(process.env.SSL_CERT_PATH || path.join(__dirname, 'certs/server.crt'))
+};
+
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, console.log(`Server started on port ${PORT}`));
+// Create HTTPS server
+https.createServer(sslOptions, app)
+  .listen(PORT, () => console.log(`HTTPS Server running on port ${PORT}`));

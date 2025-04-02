@@ -93,12 +93,15 @@ The application is containerized using Docker with the following features:
   - CPU: 0.5 cores
   - Auto-restart enabled
   - Health check endpoint: `/health`
+  - JSON file logging with rotation (10MB max size, 3 files)
 
-- **MongoDB**: Latest version running on port 27017
-  - Memory: 1GB (512MB reserved)
+- **MongoDB**: Version 7.0 running on port 27017
+  - Memory: 1GB
   - CPU: 1.0 cores
-  - Persistent data storage
-  - Health check enabled
+  - Authentication enabled
+  - Health check using mongosh
+  - JSON file logging with rotation (10MB max size, 3 files)
+  - Persistent data storage with named volume
 
 ### Environment Setup
 
@@ -107,6 +110,9 @@ The application is containerized using Docker with the following features:
    ```
    MONGO_USERNAME=your_username
    MONGO_PASSWORD=your_password
+   JWT_SECRET=your_jwt_secret_here
+   AUTH_TOKEN_EXPIRY=24h
+   SESSION_SECRET=your_session_secret_here
    ```
 
 2. Start the services:
@@ -148,25 +154,29 @@ SSL_KEY_PATH=./certs/server.key
 SSL_CERT_PATH=./certs/server.crt
 ```
 
-### Setting JWT_SECRET
+### Setting JWT_SECRET and SESSION_SECRET
 
-The JWT_SECRET should be:
-
+Both secrets should be:
 - At least 32 characters long
 - Random and unpredictable
 - Unique for each environment
 - Never committed to version control
 
-You can generate a secure secret using Node.js:
+You can generate secure secrets using Node.js:
 
 ```sh
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+# Generate JWT_SECRET
+node -e "console.log('JWT_SECRET=' + require('crypto').randomBytes(32).toString('hex'))"
+
+# Generate SESSION_SECRET
+node -e "console.log('SESSION_SECRET=' + require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-Copy the generated string to your .env file:
+Copy the generated strings to your .env file:
 
 ```sh
-JWT_SECRET=generated_random_string_from_above_command
+JWT_SECRET=generated_jwt_secret_from_above_command
+SESSION_SECRET=generated_session_secret_from_above_command
 ```
 
 ### SSL Configuration
@@ -179,14 +189,34 @@ JWT_SECRET=generated_random_string_from_above_command
    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out server.crt
    ```
 
-2. Add certificate paths to .env:
+   When prompted, fill in the certificate details. For local development, you can use:
+   - Common Name (CN): localhost
+   - Organization Name (O): HomeLabDev
+   - The rest can be left as default
+
+2. Set proper permissions (Unix systems):
+   ```sh
+   chmod 600 server.key
+   chmod 644 server.crt
+   ```
+
+3. Add certificate paths to .env:
 
    ```sh
    SSL_KEY_PATH=./certs/server.key
    SSL_CERT_PATH=./certs/server.crt
    ```
 
-3. For production, replace with valid SSL certificates from a trusted provider.
+4. For production:
+   - Replace with valid SSL certificates from a trusted provider
+   - Never use self-signed certificates in production
+   - Consider using Let's Encrypt for free SSL certificates
+
+#### Troubleshooting SSL
+
+- **Certificate Not Trusted**: When using self-signed certificates, your browser will show a warning. This is normal in development. Click "Advanced" and "Proceed" to continue.
+- **Certificate Not Found**: Make sure the certificates are properly mounted in Docker by checking the volume mapping in docker-compose.yml
+- **Permission Issues**: Ensure the certificates are readable by the node process in the container
 
 ## File Structure
 
@@ -245,6 +275,15 @@ JWT_SECRET=generated_random_string_from_above_command
 1. After logging in, navigate to the dashboard: `http://localhost:5000/dashboard`
 2. Your devices will be listed under "Your Devices".
 
+## API Routes
+
+### Devices
+
+- GET `/devices` - Get all devices for authenticated user
+- POST `/devices/add` - Add a new device
+  - Required fields: name, ipAddress, operatingSystem, hostname, network, systemRole, hypervisorInstalledOn, domainUserSignedIn, zscalerUserSignedIn, zscalerAppSegment
+  - Optional fields: notes
+
 ## Security Improvements
 
 - Added `ensureGuest` middleware to prevent authenticated users from accessing login and register pages.
@@ -255,6 +294,20 @@ JWT_SECRET=generated_random_string_from_above_command
 - Improved password hashing using `bcryptjs`.
 - Enhanced session security with `httpOnly`, `secure`, and `sameSite` options.
 - Utilized `morgan` for logging.
+
+## Development
+
+To run the application in debug mode:
+
+```sh
+npm run dev:debug
+```
+
+To run tests:
+
+```sh
+npm test
+```
 
 ## Contributing
 

@@ -42,6 +42,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Volume mounting for persistent MongoDB data
   - Bridge network configuration
   - Wait-for-it script implementation for proper service startup order
+- Device routes implementation
+  - GET / endpoint to retrieve user devices
+  - POST /add endpoint to create new devices
+- Jest testing framework for unit tests
+- Debug configuration for development
 
 ### Changed
 
@@ -51,6 +56,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced session management with secure options.
 - Refactored user registration logic.
 - Improved Docker setup with network and health check configurations.
+- Updated MongoDB configuration:
+  - Updated MongoDB version to 7.0 for latest features and security
+  - Removed complex volume mount configuration
+  - Added MongoDB authentication
+  - Improved MongoDB healthcheck using mongosh
+  - Added explicit memory and CPU limits
+  - Added logging configuration with rotation
+- Implemented full HTTPS support with automatic HTTP to HTTPS redirection
+- Updated Docker configuration to handle HTTPS traffic
 
 ### Fixed
 
@@ -76,6 +90,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Adjusted MongoDB cache size for container environment
   - Added file descriptor limits for MongoDB stability
   - Modified healthcheck timing for better reliability
+- Improved MongoDB container stability:
+  - Updated MongoDB version to 7.0
+  - Implemented proper authentication
+  - Added resource limits for better stability
+  - Added logging rotation configuration
+- Fixed express-session deprecation warning by properly configuring session secret
+- Added missing devices route handler
+- Fixed Module not found error for devices routes
+- Added missing layout.ejs file for express-ejs-layouts
 
 ### Security
 

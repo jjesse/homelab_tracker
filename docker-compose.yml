@@ -4,7 +4,8 @@ services:
   app:
     build: .
     ports:
-      - "5000:5000"
+      - "443:5000"
+      - "80:5000"
     env_file:
       - .env
     environment:
@@ -16,51 +17,60 @@ services:
     networks:
       - homelab_network
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:5000/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
-    command: sh -c './wait-for-it.sh mongo:27017 -- npm start'
-    mem_limit: 512m
-    cpus: 0.5
-    mem_reservation: 256m
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:5000/health || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    command: >
+      sh -c '
+      /usr/local/bin/wait-for-it.sh mongo:27017 -t 60 &&
+      npm start || { echo "App failed to start"; exit 1; }'
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+          cpus: '0.5'
+        reservations:
+          memory: 256m
+    restart: unless-stopped
     volumes:
       - .:/app
       - /app/node_modules
+      - ./certs:/app/certs
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
-    restart: unless-stopped
+        mode: non-blocking
 
   mongo:
-    image: mongo:latest
-    restart: always
-    command: ["mongod", "--bind_ip_all", "--wiredTigerCacheSizeGB", "0.25"]
+    image: mongo:7.0
+    restart: unless-stopped
+    command: mongod --auth
     ports:
       - "27017:27017"
     volumes:
-      - mongodb_data:/data/db
+      - type: volume
+        source: mongodb_data
+        target: /data/db
     networks:
       - homelab_network
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
     healthcheck:
-      test: ["CMD", "mongosh", "admin", "--eval", "db.auth('${MONGO_USERNAME}', '${MONGO_PASSWORD}'); db.adminCommand('ping')"]
-      interval: 30s
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
       timeout: 10s
-      retries: 3
-      start_period: 30s
-    mem_limit: 1g
-    cpus: 1.0
-    mem_reservation: 512m
-    ulimits:
-      nofile:
-        soft: 64000
-        hard: 64000
+      retries: 5
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+          cpus: '1.0'
     logging:
       driver: "json-file"
       options:
@@ -69,6 +79,7 @@ services:
 
 volumes:
   mongodb_data:
+    name: homelab_mongodb_data
 
 networks:
   homelab_network:
