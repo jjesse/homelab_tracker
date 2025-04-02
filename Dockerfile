@@ -16,7 +16,8 @@ RUN npm install
 
 # Copy wait-for-it script
 COPY wait-for-it.sh .
-RUN chmod +x wait-for-it.sh
+RUN chmod +x wait-for-it.sh 
+run sh -c 'wait-for-it.sh mongo:27017 -- npm start'
 
 # Copy the rest of the application code
 COPY . .

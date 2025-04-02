@@ -51,6 +51,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced session management with secure options.
 - Refactored user registration logic.
 - Improved Docker setup with network and health check configurations.
+- Updated MongoDB configuration:
+  - Pinned MongoDB version to 6.0 for better stability
+  - Simplified volume configuration with explicit naming
+  - Streamlined container restart policy
+  - Improved healthcheck command for better reliability
+  - Removed unnecessary memory reservation settings
 
 ### Fixed
 
@@ -76,6 +82,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Adjusted MongoDB cache size for container environment
   - Added file descriptor limits for MongoDB stability
   - Modified healthcheck timing for better reliability
+- Improved MongoDB container stability:
+  - Removed complex volume mount configuration
+  - Simplified authentication and healthcheck setup
+  - Added explicit volume naming for better persistence management
 
 ### Security
 

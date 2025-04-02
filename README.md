@@ -94,11 +94,12 @@ The application is containerized using Docker with the following features:
   - Auto-restart enabled
   - Health check endpoint: `/health`
 
-- **MongoDB**: Latest version running on port 27017
-  - Memory: 1GB (512MB reserved)
+- **MongoDB**: Version 6.0 running on port 27017
+  - Memory: 1GB
   - CPU: 1.0 cores
-  - Persistent data storage
+  - Persistent data storage with named volume
   - Health check enabled
+  - Authentication enabled
 
 ### Environment Setup
 
