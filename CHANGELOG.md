@@ -52,11 +52,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactored user registration logic.
 - Improved Docker setup with network and health check configurations.
 - Updated MongoDB configuration:
-  - Pinned MongoDB version to 6.0 for better stability
-  - Simplified volume configuration with explicit naming
-  - Streamlined container restart policy
-  - Improved healthcheck command for better reliability
-  - Removed unnecessary memory reservation settings
+  - Updated MongoDB version to 7.0 for latest features and security
+  - Removed complex volume mount configuration
+  - Added MongoDB authentication
+  - Improved MongoDB healthcheck using mongosh
+  - Added explicit memory and CPU limits
+  - Added logging configuration with rotation
 
 ### Fixed
 
@@ -83,13 +84,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added file descriptor limits for MongoDB stability
   - Modified healthcheck timing for better reliability
 - Improved MongoDB container stability:
-  - Removed complex volume mount configuration
-  - Simplified authentication and healthcheck setup
-  - Added explicit volume naming for better persistence management
-- Fixed wait-for-it.sh script permissions:
-  - Moved script to /usr/local/bin
-  - Set proper executable permissions
-  - Updated script path in docker-compose.yml
+  - Updated MongoDB version to 7.0
+  - Implemented proper authentication
+  - Added resource limits for better stability
+  - Added logging rotation configuration
 
 ### Security
 

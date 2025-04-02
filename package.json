@@ -21,7 +21,8 @@
     "express-ejs-layouts": "^2.5.1",
     "express-rate-limit": "^6.7.0",
     "morgan": "^1.10.0",
-    "csurf": "^1.11.0"
+    "csurf": "^1.11.0",
+    "dotenv": "^16.3.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"

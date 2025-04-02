@@ -93,13 +93,15 @@ The application is containerized using Docker with the following features:
   - CPU: 0.5 cores
   - Auto-restart enabled
   - Health check endpoint: `/health`
+  - JSON file logging with rotation (10MB max size, 3 files)
 
-- **MongoDB**: Version 6.0 running on port 27017
+- **MongoDB**: Version 7.0 running on port 27017
   - Memory: 1GB
   - CPU: 1.0 cores
-  - Persistent data storage with named volume
-  - Health check enabled
   - Authentication enabled
+  - Health check using mongosh
+  - JSON file logging with rotation (10MB max size, 3 files)
+  - Persistent data storage with named volume
 
 ### Environment Setup
 
@@ -108,6 +110,9 @@ The application is containerized using Docker with the following features:
    ```
    MONGO_USERNAME=your_username
    MONGO_PASSWORD=your_password
+   JWT_SECRET=your_jwt_secret_here
+   AUTH_TOKEN_EXPIRY=24h
+   SESSION_SECRET=your_session_secret_here
    ```
 
 2. Start the services:
