@@ -1,7 +1,7 @@
 FROM node:latest
 
-# Install curl for health checks
-RUN apt-get update && apt-get install -y curl
+# Install curl and netcat for health checks
+RUN apt-get update && apt-get install -y curl netcat-traditional
 
 WORKDIR /app
 

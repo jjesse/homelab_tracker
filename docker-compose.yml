@@ -27,9 +27,9 @@ services:
       npm start || { echo "App failed to start"; exit 1; }'
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 5s
-        max_attempts: 3
+        max_attempts: 0  # unlimited retries
         window: 120s
     mem_limit: 512m
     cpus: 0.5
@@ -66,6 +66,12 @@ services:
       timeout: 10s
       retries: 5
       start_period: 40s
+    deploy:
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 0  # unlimited retries
+        window: 120s
     mem_limit: 1g
     cpus: 1.0
     logging:
