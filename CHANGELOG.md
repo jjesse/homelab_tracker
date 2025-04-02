@@ -96,6 +96,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed express-session deprecation warning by properly configuring session secret
 - Added missing devices route handler
 - Fixed Module not found error for devices routes
+- Added missing layout.ejs file for express-ejs-layouts
 
 ### Security
 

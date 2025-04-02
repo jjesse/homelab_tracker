@@ -50,6 +50,7 @@ connectWithRetry();
 
 // EJS
 app.use(expressLayouts);
+app.set('layout', 'layout'); // add this line
 app.set('view engine', 'ejs');
 
 // Static Files

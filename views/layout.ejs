@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home Lab - <%- typeof title != 'undefined' ? title : 'Welcome' %></title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <% if(typeof user != 'undefined') { %>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/users/logout">Logout</a>
+      <% } else { %>
+        <a href="/users/login">Login</a>
+        <a href="/users/register">Register</a>
+      <% } %>
+    </nav>
+  </header>
+
+  <main>
+    <% if(typeof success_msg != 'undefined' && success_msg != '') { %>
+      <div class="alert success"><%= success_msg %></div>
+    <% } %>
+    <% if(typeof error_msg != 'undefined' && error_msg != '') { %>
+      <div class="alert error"><%= error_msg %></div>
+    <% } %>
+    <%- body %>
+  </main>
+
+  <footer>
+    <p>&copy; <%= new Date().getFullYear() %> Home Lab</p>
+  </footer>
+</body>
+</html>
