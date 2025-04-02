@@ -14,9 +14,9 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
-# Copy wait-for-it script
-COPY wait-for-it.sh .
-RUN chmod +x wait-for-it.sh
+# Copy wait-for-it script and set permissions
+COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
+RUN chmod +x /usr/local/bin/wait-for-it.sh
 
 # Copy the rest of the application code
 COPY . .

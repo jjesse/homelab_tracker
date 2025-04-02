@@ -86,6 +86,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed complex volume mount configuration
   - Simplified authentication and healthcheck setup
   - Added explicit volume naming for better persistence management
+- Fixed wait-for-it.sh script permissions:
+  - Moved script to /usr/local/bin
+  - Set proper executable permissions
+  - Updated script path in docker-compose.yml
 
 ### Security
 

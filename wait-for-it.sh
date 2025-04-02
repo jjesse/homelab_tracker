@@ -55,12 +55,22 @@ wait_for_wrapper() {
     fi
     return $WAITFORIT_RESULT
 }
+
+# Initialize WAITFORIT_CHILD
+WAITFORIT_CHILD=0
+
 # Parse command line arguments
 while [[ $# -gt 0 ]]
 do
     case "$1" in
         *:* )
-        WAITFORIT_hostport=($1)
+        hostport=(${1//:/ })
+        WAITFORIT_HOST=${hostport[0]}
+        WAITFORIT_PORT=${hostport[1]}
+        shift 1
+        ;;
+        --child)
+        WAITFORIT_CHILD=1
         shift 1
         ;;
         -q|--quiet)
@@ -113,9 +123,14 @@ do
     esac
 done
 
-if [[ "$WAITFORIT_hostport" != "" ]]; then
-    WAITFORIT_HOST="${WAITFORIT_hostport[0]}"
-    WAITFORIT_PORT="${WAITFORIT_hostport[1]}"
+WAITFORIT_BUSYTIMEFLAG=""
+if command -v timeout >/dev/null; then
+    WAITFORIT_ISBUSY=1
+    if timeout --help 2>&1 | grep -q "-t "; then
+        WAITFORIT_BUSYTIMEFLAG="-t"
+    fi
+else
+    WAITFORIT_ISBUSY=0
 fi
 
 # Check if host and port are provided
@@ -127,15 +142,6 @@ fi
 WAITFORIT_TIMEOUT=${WAITFORIT_TIMEOUT:-15}
 WAITFORIT_STRICT=${WAITFORIT_STRICT:-0}
 WAITFORIT_QUIET=${WAITFORIT_QUIET:-0}
-WAITFORIT_ISBUSY=${WAITFORIT_ISBUSY:-0}
-if [[ -n "$(type -t timeout)" ]]; then
-    WAITFORIT_ISBUSY=1
-    if [[ -n "$(type -t timeout)" | grep -q -e '-t '; then
-        WAITFORIT_BUSYTIMEFLAG="-t"
-    fi
-else
-    WAITFORIT_ISBUSY=0
-fi
 
 if [[ $WAITFORIT_CHILD -gt 0 ]]; then
     wait_for
