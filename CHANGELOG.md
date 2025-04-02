@@ -42,6 +42,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Volume mounting for persistent MongoDB data
   - Bridge network configuration
   - Wait-for-it script implementation for proper service startup order
+- Device routes implementation
+  - GET / endpoint to retrieve user devices
+  - POST /add endpoint to create new devices
+- Jest testing framework for unit tests
+- Debug configuration for development
 
 ### Changed
 
@@ -88,6 +93,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Implemented proper authentication
   - Added resource limits for better stability
   - Added logging rotation configuration
+- Fixed express-session deprecation warning by properly configuring session secret
+- Added missing devices route handler
+- Fixed Module not found error for devices routes
 
 ### Security
 

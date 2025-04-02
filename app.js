@@ -60,7 +60,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // Session
 app.use(session({
-  secret: process.env.SESSION_SECRET,
+  secret: process.env.SESSION_SECRET || 'fallback_secret_do_not_use_in_production',
   resave: false,
   saveUninitialized: false,
   cookie: {
