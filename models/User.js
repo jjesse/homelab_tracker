@@ -17,7 +17,11 @@ const UserSchema = new mongoose.Schema({
   date: {
     type: Date,
     default: Date.now
-  }
+  },
+  devices: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Device'
+  }]
 });
 
 const User = mongoose.model('User', UserSchema);

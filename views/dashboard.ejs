@@ -58,10 +58,14 @@
     <button type="submit">Add Device</button>
   </form>
   <h2>Your Devices</h2>
-  <ul>
-    <% user.devices.forEach(function(device) { %>
-      <li><%= device.name %> - <%= device.ipAddress %> - <%= device.operatingSystem %> - <%= device.hostname %> - <%= device.network %> - <%= device.systemRole %> - <%= device.hypervisorInstalledOn %> - <%= device.domainUserSignedIn %> - <%= device.zscalerUserSignedIn %> - <%= device.zscalerAppSegment %> - <%= device.notes %></li>
-    <% }) %>
-  </ul>
+  <% if(user.devices && user.devices.length > 0) { %>
+    <ul>
+      <% user.devices.forEach(function(device) { %>
+        <li><%= device.name %> - <%= device.ipAddress %> - <%= device.operatingSystem %> - <%= device.hostname %> - <%= device.network %> - <%= device.systemRole %> - <%= device.hypervisorInstalledOn %> - <%= device.domainUserSignedIn %> - <%= device.zscalerUserSignedIn %> - <%= device.zscalerAppSegment %> - <%= device.notes %></li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <p>No devices found. Add your first device using the form below.</p>
+  <% } %>
 </body>
 </html>
