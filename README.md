@@ -78,7 +78,7 @@ This web application allows you to store details about your home lab devices. Yo
    docker-compose up
    ```
 
-5. Open your browser and navigate to `http://localhost:5000`.
+5. Open your browser and navigate to `https://localhost:8443` or `http://localhost:8080`.
 
    **Note:** The Docker setup now includes a defined network for service communication and a health check for the MongoDB service.
 
@@ -246,17 +246,15 @@ SESSION_SECRET=generated_session_secret_from_above_command
 
 ### Register
 
-1. Navigate to the registration page: `http://localhost:5000/users/register`
-2. Fill in the registration form and submit.
+1. Navigate to the registration page: `https://localhost:8443/users/register`
 
 ### Login
 
-1. Navigate to the login page: `http://localhost:5000/users/login`
-2. Fill in the login form and submit.
+1. Navigate to the login page: `https://localhost:8443/users/login`
 
 ### Add Device
 
-1. After logging in, navigate to the dashboard: `http://localhost:5000/dashboard`
+1. After logging in, navigate to the dashboard: `https://localhost:8443/dashboard`
 2. Fill in the device form and submit to add a new device. The form includes the following fields:
    - Device Name
    - IP Address
