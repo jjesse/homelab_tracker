@@ -183,6 +183,19 @@ footer {
   color: #999;
 }
 
+th[data-sort] {
+  position: relative;
+  cursor: pointer;
+}
+
+th[data-sort].sort-asc .sort-arrow:after {
+  content: "↑";
+}
+
+th[data-sort].sort-desc .sort-arrow:after {
+  content: "↓";
+}
+
 .actions {
   display: flex;
   gap: 0.5rem;
@@ -207,4 +220,175 @@ footer {
 
 .btn:hover {
   opacity: 0.9;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #007bff;
+}
+
+.management-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.bulk-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.form-control {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  min-width: 150px;
+}
+
+.device-group {
+  margin-bottom: 1rem;
+  border-left: 3px solid #007bff;
+  padding-left: 1rem;
+}
+
+.device-group-header {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #007bff;
+}
+
+.device-group-header td {
+  background: #f8f9fa !important;
+  font-weight: bold;
+  color: #007bff;
+  border-top: 2px solid #007bff;
+}
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1000;
+}
+
+.modal-content {
+  position: relative;
+  background-color: #fff;
+  margin: 5% auto;
+  padding: 0;
+  width: 80%;
+  max-width: 800px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.modal-header {
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body {
+  padding: 1rem;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.close {
+  color: #666;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: #000;
+}
+
+.device-details {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1rem;
+}
+
+.device-details dt {
+  font-weight: bold;
+  color: #666;
+}
+
+.device-details dd {
+  margin: 0;
+}
+
+.notification {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  padding: 1rem;
+  border-radius: 4px;
+  animation: slideIn 0.3s ease-out;
+  z-index: 1100;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Form Validation Styles */
+.device-form input:invalid {
+  border-color: #dc3545;
+}
+
+.device-form input:valid {
+  border-color: #28a745;
+}
+
+.validation-message {
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  color: #dc3545;
 }

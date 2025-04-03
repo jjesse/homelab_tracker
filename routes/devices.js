@@ -14,6 +14,22 @@ router.get('/', ensureAuthenticated, async (req, res) => {
   }
 });
 
+// Get single device
+router.get('/:id', ensureAuthenticated, async (req, res) => {
+  try {
+    const device = await Device.findOne({ 
+      _id: req.params.id,
+      user: req.user.id 
+    });
+    if (!device) {
+      return res.status(404).json({ message: 'Device not found' });
+    }
+    res.json(device);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // Add new device
 router.post('/add', ensureAuthenticated, async (req, res) => {
   try {
@@ -46,6 +62,60 @@ router.post('/add', ensureAuthenticated, async (req, res) => {
     console.error(err);
     req.flash('error_msg', 'Error adding device');
     res.redirect('/dashboard');
+  }
+});
+
+// Update device
+router.put('/:id', ensureAuthenticated, async (req, res) => {
+  try {
+    const device = await Device.findOne({ 
+      _id: req.params.id,
+      user: req.user.id 
+    });
+    
+    if (!device) {
+      return res.status(404).json({ message: 'Device not found' });
+    }
+
+    const updates = req.body;
+    delete updates._id; // Prevent _id modification
+    delete updates.user; // Prevent user modification
+
+    const updatedDevice = await Device.findByIdAndUpdate(
+      req.params.id,
+      { $set: updates },
+      { new: true, runValidators: true }
+    );
+
+    res.json(updatedDevice);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+// Delete device
+router.delete('/:id', ensureAuthenticated, async (req, res) => {
+  try {
+    const device = await Device.findOne({ 
+      _id: req.params.id,
+      user: req.user.id 
+    });
+    
+    if (!device) {
+      return res.status(404).json({ message: 'Device not found' });
+    }
+
+    await Device.findByIdAndDelete(req.params.id);
+    
+    // Remove device reference from user
+    await User.findByIdAndUpdate(
+      req.user.id,
+      { $pull: { devices: req.params.id } }
+    );
+
+    res.json({ message: 'Device deleted' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 });
 

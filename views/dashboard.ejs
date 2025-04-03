@@ -3,7 +3,9 @@
 <head>
   <title>Dashboard</title>
   <link rel="stylesheet" href="/styles/dashboard.css">
+  <link rel="stylesheet" href="/css/style.css">
   <script src="/scripts/dashboard.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="dashboard-container">
@@ -12,11 +14,53 @@
       <p>Welcome, <%= user.name %></p>
     </div>
 
+    <!-- Statistics Section -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Total Devices</h3>
+        <p class="stat-number"><%= user.devices.length %></p>
+      </div>
+      <div class="stat-card">
+        <h3>By Operating System</h3>
+        <canvas id="osChart"></canvas>
+      </div>
+      <div class="stat-card">
+        <h3>By Network</h3>
+        <canvas id="networkChart"></canvas>
+      </div>
+      <div class="stat-card">
+        <h3>By Role</h3>
+        <canvas id="roleChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Device Management -->
     <div class="device-management">
+      <!-- Grouping and Bulk Actions -->
+      <div class="management-controls">
+        <select id="groupBy" class="form-control">
+          <option value="">Group by...</option>
+          <option value="operatingSystem">Operating System</option>
+          <option value="network">Network</option>
+          <option value="systemRole">System Role</option>
+        </select>
+        <div class="bulk-actions">
+          <button id="selectAll" class="btn btn-secondary">Select All</button>
+          <select id="bulkAction" class="form-control" disabled>
+            <option value="">Bulk Actions...</option>
+            <option value="delete">Delete Selected</option>
+            <option value="updateNetwork">Update Network</option>
+            <option value="updateRole">Update Role</option>
+          </select>
+          <button id="applyBulk" class="btn btn-primary" disabled>Apply</button>
+        </div>
+      </div>
+
       <div class="device-table-container">
         <table id="deviceTable" class="device-table">
           <thead>
             <tr>
+              <th><input type="checkbox" id="selectAllCheckbox"></th>
               <th data-sort="name">Device Name <span class="sort-arrow">↕</span></th>
               <th data-sort="ipAddress">IP Address <span class="sort-arrow">↕</span></th>
               <th data-sort="operatingSystem">OS <span class="sort-arrow">↕</span></th>
@@ -27,7 +71,8 @@
           <tbody>
             <% if(user.devices && user.devices.length > 0) { %>
               <% user.devices.forEach(function(device) { %>
-                <tr>
+                <tr data-os="<%= device.operatingSystem %>" data-network="<%= device.network %>" data-role="<%= device.systemRole %>" data-device-id="<%= device._id %>">
+                  <td><input type="checkbox" class="device-select" value="<%= device._id %>"></td>
                   <td><%= device.name %></td>
                   <td><%= device.ipAddress %></td>
                   <td><%= device.operatingSystem %></td>
@@ -96,5 +141,235 @@
       <button type="submit" class="btn btn-primary">Add Device</button>
     </form>
   </div>
+
+  <!-- View Device Modal -->
+  <div id="viewDeviceModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Device Details</h2>
+        <span class="close">&times;</span>
+      </div>
+      <div class="modal-body">
+        <dl class="device-details">
+          <!-- Details will be populated by JavaScript -->
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Device Modal -->
+  <div id="editDeviceModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Edit Device</h2>
+        <span class="close">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="editDeviceForm" class="device-form">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <input type="hidden" name="deviceId" id="editDeviceId">
+          <!-- Copy of the add device form fields with validation -->
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteDeviceModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Confirm Delete</h2>
+        <span class="close">&times;</span>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this device? This action cannot be undone.</p>
+        <div class="modal-actions">
+          <button id="confirmDelete" class="btn btn-danger">Delete</button>
+          <button id="cancelDelete" class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize charts with empty data
+      let charts = {
+        osChart: null,
+        networkChart: null,
+        roleChart: null
+      };
+
+      updateCharts();
+
+      // Group by functionality
+      document.getElementById('groupBy').addEventListener('change', function(e) {
+        const groupBy = e.target.value;
+        const tbody = document.querySelector('#deviceTable tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+
+        if (!groupBy) {
+          // Show all rows normally
+          rows.forEach(row => row.style.display = '');
+          return;
+        }
+
+        // Group the rows by the selected property
+        const groups = {};
+        rows.forEach(row => {
+          const value = row.dataset[groupBy.toLowerCase()];
+          if (!groups[value]) {
+            groups[value] = [];
+          }
+          groups[value].push(row);
+        });
+
+        // Clear the table body
+        tbody.innerHTML = '';
+
+        // Add grouped rows with headers
+        Object.entries(groups).forEach(([groupName, groupRows]) => {
+          // Add group header
+          const groupHeader = document.createElement('tr');
+          groupHeader.className = 'device-group-header';
+          groupHeader.innerHTML = `
+            <td colspan="6" style="background: #f8f9fa; font-weight: bold; padding: 0.5rem 1rem;">
+              ${groupBy}: ${groupName} (${groupRows.length} devices)
+            </td>
+          `;
+          tbody.appendChild(groupHeader);
+
+          // Add group rows
+          groupRows.forEach(row => tbody.appendChild(row));
+        });
+      });
+
+      // Sorting functionality
+      document.querySelectorAll('th[data-sort]').forEach(th => {
+        th.addEventListener('click', function() {
+          const tbody = document.querySelector('#deviceTable tbody');
+          const rows = Array.from(tbody.querySelectorAll('tr:not(.device-group-header)'));
+          const column = this.dataset.sort;
+          const columnIndex = Array.from(th.parentNode.children).indexOf(th);
+          const isAscending = !this.classList.contains('sort-asc');
+
+          // Update sort direction indicator
+          document.querySelectorAll('th[data-sort]').forEach(header => {
+            header.classList.remove('sort-asc', 'sort-desc');
+          });
+          this.classList.toggle('sort-asc', isAscending);
+          this.classList.toggle('sort-desc', !isAscending);
+
+          // Sort the rows
+          rows.sort((a, b) => {
+            const aValue = a.children[columnIndex].textContent.trim();
+            const bValue = b.children[columnIndex].textContent.trim();
+            return isAscending ? 
+              aValue.localeCompare(bValue) : 
+              bValue.localeCompare(aValue);
+          });
+
+          // Reattach sorted rows
+          rows.forEach(row => tbody.appendChild(row));
+        });
+      });
+
+      function updateCharts() {
+        const devices = Array.from(document.querySelectorAll('#deviceTable tbody tr:not(.device-group-header)'));
+        
+        // Update OS Chart
+        const osData = aggregateData(devices, 'os');
+        if (charts.osChart) {
+          charts.osChart.destroy();
+        }
+        charts.osChart = createChart('osChart', 'Operating Systems', osData);
+
+        // Update Network Chart
+        const networkData = aggregateData(devices, 'network');
+        if (charts.networkChart) {
+          charts.networkChart.destroy();
+        }
+        charts.networkChart = createChart('networkChart', 'Networks', networkData);
+
+        // Update Role Chart
+        const roleData = aggregateData(devices, 'role');
+        if (charts.roleChart) {
+          charts.roleChart.destroy();
+        }
+        charts.roleChart = createChart('roleChart', 'System Roles', roleData);
+      }
+
+      function aggregateData(devices, property) {
+        const counts = devices.reduce((acc, device) => {
+          const value = device.dataset[property];
+          acc[value] = (acc[value] || 0) + 1;
+          return acc;
+        }, {});
+
+        return {
+          labels: Object.keys(counts),
+          data: Object.values(counts)
+        };
+      }
+
+      // Update the existing createChart function
+      function createChart(canvasId, label, data) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        return new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: data.labels,
+            datasets: [{
+              data: data.data,
+              backgroundColor: [
+                '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+                '#FF9F40', '#4BC0C0', '#36A2EB', '#FF6384', '#9966FF'
+              ]
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                display: true
+              },
+              title: {
+                display: true,
+                text: label
+              }
+            }
+          }
+        });
+      }
+
+      // Update charts when changes occur
+      function updateDashboard() {
+        updateDeviceStats();
+        updateCharts();
+      }
+
+      // Add this to the delete success handler
+      document.getElementById('confirmDelete').addEventListener('click', async () => {
+        let deviceToDelete = null;
+        // ...existing delete code...
+        if (response.ok) {
+          // ...existing success code...
+          updateDashboard();
+        }
+      });
+
+      // Close modal when clicking the X or outside
+      document.querySelectorAll('.close, .modal').forEach(element => {
+        element.addEventListener('click', (e) => {
+          if (e.target === element) {
+            document.getElementById('viewDeviceModal').style.display = 'none';
+            document.getElementById('editDeviceModal').style.display = 'none';
+            document.getElementById('deleteDeviceModal').style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
 </body>
 </html>
