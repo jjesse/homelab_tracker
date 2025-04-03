@@ -414,38 +414,87 @@
         });
       });
 
-      // CSV Export functionality
-      document.getElementById('exportCSV').addEventListener('click', function() {
-        const devices = Array.from(document.querySelectorAll('#deviceTable tbody tr:not(.device-group-header)'))
-          .map(row => ({
-            name: row.cells[1].textContent,
-            ipAddress: row.cells[2].textContent,
-            operatingSystem: row.cells[3].textContent,
-            systemRole: row.cells[4].textContent,
-            network: row.dataset.network,
-            hostname: row.dataset.hostname,
-            hypervisorInstalledOn: row.dataset.hypervisor,
-            domainUserSignedIn: row.dataset.domainUser,
-            zscalerUserSignedIn: row.dataset.zscalerUser,
-            zscalerAppSegment: row.dataset.zscalerSegment,
-            notes: row.dataset.notes
-          }));
+      // Select All functionality
+      const selectAllBtn = document.getElementById('selectAll');
+      const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+      const deviceCheckboxes = document.querySelectorAll('.device-select');
+      const bulkActionSelect = document.getElementById('bulkAction');
+      const applyBulkBtn = document.getElementById('applyBulk');
 
-        const headers = ['Name,IP Address,Operating System,System Role,Network,Hostname,Hypervisor,Domain User,Zscaler User,Zscaler App Segment,Notes\n'];
-        const csvContent = headers + devices.map(device => 
-          `${device.name},${device.ipAddress},${device.operatingSystem},${device.systemRole},${device.network},${device.hostname || ''},${device.hypervisorInstalledOn || ''},${device.domainUserSignedIn || ''},${device.zscalerUserSignedIn || ''},${device.zscalerAppSegment || ''},${(device.notes || '').replace(/,/g, ';')}`
-        ).join('\n');
+      function updateBulkActionControls() {
+          const checkedBoxes = document.querySelectorAll('.device-select:checked');
+          bulkActionSelect.disabled = checkedBoxes.length === 0;
+          applyBulkBtn.disabled = checkedBoxes.length === 0;
+          document.getElementById('exportCSV').disabled = checkedBoxes.length === 0;
+      }
 
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', `devices_export_${new Date().toISOString().split('T')[0]}.csv`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+      selectAllBtn.addEventListener('click', () => {
+          const newState = !selectAllCheckbox.checked;
+          selectAllCheckbox.checked = newState;
+          deviceCheckboxes.forEach(checkbox => {
+              checkbox.checked = newState;
+          });
+          updateBulkActionControls();
       });
+
+      selectAllCheckbox.addEventListener('change', () => {
+          deviceCheckboxes.forEach(checkbox => {
+              checkbox.checked = selectAllCheckbox.checked;
+          });
+          updateBulkActionControls();
+      });
+
+      // Add change event listener to individual checkboxes
+      deviceCheckboxes.forEach(checkbox => {
+          checkbox.addEventListener('change', () => {
+              selectAllCheckbox.checked = 
+                  deviceCheckboxes.length === 
+                  document.querySelectorAll('.device-select:checked').length;
+              updateBulkActionControls();
+          });
+      });
+
+      // CSV Export functionality - updated to use selected rows
+      document.getElementById('exportCSV').addEventListener('click', function() {
+          const selectedRows = Array.from(document.querySelectorAll('.device-select:checked'))
+              .map(checkbox => checkbox.closest('tr'))
+              .map(row => ({
+                  name: row.cells[1].textContent,
+                  ipAddress: row.cells[2].textContent,
+                  operatingSystem: row.cells[3].textContent,
+                  systemRole: row.cells[4].textContent,
+                  network: row.dataset.network,
+                  hostname: row.dataset.hostname,
+                  hypervisorInstalledOn: row.dataset.hypervisor,
+                  domainUserSignedIn: row.dataset.domainUser,
+                  zscalerUserSignedIn: row.dataset.zscalerUser,
+                  zscalerAppSegment: row.dataset.zscalerSegment,
+                  notes: row.dataset.notes
+              }));
+
+          if (selectedRows.length === 0) {
+              alert('Please select at least one device to export');
+              return;
+          }
+
+          const headers = ['Name,IP Address,Operating System,System Role,Network,Hostname,Hypervisor,Domain User,Zscaler User,Zscaler App Segment,Notes\n'];
+          const csvContent = headers + selectedRows.map(device => 
+              `${device.name},${device.ipAddress},${device.operatingSystem},${device.systemRole},${device.network},${device.hostname || ''},${device.hypervisorInstalledOn || ''},${device.domainUserSignedIn || ''},${device.zscalerUserSignedIn || ''},${device.zscalerAppSegment || ''},${(device.notes || '').replace(/,/g, ';')}`
+          ).join('\n');
+
+          const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+          const link = document.createElement('a');
+          const url = URL.createObjectURL(blob);
+          link.setAttribute('href', url);
+          link.setAttribute('download', `devices_export_${new Date().toISOString().split('T')[0]}.csv`);
+          link.style.visibility = 'hidden';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+      });
+
+      // Initialize button states
+      updateBulkActionControls();
     });
   </script>
 </body>
