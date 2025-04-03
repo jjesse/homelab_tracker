@@ -47,6 +47,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - POST /add endpoint to create new devices
 - Jest testing framework for unit tests
 - Debug configuration for development
+- Added devices array to User model to track user's devices
+- Added null check for devices list in dashboard view
+- Added User model population in dashboard route
 
 ### Changed
 
@@ -99,6 +102,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added missing devices route handler
 - Fixed Module not found error for devices routes
 - Added missing layout.ejs file for express-ejs-layouts
+- Fixed devices list display in dashboard by adding null check
+- Fixed user-device relationship in MongoDB schema
+- Fixed dashboard route to properly populate devices
 
 ### Security
 
