@@ -173,19 +173,29 @@ footer {
   cursor: pointer;
 }
 
-.device-table tbody tr:hover {
+device-table tbody tr:hover {
   background: #f8f9fa;
-}
-
-.sort-arrow {
-  display: inline-block;
-  margin-left: 0.5rem;
-  color: #999;
 }
 
 th[data-sort] {
   position: relative;
   cursor: pointer;
+  user-select: none;
+}
+
+th[data-sort]:hover {
+  background-color: #e9ecef;
+}
+
+.sort-arrow {
+  display: inline-block;
+  margin-left: 0.5rem;
+  transition: transform 0.2s ease;
+  color: #6c757d;
+}
+
+th[data-sort]:hover .sort-arrow {
+  color: #007bff;
 }
 
 th[data-sort].sort-asc .sort-arrow:after {
@@ -234,6 +244,15 @@ th[data-sort].sort-desc .sort-arrow:after {
   padding: 1.5rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  min-height: 300px; /* Add minimum height for charts */
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-card canvas {
+  flex: 1;
+  width: 100% !important;
+  height: 200px !important;
 }
 
 .stat-number {

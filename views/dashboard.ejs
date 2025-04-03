@@ -200,7 +200,113 @@
         roleChart: null
       };
 
+      // Initial chart creation
       updateCharts();
+
+      function updateCharts() {
+        const devices = Array.from(document.querySelectorAll('#deviceTable tbody tr:not(.device-group-header)'));
+        
+        // Update OS Chart
+        updateChart('osChart', 'Operating Systems', aggregateDeviceData(devices, 'operatingSystem'));
+        updateChart('networkChart', 'Networks', aggregateDeviceData(devices, 'network'));
+        updateChart('roleChart', 'System Roles', aggregateDeviceData(devices, 'role'));
+      }
+
+      function aggregateDeviceData(devices, property) {
+        const counts = {};
+        devices.forEach(device => {
+          let value;
+          switch(property) {
+            case 'operatingSystem':
+              value = device.querySelector('td:nth-child(4)').textContent.trim();
+              break;
+            case 'network':
+              value = device.dataset.network;
+              break;
+            case 'role':
+              value = device.dataset.role;
+              break;
+          }
+          counts[value] = (counts[value] || 0) + 1;
+        });
+
+        return {
+          labels: Object.keys(counts),
+          data: Object.values(counts)
+        };
+      }
+
+      function updateChart(canvasId, title, data) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        
+        // Destroy existing chart if it exists
+        if (charts[canvasId]) {
+          charts[canvasId].destroy();
+        }
+
+        // Create new chart
+        charts[canvasId] = new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: data.labels,
+            datasets: [{
+              data: data.data,
+              backgroundColor: [
+                '#FF6384',
+                '#36A2EB',
+                '#FFCE56',
+                '#4BC0C0',
+                '#9966FF',
+                '#FF9F40'
+              ]
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  padding: 20,
+                  usePointStyle: true
+                }
+              },
+              title: {
+                display: true,
+                text: title,
+                padding: 20
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    const label = context.label || '';
+                    const value = context.parsed;
+                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                    const percentage = Math.round((value * 100) / total);
+                    return `${label}: ${value} (${percentage}%)`;
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+
+      // Update charts after delete or add
+      function updateDashboard() {
+        updateDeviceStats();
+        updateCharts();
+      }
+
+      // Make sure to call updateCharts after any table changes
+      document.getElementById('confirmDelete').addEventListener('click', async () => {
+        // ...existing delete code...
+        if (response.ok) {
+          // ...existing success code...
+          updateDashboard();
+        }
+      });
 
       // Group by functionality
       document.getElementById('groupBy').addEventListener('change', function(e) {
@@ -244,29 +350,51 @@
         });
       });
 
-      // Sorting functionality
+      // Improved sorting functionality
+      let currentSort = {
+        column: null,
+        ascending: true
+      };
+
       document.querySelectorAll('th[data-sort]').forEach(th => {
         th.addEventListener('click', function() {
+          const sortBy = this.dataset.sort;
+          const columnIndex = Array.from(th.parentNode.children).indexOf(th);
+          
+          // Toggle sort direction if same column, otherwise default to ascending
+          if (currentSort.column === sortBy) {
+            currentSort.ascending = !currentSort.ascending;
+          } else {
+            currentSort.column = sortBy;
+            currentSort.ascending = true;
+          }
+
+          // Update sort indicators
+          document.querySelectorAll('.sort-arrow').forEach(arrow => {
+            arrow.textContent = '↕';
+          });
+          this.querySelector('.sort-arrow').textContent = currentSort.ascending ? '↑' : '↓';
+
+          // Get all data rows (excluding headers and group headers)
           const tbody = document.querySelector('#deviceTable tbody');
           const rows = Array.from(tbody.querySelectorAll('tr:not(.device-group-header)'));
-          const column = this.dataset.sort;
-          const columnIndex = Array.from(th.parentNode.children).indexOf(th);
-          const isAscending = !this.classList.contains('sort-asc');
-
-          // Update sort direction indicator
-          document.querySelectorAll('th[data-sort]').forEach(header => {
-            header.classList.remove('sort-asc', 'sort-desc');
-          });
-          this.classList.toggle('sort-asc', isAscending);
-          this.classList.toggle('sort-desc', !isAscending);
 
           // Sort the rows
           rows.sort((a, b) => {
-            const aValue = a.children[columnIndex].textContent.trim();
-            const bValue = b.children[columnIndex].textContent.trim();
-            return isAscending ? 
-              aValue.localeCompare(bValue) : 
-              bValue.localeCompare(aValue);
+            let aVal = a.children[columnIndex].textContent.trim();
+            let bVal = b.children[columnIndex].textContent.trim();
+
+            // Special handling for IP addresses
+            if (sortBy === 'ipAddress') {
+              aVal = ipToNumber(aVal);
+              bVal = ipToNumber(bVal);
+              return currentSort.ascending ? aVal - bVal : bVal - aVal;
+            }
+
+            // Regular string comparison for other columns
+            return currentSort.ascending ? 
+              aVal.localeCompare(bVal) : 
+              bVal.localeCompare(aVal);
           });
 
           // Reattach sorted rows
@@ -274,90 +402,12 @@
         });
       });
 
-      function updateCharts() {
-        const devices = Array.from(document.querySelectorAll('#deviceTable tbody tr:not(.device-group-header)'));
-        
-        // Update OS Chart
-        const osData = aggregateData(devices, 'os');
-        if (charts.osChart) {
-          charts.osChart.destroy();
-        }
-        charts.osChart = createChart('osChart', 'Operating Systems', osData);
-
-        // Update Network Chart
-        const networkData = aggregateData(devices, 'network');
-        if (charts.networkChart) {
-          charts.networkChart.destroy();
-        }
-        charts.networkChart = createChart('networkChart', 'Networks', networkData);
-
-        // Update Role Chart
-        const roleData = aggregateData(devices, 'role');
-        if (charts.roleChart) {
-          charts.roleChart.destroy();
-        }
-        charts.roleChart = createChart('roleChart', 'System Roles', roleData);
+      // Helper function to convert IP to sortable number
+      function ipToNumber(ip) {
+        return ip.split('.')
+          .map((octet, index) => parseInt(octet) * Math.pow(256, 3 - index))
+          .reduce((acc, val) => acc + val, 0);
       }
-
-      function aggregateData(devices, property) {
-        const counts = devices.reduce((acc, device) => {
-          const value = device.dataset[property];
-          acc[value] = (acc[value] || 0) + 1;
-          return acc;
-        }, {});
-
-        return {
-          labels: Object.keys(counts),
-          data: Object.values(counts)
-        };
-      }
-
-      // Update the existing createChart function
-      function createChart(canvasId, label, data) {
-        const ctx = document.getElementById(canvasId).getContext('2d');
-        return new Chart(ctx, {
-          type: 'doughnut',
-          data: {
-            labels: data.labels,
-            datasets: [{
-              data: data.data,
-              backgroundColor: [
-                '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
-                '#FF9F40', '#4BC0C0', '#36A2EB', '#FF6384', '#9966FF'
-              ]
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: {
-                position: 'bottom',
-                display: true
-              },
-              title: {
-                display: true,
-                text: label
-              }
-            }
-          }
-        });
-      }
-
-      // Update charts when changes occur
-      function updateDashboard() {
-        updateDeviceStats();
-        updateCharts();
-      }
-
-      // Add this to the delete success handler
-      document.getElementById('confirmDelete').addEventListener('click', async () => {
-        let deviceToDelete = null;
-        // ...existing delete code...
-        if (response.ok) {
-          // ...existing success code...
-          updateDashboard();
-        }
-      });
 
       // Close modal when clicking the X or outside
       document.querySelectorAll('.close, .modal').forEach(element => {
