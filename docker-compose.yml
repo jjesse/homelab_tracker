@@ -11,8 +11,12 @@ services:
     environment:
       - NODE_ENV=development
       - MONGODB_URI=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo:27017/homelab?authSource=admin
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
       mongo:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     networks:
       - homelab_network
@@ -77,9 +81,32 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - homelab_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+          cpus: '0.3'
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
 volumes:
   mongodb_data:
     name: homelab_mongodb_data
+  redis_data:
+    name: homelab_redis_data
 
 networks:
   homelab_network:

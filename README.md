@@ -113,6 +113,14 @@ The application is containerized using Docker with the following features:
   - JSON file logging with rotation (10MB max size, 3 files)
   - Persistent data storage with named volume
 
+- **Redis**: Version 7 running on port 6379
+  - Memory: 256MB
+  - CPU: 0.3 cores
+  - Used for session storage
+  - Health check using redis-cli ping
+  - Persistent data storage with named volume
+  - Alpine-based image for smaller footprint
+
 ### Environment Setup
 
 1. Create a `.env` file with the following variables:

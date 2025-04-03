@@ -83,6 +83,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added animation for notifications
 - Added CSV export functionality for device data
 - Export includes device name, IP address, operating system, system role, and network information
+- Added Redis service to docker-compose.yml for session storage
+- Added compression middleware for HTTP response compression
+- Added missing NPM dependencies:
+  - compression for HTTP compression
+  - connect-redis for Redis session store
+  - express-mongo-sanitize for MongoDB query sanitization
+  - ioredis for Redis client
+  - winston for logging
 
 ### Changed
 
@@ -169,6 +177,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed CSV export by correctly accessing data attributes and handling empty values
 - Added error message when trying to export without selected devices
 - Improved checkbox state synchronization between Select All and individual checkboxes
+- Added Redis service configuration and health check
+- Updated docker-compose.yml with Redis service and volume
 
 ### Security
 
