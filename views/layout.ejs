@@ -9,7 +9,8 @@
 <body>
   <header>
     <nav>
-      <% if(typeof user != 'undefined') { %>
+      <a href="/">Home</a>
+      <% if(typeof user != 'undefined' && user) { %>
         <a href="/dashboard">Dashboard</a>
         <a href="/users/logout">Logout</a>
       <% } else { %>
@@ -32,5 +33,43 @@
   <footer>
     <p>&copy; <%= new Date().getFullYear() %> Home Lab</p>
   </footer>
+  
+  <script>
+    // Add basic sorting and filtering functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const deviceTable = document.getElementById('deviceTable');
+      const searchInput = document.getElementById('deviceSearch');
+
+      if (deviceTable && searchInput) {
+        // Search functionality
+        searchInput.addEventListener('input', function(e) {
+          const searchTerm = e.target.value.toLowerCase();
+          const rows = deviceTable.querySelectorAll('tbody tr');
+          
+          rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? '' : 'none';
+          });
+        });
+
+        // Sorting functionality
+        deviceTable.querySelectorAll('th[data-sort]').forEach(th => {
+          th.addEventListener('click', function() {
+            const column = this.dataset.sort;
+            const rows = Array.from(deviceTable.querySelectorAll('tbody tr'));
+            const ascending = this.classList.toggle('sort-asc');
+            
+            rows.sort((a, b) => {
+              const aVal = a.querySelector(`td:nth-child(${Array.from(th.parentNode.children).indexOf(th) + 1})`).textContent;
+              const bVal = b.querySelector(`td:nth-child(${Array.from(th.parentNode.children).indexOf(th) + 1})`).textContent;
+              return ascending ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+            });
+            
+            rows.forEach(row => deviceTable.querySelector('tbody').appendChild(row));
+          });
+        });
+      }
+    });
+  </script>
 </body>
 </html>

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { ensureAuthenticated } = require('../config/auth');
 const Device = require('../models/Device');
+const User = require('../models/User'); // Added User model
 
 // Get all devices for a user
 router.get('/', ensureAuthenticated, async (req, res) => {
@@ -31,7 +32,14 @@ router.post('/add', ensureAuthenticated, async (req, res) => {
       user: req.user.id
     });
 
-    await newDevice.save();
+    const device = await newDevice.save();
+    // Update user's devices array
+    await User.findByIdAndUpdate(
+      req.user.id,
+      { $push: { devices: device._id } },
+      { new: true }
+    );
+
     req.flash('success_msg', 'Device added successfully');
     res.redirect('/dashboard');
   } catch (err) {

@@ -2,66 +2,99 @@
 <html>
 <head>
   <title>Dashboard</title>
+  <link rel="stylesheet" href="/styles/dashboard.css">
+  <script src="/scripts/dashboard.js"></script>
 </head>
 <body>
-  <h1>Dashboard</h1>
-  <p>Welcome, <%= user.name %></p>
-  <a href="/users/logout">Logout</a>
-  <h2>Add Device</h2>
-  <form action="/devices/add" method="POST">
-    <div>
-      <label for="name">Device Name:</label>
-      <input type="text" name="name" required>
+  <div class="dashboard-container">
+    <div class="dashboard-header">
+      <h1>Dashboard</h1>
+      <p>Welcome, <%= user.name %></p>
     </div>
-    <div>
-      <label for="ipAddress">IP Address:</label>
-      <input type="text" name="ipAddress" required>
+
+    <div class="device-management">
+      <div class="device-table-container">
+        <table id="deviceTable" class="device-table">
+          <thead>
+            <tr>
+              <th data-sort="name">Device Name <span class="sort-arrow">↕</span></th>
+              <th data-sort="ipAddress">IP Address <span class="sort-arrow">↕</span></th>
+              <th data-sort="operatingSystem">OS <span class="sort-arrow">↕</span></th>
+              <th data-sort="systemRole">Role <span class="sort-arrow">↕</span></th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if(user.devices && user.devices.length > 0) { %>
+              <% user.devices.forEach(function(device) { %>
+                <tr>
+                  <td><%= device.name %></td>
+                  <td><%= device.ipAddress %></td>
+                  <td><%= device.operatingSystem %></td>
+                  <td><%= device.systemRole %></td>
+                  <td class="actions">
+                    <button class="btn btn-info btn-sm view-device" data-id="<%= device._id %>">View</button>
+                    <button class="btn btn-warning btn-sm edit-device" data-id="<%= device._id %>">Edit</button>
+                    <button class="btn btn-danger btn-sm delete-device" data-id="<%= device._id %>">Delete</button>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
     </div>
-    <div>
-      <label for="operatingSystem">Operating System:</label>
-      <input type="text" name="operatingSystem" required>
-    </div>
-    <!-- New fields -->
-    <div>
-      <label for="hostname">Hostname:</label>
-      <input type="text" name="hostname" required>
-    </div>
-    <div>
-      <label for="network">Network:</label>
-      <input type="text" name="network" required>
-    </div>
-    <div>
-      <label for="systemRole">System Role:</label>
-      <input type="text" name="systemRole" required>
-    </div>
-    <div>
-      <label for="hypervisorInstalledOn">Hypervisor Installed On:</label>
-      <input type="text" name="hypervisorInstalledOn" required>
-    </div>
-    <div>
-      <label for="domainUserSignedIn">Domain User Signed In:</label>
-      <input type="text" name="domainUserSignedIn" required>
-    </div>
-    <div>
-      <label for="zscalerUserSignedIn">Zscaler User Signed In:</label>
-      <input type="text" name="zscalerUserSignedIn" required>
-    </div>
-    <div>
-      <label for="zscalerAppSegment">Zscaler App Segment:</label>
-      <input type="text" name="zscalerAppSegment" required>
-    </div>
-    <div>
-      <label for="notes">Notes:</label>
-      <textarea name="notes"></textarea>
-    </div>
-    <!-- End of new fields -->
-    <button type="submit">Add Device</button>
-  </form>
-  <h2>Your Devices</h2>
-  <ul>
-    <% user.devices.forEach(function(device) { %>
-      <li><%= device.name %> - <%= device.ipAddress %> - <%= device.operatingSystem %> - <%= device.hostname %> - <%= device.network %> - <%= device.systemRole %> - <%= device.hypervisorInstalledOn %> - <%= device.domainUserSignedIn %> - <%= device.zscalerUserSignedIn %> - <%= device.zscalerAppSegment %> - <%= device.notes %></li>
-    <% }) %>
-  </ul>
+
+    <h2>Add Device</h2>
+    <!-- Add Device Form -->
+    <form action="/devices/add" method="POST" class="device-form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div>
+        <label for="name">Device Name:</label>
+        <input type="text" name="name" required>
+      </div>
+      <div>
+        <label for="ipAddress">IP Address:</label>
+        <input type="text" name="ipAddress" required>
+      </div>
+      <div>
+        <label for="operatingSystem">Operating System:</label>
+        <input type="text" name="operatingSystem" required>
+      </div>
+      <div>
+        <label for="hostname">Hostname:</label>
+        <input type="text" name="hostname" required>
+      </div>
+      <div>
+        <label for="network">Network:</label>
+        <input type="text" name="network" required>
+      </div>
+      <div>
+        <label for="systemRole">System Role:</label>
+        <input type="text" name="systemRole" required>
+      </div>
+      <div>
+        <label for="hypervisorInstalledOn">Hypervisor Installed On:</label>
+        <input type="text" name="hypervisorInstalledOn" required>
+      </div>
+      <div>
+        <label for="domainUserSignedIn">Domain User Signed In:</label>
+        <input type="text" name="domainUserSignedIn" required>
+      </div>
+      <div>
+        <label for="zscalerUserSignedIn">Zscaler User Signed In:</label>
+        <input type="text" name="zscalerUserSignedIn" required>
+      </div>
+      <div>
+        <label for="zscalerAppSegment">Zscaler App Segment:</label>
+        <input type="text" name="zscalerAppSegment" required>
+      </div>
+      <div>
+        <label for="notes">Notes:</label>
+        <textarea name="notes"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Add Device</button>
+    </form>
+  </div>
 </body>
 </html>

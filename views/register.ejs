@@ -1,34 +1,37 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Register</title>
-</head>
-<body>
+<div class="register-container">
   <h1>Register</h1>
   <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
     <% errors.forEach(function(error) { %>
-      <div><%= error.msg %></div>
+      <div class="alert error"><%= error.msg %></div>
     <% }) %>
   <% } %>
-  <form action="/users/register" method="POST">
+  <form action="/users/register" method="POST" class="form-group">
     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-    <div>
+    <div class="form-field">
       <label for="name">Name:</label>
-      <input type="text" name="name" required>
+      <input type="text" name="name" id="name" pattern="[A-Za-z ]{2,}" title="Name must be at least 2 characters long and contain only letters" required>
     </div>
-    <div>
+    <div class="form-field">
       <label for="email">Email:</label>
-      <input type="email" name="email" required>
+      <input type="email" name="email" id="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required>
     </div>
-    <div>
+    <div class="form-field">
       <label for="password">Password:</label>
-      <input type="password" name="password" required>
+      <input type="password" name="password" id="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required>
+      <div class="password-requirements">
+        Password must contain:
+        <ul>
+          <li>At least 8 characters</li>
+          <li>One uppercase letter</li>
+          <li>One lowercase letter</li>
+          <li>One number</li>
+        </ul>
+      </div>
     </div>
-    <div>
+    <div class="form-field">
       <label for="password2">Confirm Password:</label>
-      <input type="password" name="password2" required>
+      <input type="password" name="password2" id="password2" required>
     </div>
     <button type="submit">Register</button>
   </form>
-</body>
-</html>
+</div>
