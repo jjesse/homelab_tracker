@@ -165,6 +165,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved error handling for empty device lists
 - Fixed Select All functionality not working properly with dynamic table updates
 - Fixed CSV export to properly handle special characters and include all device fields
+- Fixed Select All functionality by properly handling checkbox state changes
+- Fixed CSV export by correctly accessing data attributes and handling empty values
+- Added error message when trying to export without selected devices
+- Improved checkbox state synchronization between Select All and individual checkboxes
 
 ### Security
 
@@ -178,3 +182,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Verified
 
 - Confirmed docker-compose.yml `depends_on` configuration is correctly set up for app service dependency on MongoDB with health check condition
+
+## [Upcoming]
+
+### Security Changes
+
+- Add input sanitization middleware
+- Implement API rate limiting per endpoint
+- Add password complexity validation
+- Add account lockout mechanism
+- Configure secure headers
+
+### Testing
+
+- Add Jest unit test suite
+- Add API integration tests
+- Add test coverage reporting
+- Add CI pipeline configuration
+
+### Performance
+
+- Implement Redis caching
+- Optimize MongoDB queries
+- Add compression middleware
+- Add static asset optimization
+
+### Error Handling
+
+- Add global error handler
+- Standardize error responses
+- Implement error logging service
+- Add validation middleware
