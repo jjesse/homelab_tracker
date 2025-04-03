@@ -9,7 +9,8 @@
 <body>
   <header>
     <nav>
-      <% if(typeof user != 'undefined') { %>
+      <a href="/">Home</a>
+      <% if(typeof user != 'undefined' && user) { %>
         <a href="/dashboard">Dashboard</a>
         <a href="/users/logout">Logout</a>
       <% } else { %>

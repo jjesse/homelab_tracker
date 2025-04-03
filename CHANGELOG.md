@@ -50,6 +50,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added devices array to User model to track user's devices
 - Added null check for devices list in dashboard view
 - Added User model population in dashboard route
+- Added consistent styling for login and registration forms
+- Added responsive container layouts for auth forms
+- Added hover effects for auth buttons
 
 ### Changed
 
@@ -68,6 +71,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added logging configuration with rotation
 - Implemented full HTTPS support with automatic HTTP to HTTPS redirection
 - Updated Docker configuration to handle HTTPS traffic
+- Improved layout template implementation for consistent page structure
+- Streamlined navigation bar with conditional rendering
+- Enhanced form styling with flexbox layout
+- Standardized alert message styling across all pages
 
 ### Fixed
 
@@ -105,6 +112,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed devices list display in dashboard by adding null check
 - Fixed user-device relationship in MongoDB schema
 - Fixed dashboard route to properly populate devices
+- Fixed layout template not being used in login and register pages
+- Fixed inconsistent page structure across views
+- Fixed duplicate HTML boilerplate in view files
+- Fixed navigation links visibility issues
 
 ### Security
 
