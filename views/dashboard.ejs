@@ -417,110 +417,79 @@
       // Initialize controls
       const selectAllBtn = document.getElementById('selectAll');
       const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-      const deviceCheckboxes = document.querySelectorAll('.device-select');
       const bulkActionSelect = document.getElementById('bulkAction');
       const applyBulkBtn = document.getElementById('applyBulk');
       const exportCSVBtn = document.getElementById('exportCSV');
 
-      // Set initial state
-      exportCSVBtn.disabled = true;
-      bulkActionSelect.disabled = true;
-      applyBulkBtn.disabled = true;
+      // Improved checkbox delegation using event bubbling
+      document.getElementById('deviceTable').addEventListener('change', function(e) {
+        if (e.target.matches('.device-select, #selectAllCheckbox')) {
+          updateControlsState();
+        }
+      });
 
-      // Update controls based on selection state
+      // Fixed updateControlsState function
       function updateControlsState() {
+        const deviceCheckboxes = document.querySelectorAll('.device-select');
         const checkedBoxes = document.querySelectorAll('.device-select:checked');
         const hasSelection = checkedBoxes.length > 0;
         
         exportCSVBtn.disabled = !hasSelection;
         bulkActionSelect.disabled = !hasSelection;
-        applyBulkBtn.disabled = !hasSelection;
+        applyBulkBtn.disabled = !hasSelection || !bulkActionSelect.value;
         
-        // Update select all checkbox state
-        selectAllCheckbox.checked = checkedBoxes.length === deviceCheckboxes.length;
+        // Update select all checkbox state without triggering events
+        selectAllCheckbox.checked = checkedBoxes.length === deviceCheckboxes.length && deviceCheckboxes.length > 0;
         selectAllCheckbox.indeterminate = hasSelection && checkedBoxes.length < deviceCheckboxes.length;
       }
 
-      // Select All button click handler
+      // Fixed Select All button handler
       selectAllBtn.addEventListener('click', () => {
+        const deviceCheckboxes = document.querySelectorAll('.device-select');
         const newState = !selectAllCheckbox.checked;
         deviceCheckboxes.forEach(checkbox => checkbox.checked = newState);
         updateControlsState();
       });
 
-      // Select All checkbox change handler
-      selectAllCheckbox.addEventListener('change', () => {
-        deviceCheckboxes.forEach(checkbox => checkbox.checked = selectAllCheckbox.checked);
-        updateControlsState();
-      });
-
-      // Individual checkbox change handlers
-      deviceCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', updateControlsState);
-      });
-
-      // Bulk Actions handler
-      applyBulkBtn.addEventListener('click', () => {
-        const action = bulkActionSelect.value;
-        const selectedIds = Array.from(document.querySelectorAll('.device-select:checked'))
-          .map(checkbox => checkbox.value);
-
-        if (!action || selectedIds.length === 0) return;
-
-        switch(action) {
-          case 'delete':
-            if (confirm('Are you sure you want to delete all selected devices?')) {
-              // Implement bulk delete
-              console.log('Deleting devices:', selectedIds);
-            }
-            break;
-          case 'updateNetwork':
-            const newNetwork = prompt('Enter new network for selected devices:');
-            if (newNetwork) {
-              // Implement network update
-              console.log('Updating network for devices:', selectedIds);
-            }
-            break;
-          case 'updateRole':
-            const newRole = prompt('Enter new role for selected devices:');
-            if (newRole) {
-              // Implement role update
-              console.log('Updating role for devices:', selectedIds);
-            }
-            break;
-        }
-      });
-
-      // CSV Export handler
+      // Fixed CSV Export handler
       exportCSVBtn.addEventListener('click', () => {
         const selectedRows = Array.from(document.querySelectorAll('.device-select:checked'))
           .map(checkbox => checkbox.closest('tr'));
 
-        if (selectedRows.length === 0) {
-          alert('Please select at least one device to export');
-          return;
-        }
+        if (selectedRows.length === 0) return;
 
-        const csvData = selectedRows.map(row => ({
-          name: row.cells[1].textContent,
-          ipAddress: row.cells[2].textContent,
-          operatingSystem: row.cells[3].textContent,
-          systemRole: row.cells[4].textContent,
-          network: row.dataset.network,
-          hostname: row.dataset.hostname,
-          hypervisor: row.dataset.hypervisor,
-          domainUser: row.dataset.domainUser,
-          zscalerUser: row.dataset.zscalerUser,
-          zscalerSegment: row.dataset.zscalerSegment,
-          notes: row.dataset.notes
-        }));
+        const headers = [
+          'Name',
+          'IP Address',
+          'Operating System',
+          'Hostname',
+          'Network',
+          'System Role',
+          'Hypervisor',
+          'Domain User',
+          'Zscaler User',
+          'Zscaler Segment',
+          'Notes'
+        ];
 
-        const headers = Object.keys(csvData[0]);
-        const csvContent = [
-          headers.join(','),
-          ...csvData.map(row => headers.map(header => row[header] || '').join(','))
-        ].join('\n');
+        const csvData = selectedRows.map(row => {
+          return [
+            row.querySelector('td:nth-child(2)').textContent.trim(), // Name
+            row.querySelector('td:nth-child(3)').textContent.trim(), // IP Address
+            row.querySelector('td:nth-child(4)').textContent.trim(), // OS
+            row.dataset.hostname,
+            row.dataset.network,
+            row.querySelector('td:nth-child(5)').textContent.trim(), // Role
+            row.dataset.hypervisor,
+            row.dataset.domainUser,
+            row.dataset.zscalerUser,
+            row.dataset.zscalerSegment,
+            row.dataset.notes || ''
+          ].map(field => `"${(field || '').replace(/"/g, '""')}"`)
+           .join(',');
+        });
 
+        const csvContent = [headers.join(','), ...csvData].join('\n');
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
@@ -529,6 +498,7 @@
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        URL.revokeObjectURL(url);
       });
 
       // Initialize control states

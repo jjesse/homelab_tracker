@@ -163,6 +163,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed "device is not defined" error in dashboard.ejs by adding proper null checks
 - Added fallback for cases where user.devices is undefined
 - Improved error handling for empty device lists
+- Fixed Select All functionality not working properly with dynamic table updates
+- Fixed CSV export to properly handle special characters and include all device fields
 
 ### Security
 
