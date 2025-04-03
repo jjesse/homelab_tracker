@@ -160,6 +160,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed navigation links visibility issues
 - Fixed template engine error with login.ejs by removing incorrect layout include
 - Fixed layout inheritance for login and register pages
+- Fixed "device is not defined" error in dashboard.ejs by adding proper null checks
+- Added fallback for cases where user.devices is undefined
+- Improved error handling for empty device lists
 
 ### Security
 

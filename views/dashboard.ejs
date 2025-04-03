@@ -18,7 +18,7 @@
     <div class="stats-grid">
       <div class="stat-card">
         <h3>Total Devices</h3>
-        <p class="stat-number"><%= user.devices.length %></p>
+        <p class="stat-number"><%= (user && user.devices) ? user.devices.length : 0 %></p>
       </div>
       <div class="stat-card">
         <h3>By Operating System</h3>
@@ -70,98 +70,96 @@
             </tr>
           </thead>
           <tbody>
-            <% if(user.devices && user.devices.length > 0) { %>
-              <% user.devices.forEach(function(device) { %>
+            <% const devices = (user && user.devices) ? user.devices : []; %>
+            <% if(devices.length > 0) { %>
+              <% devices.forEach(function(device) { %>
                 <tr data-os="<%= device.operatingSystem %>" data-network="<%= device.network %>" data-role="<%= device.systemRole %>" data-device-id="<%= device._id %>" data-hostname="<%= device.hostname %>" data-hypervisor="<%= device.hypervisorInstalledOn %>" data-domain-user="<%= device.domainUserSignedIn %>" data-zscaler-user="<%= device.zscalerUserSignedIn %>" data-zscaler-segment="<%= device.zscalerAppSegment %>" data-notes="<%= device.notes %>">
                   <td><input type="checkbox" class="device-select" value="<%= device._id %>"></td>
-                  <td><%= device.name %></td>temRole %>" 
-                  <td><%= device.ipAddress %></td> %>"
-                  <td><%= device.operatingSystem %></td>>"
-                  <td><%= device.systemRole %></td>ervisorInstalledOn %>"
-                  <td class="actions"><%= device.domainUserSignedIn %>"
+                  <td><%= device.name %></td>
+                  <td><%= device.ipAddress %></td>
+                  <td><%= device.operatingSystem %></td>
+                  <td><%= device.systemRole %></td>
+                  <td class="actions">
                     <button class="btn btn-info btn-sm view-device" data-id="<%= device._id %>">View</button>
                     <button class="btn btn-warning btn-sm edit-device" data-id="<%= device._id %>">Edit</button>
                     <button class="btn btn-danger btn-sm delete-device" data-id="<%= device._id %>">Delete</button>
-                  </td>input type="checkbox" class="device-select" value="<%= device._id %>"></td>
-                </tr>><%= device.name %></td>
-              <% }) %><%= device.ipAddress %></td>
-            <% } %>td><%= device.operatingSystem %></td>
-          </tbody><td><%= device.systemRole %></td>
-        </table>  <td class="actions">
-      </div>        <button class="btn btn-info btn-sm view-device" data-id="<%= device._id %>">View</button>
-    </div>          <button class="btn btn-warning btn-sm edit-device" data-id="<%= device._id %>">Edit</button>
-                    <button class="btn btn-danger btn-sm delete-device" data-id="<%= device._id %>">Delete</button>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
     <h2>Add Device</h2>
     <!-- Add Device Form -->
     <form action="/devices/add" method="POST" class="device-form">
       <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-      <div>/tbody>
+      <div>
         <label for="name">Device Name:</label>
         <input type="text" name="name" required>
       </div>
       <div>
         <label for="ipAddress">IP Address:</label>
         <input type="text" name="ipAddress" required>
-      </div>tion="/devices/add" method="POST" class="device-form">
-      <div>t type="hidden" name="_csrf" value="<%= csrfToken %>">
+      </div>
+      <div>
         <label for="operatingSystem">Operating System:</label>
         <input type="text" name="operatingSystem" required>
-      </div>ut type="text" name="name" required>
-      <div>>
+      </div>
+      <div>
         <label for="hostname">Hostname:</label>
         <input type="text" name="hostname" required>
-      </div>ut type="text" name="ipAddress" required>
-      <div>>
+      </div>
+      <div>
         <label for="network">Network:</label>
-        <input type="text" name="network" required>em:</label>
-      </div>ut type="text" name="operatingSystem" required>
-      <div>>
+        <input type="text" name="network" required>
+      </div>
+      <div>
         <label for="systemRole">System Role:</label>
         <input type="text" name="systemRole" required>
-      </div>ut type="text" name="hostname" required>
-      <div>>
+      </div>
+      <div>
         <label for="hypervisorInstalledOn">Hypervisor Installed On:</label>
         <input type="text" name="hypervisorInstalledOn" required>
-      </div>ut type="text" name="network" required>
-      <div>>
+      </div>
+      <div>
         <label for="domainUserSignedIn">Domain User Signed In:</label>
         <input type="text" name="domainUserSignedIn" required>
-      </div>ut type="text" name="systemRole" required>
-      <div>>
+      </div>
+      <div>
         <label for="zscalerUserSignedIn">Zscaler User Signed In:</label>
-        <input type="text" name="zscalerUserSignedIn" required> On:</label>
-      </div>ut type="text" name="hypervisorInstalledOn" required>
-      <div>>
+        <input type="text" name="zscalerUserSignedIn" required>
+      </div>
+      <div>
         <label for="zscalerAppSegment">Zscaler App Segment:</label>
-        <input type="text" name="zscalerAppSegment" required>:</label>
-      </div>ut type="text" name="domainUserSignedIn" required>
-      <div>>
+        <input type="text" name="zscalerAppSegment" required>
+      </div>
+      <div>
         <label for="notes">Notes:</label>
-        <textarea name="notes"></textarea>scaler User Signed In:</label>
-      </div>ut type="text" name="zscalerUserSignedIn" required>
+        <textarea name="notes"></textarea>
+      </div>
       <button type="submit" class="btn btn-primary">Add Device</button>
     </form>
-  </div><label for="zscalerAppSegment">Zscaler App Segment:</label>
-        <input type="text" name="zscalerAppSegment" required>
+  </div>
   <!-- View Device Modal -->
   <div id="viewDeviceModal" class="modal">
-    <div class="modal-content">s:</label>
-      <div class="modal-header">/textarea>
+    <div class="modal-content">
+      <div class="modal-header">
         <h2>Device Details</h2>
-        <span class="close">&times;</span>-primary">Add Device</button>
+        <span class="close">&times;</span>
       </div>
       <div class="modal-body">
         <dl class="device-details">
           <!-- Details will be populated by JavaScript -->
-        </dl>ewDeviceModal" class="modal">
-      </div>ss="modal-content">
-    </div> class="modal-header">
-  </div><h2>Device Details</h2>
-        <span class="close">&times;</span>
+        </dl>
+      </div>
+    </div>
+  </div>
   <!-- Edit Device Modal -->
   <div id="editDeviceModal" class="modal">
-    <div class="modal-content">ls">
-      <div class="modal-header">opulated by JavaScript -->
+    <div class="modal-content">
+      <div class="modal-header">
         <h2>Edit Device</h2>
         <span class="close">&times;</span>
       </div>
@@ -170,116 +168,112 @@
           <input type="hidden" name="_csrf" value="<%= csrfToken %>">
           <input type="hidden" name="deviceId" id="editDeviceId">
           <!-- Copy of the add device form fields with validation -->
-        </form>s="modal-header">
-      </div>Edit Device</h2>
-    </div>pan class="close">&times;</span>
-  </div>div>
-      <div class="modal-body">
-  <!-- Delete Confirmation Modal -->ass="device-form">
-  <div id="deleteDeviceModal" class="modal">value="<%= csrfToken %>">
-    <div class="modal-content">name="deviceId" id="editDeviceId">
-      <div class="modal-header">evice form fields with validation -->
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteDeviceModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
         <h2>Confirm Delete</h2>
         <span class="close">&times;</span>
       </div>
       <div class="modal-body">
         <p>Are you sure you want to delete this device? This action cannot be undone.</p>
-        <div class="modal-actions">>
+        <div class="modal-actions">
           <button id="confirmDelete" class="btn btn-danger">Delete</button>
           <button id="cancelDelete" class="btn btn-secondary">Cancel</button>
-        </div>ss="modal-header">
-      </div>Confirm Delete</h2>
-    </div>pan class="close">&times;</span>
-  </div>div>
-      <div class="modal-body">
-  <script>>Are you sure you want to delete this device? This action cannot be undone.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Initialize charts with empty data="btn btn-danger">Delete</button>
-      let charts = {="cancelDelete" class="btn btn-secondary">Cancel</button>
+      // Initialize charts with empty data
+      let charts = {
         osChart: null,
         networkChart: null,
         roleChart: null
       };
 
       // Initial chart creation
-      updateCharts();Listener('DOMContentLoaded', function() {
-      // Initialize charts with empty data
+      updateCharts();
+
       function updateCharts() {
         const devices = Array.from(document.querySelectorAll('#deviceTable tbody tr:not(.device-group-header)'));
-        networkChart: null,
         // Update OS Chart
         updateChart('osChart', 'Operating Systems', aggregateDeviceData(devices, 'operatingSystem'));
         updateChart('networkChart', 'Networks', aggregateDeviceData(devices, 'network'));
         updateChart('roleChart', 'System Roles', aggregateDeviceData(devices, 'role'));
-      }pdateCharts();
+      }
 
       function aggregateDeviceData(devices, property) {
-        const counts = {};ray.from(document.querySelectorAll('#deviceTable tbody tr:not(.device-group-header)'));
+        const counts = {};
         devices.forEach(device => {
-          let value; Chart
-          switch(property) {', 'Operating Systems', aggregateDeviceData(devices, 'operatingSystem'));
-            case 'operatingSystem': 'Networks', aggregateDeviceData(devices, 'network'));
-              value = device.querySelector('td:nth-child(4)').textContent.trim();le'));
+          let value;
+          switch(property) {
+            case 'operatingSystem':
+              value = device.querySelector('td:nth-child(4)').textContent.trim();
               break;
             case 'network':
-              value = device.dataset.network;roperty) {
-              break; = {};
-            case 'role':device => {
+              value = device.dataset.network;
+              break;
+            case 'role':
               value = device.dataset.role;
-              break;perty) {
-          } case 'operatingSystem':
-          counts[value] = (counts[value] || 0) + 1;child(4)').textContent.trim();
-        });   break;
-            case 'network':
-        return {lue = device.dataset.network;
+              break;
+          }
+          counts[value] = (counts[value] || 0) + 1;
+        });
+        return {
           labels: Object.keys(counts),
           data: Object.values(counts)
-        };    value = device.dataset.role;
-      }       break;
-          }
+        };
+      }
+
       function updateChart(canvasId, title, data) {
         const ctx = document.getElementById(canvasId).getContext('2d');
         
         // Destroy existing chart if it exists
-        if (charts[canvasId]) {ounts),
+        if (charts[canvasId]) {
           charts[canvasId].destroy();
-        };
-      }
+        }
+
         // Create new chart
-        charts[canvasId] = new Chart(ctx, { data) {
-          type: 'pie',cument.getElementById(canvasId).getContext('2d');
+        charts[canvasId] = new Chart(ctx, {
+          type: 'pie',
           data: {
-            labels: data.labels,t if it exists
-            datasets: [{sId]) {
-              data: data.data,troy();
+            labels: data.labels,
+            datasets: [{
+              data: data.data,
               backgroundColor: [
                 '#FF6384',
-                '#36A2EB',t
-                '#FFCE56', new Chart(ctx, {
+                '#36A2EB',
+                '#FFCE56',
                 '#4BC0C0',
                 '#9966FF',
-                '#FF9F40'labels,
-              ]asets: [{
-            }]data: data.data,
-          },  backgroundColor: [
-          options: {6384',
+                '#FF9F40'
+              ]
+            }]
+          },
+          options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {C0',
-              legend: {F',
+            plugins: {
+              legend: {
                 position: 'bottom',
                 labels: {
                   padding: 20,
                   usePointStyle: true
-                }: {
-              },onsive: true,
-              title: {pectRatio: false,
+                }
+              },
+              title: {
                 display: true,
                 text: title,
-                padding: 20bottom',
-              },labels: {
-              tooltip: {g: 20,
-                callbacks: {yle: true
+                padding: 20
+              },
+              tooltip: {
+                callbacks: {
                   label: function(context) {
                     const label = context.label || '';
                     const value = context.parsed;
@@ -287,53 +281,53 @@
                     const percentage = Math.round((value * 100) / total);
                     return `${label}: ${value} (${percentage}%)`;
                   }
-                }ltip: {
-              } callbacks: {
-            }     label: function(context) {
-          }         const label = context.label || '';
-        });         const value = context.parsed;
-      }             const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                    const percentage = Math.round((value * 100) / total);
-      // Update charts after delete or addlue} (${percentage}%)`;
+                }
+              }
+            }
+          }
+        });
+      }
+
+      // Update charts after delete or add
       function updateDashboard() {
         updateDeviceStats();
         updateCharts();
-      }     }
-          }
+      }
+
       // Make sure to call updateCharts after any table changes
       document.getElementById('confirmDelete').addEventListener('click', async () => {
         // ...existing delete code...
-        if (response.ok) {er delete or add
+        if (response.ok) {
           // ...existing success code...
           updateDashboard();
-        }pdateCharts();
+        }
       });
 
-      // Group by functionalityteCharts after any table changes
-      document.getElementById('groupBy').addEventListener('change', function(e) { => {
+      // Group by functionality
+      document.getElementById('groupBy').addEventListener('change', function(e) {
         const groupBy = e.target.value;
         const tbody = document.querySelector('#deviceTable tbody');
         const rows = Array.from(tbody.querySelectorAll('tr'));
-          updateDashboard();
+
         if (!groupBy) {
           // Show all rows normally
           rows.forEach(row => row.style.display = '');
-          return; functionality
-        }ument.getElementById('groupBy').addEventListener('change', function(e) {
-        const groupBy = e.target.value;
-        // Group the rows by the selected propertyiceTable tbody');
-        const groups = {};.from(tbody.querySelectorAll('tr'));
+          return;
+        }
+
+        // Group the rows by the selected property
+        const groups = {};
         rows.forEach(row => {
           const value = row.dataset[groupBy.toLowerCase()];
-          if (!groups[value]) {ally
-            groups[value] = [];ow.style.display = '');
-          }eturn;
+          if (!groups[value]) {
+            groups[value] = [];
+          }
           groups[value].push(row);
         });
-        // Group the rows by the selected property
+
         // Clear the table body
         tbody.innerHTML = '';
-          const value = row.dataset[groupBy.toLowerCase()];
+
         // Add grouped rows with headers
         Object.entries(groups).forEach(([groupName, groupRows]) => {
           // Add group header
@@ -343,122 +337,112 @@
             <td colspan="6" style="background: #f8f9fa; font-weight: bold; padding: 0.5rem 1rem;">
               ${groupBy}: ${groupName} (${groupRows.length} devices)
             </td>
-          `;dd grouped rows with headers
-          tbody.appendChild(groupHeader);groupName, groupRows]) => {
-          // Add group header
-          // Add group rows = document.createElement('tr');
+          `;
+          tbody.appendChild(groupHeader);
+          // Add group rows
           groupRows.forEach(row => tbody.appendChild(row));
-        });roupHeader.innerHTML = `
-      });   <td colspan="6" style="background: #f8f9fa; font-weight: bold; padding: 0.5rem 1rem;">
-              ${groupBy}: ${groupName} (${groupRows.length} devices)
+        });
+      });
+
       // Improved sorting functionality
       let currentSort = {
-        column: null,dChild(groupHeader);
+        column: null,
         ascending: true
-      };  // Add group rows
-          groupRows.forEach(row => tbody.appendChild(row));
+      };
+
       document.querySelectorAll('th[data-sort]').forEach(th => {
         th.addEventListener('click', function() {
           const sortBy = this.dataset.sort;
           const columnIndex = Array.from(th.parentNode.children).indexOf(th);
-          currentSort = {
+
           // Toggle sort direction if same column, otherwise default to ascending
           if (currentSort.column === sortBy) {
             currentSort.ascending = !currentSort.ascending;
           } else {
-            currentSort.column = sortBy;-sort]').forEach(th => {
-            currentSort.ascending = true;tion() {
-          }onst sortBy = this.dataset.sort;
-          const columnIndex = Array.from(th.parentNode.children).indexOf(th);
-          // Update sort indicators
-          document.querySelectorAll('.sort-arrow').forEach(arrow => {to ascending
-            arrow.textContent = '↕'; sortBy) {
-          });urrentSort.ascending = !currentSort.ascending;
-          this.querySelector('.sort-arrow').textContent = currentSort.ascending ? '↑' : '↓';
             currentSort.column = sortBy;
+            currentSort.ascending = true;
+          }
+
+          // Update sort indicators
+          document.querySelectorAll('.sort-arrow').forEach(arrow => {
+            arrow.textContent = '↕';
+          });
+          this.querySelector('.sort-arrow').textContent = currentSort.ascending ? '↑' : '↓';
+
           // Get all data rows (excluding headers and group headers)
           const tbody = document.querySelector('#deviceTable tbody');
           const rows = Array.from(tbody.querySelectorAll('tr:not(.device-group-header)'));
-          // Update sort indicators
-          // Sort the rowslectorAll('.sort-arrow').forEach(arrow => {
-          rows.sort((a, b) => { '↕';
-            let aVal = a.children[columnIndex].textContent.trim();
-            let bVal = b.children[columnIndex].textContent.trim();ort.ascending ? '↑' : '↓';
 
-            // Special handling for IP addressess and group headers)
-            if (sortBy === 'ipAddress') {ector('#deviceTable tbody');
-              aVal = ipToNumber(aVal);y.querySelectorAll('tr:not(.device-group-header)'));
+          // Sort the rows
+          rows.sort((a, b) => {
+            let aVal = a.children[columnIndex].textContent.trim();
+            let bVal = b.children[columnIndex].textContent.trim();
+
+            // Special handling for IP addresses
+            if (sortBy === 'ipAddress') {
+              aVal = ipToNumber(aVal);
               bVal = ipToNumber(bVal);
               return currentSort.ascending ? aVal - bVal : bVal - aVal;
-            }s.sort((a, b) => {
-            let aVal = a.children[columnIndex].textContent.trim();
-            // Regular string comparison for other columns.trim();
+            }
+
+            // Regular string comparison for other columns
             return currentSort.ascending ? 
-              aVal.localeCompare(bVal) : dresses
-              bVal.localeCompare(aVal); {
-          }); aVal = ipToNumber(aVal);
-              bVal = ipToNumber(bVal);
-          // Reattach sorted rowsascending ? aVal - bVal : bVal - aVal;
+              aVal.localeCompare(bVal) : 
+              bVal.localeCompare(aVal);
+          });
+
+          // Reattach sorted rows
           rows.forEach(row => tbody.appendChild(row));
         });
-      });   // Regular string comparison for other columns
-            return currentSort.ascending ? 
+      });
+
       // Helper function to convert IP to sortable number
-      function ipToNumber(ip) {e(aVal);
+      function ipToNumber(ip) {
         return ip.split('.')
           .map((octet, index) => parseInt(octet) * Math.pow(256, 3 - index))
           .reduce((acc, val) => acc + val, 0);
-      }   rows.forEach(row => tbody.appendChild(row));
-        });
+      }
+
       // Close modal when clicking the X or outside
       document.querySelectorAll('.close, .modal').forEach(element => {
-        element.addEventListener('click', (e) => { number
+        element.addEventListener('click', (e) => {
           if (e.target === element) {
             document.getElementById('viewDeviceModal').style.display = 'none';
             document.getElementById('editDeviceModal').style.display = 'none';
             document.getElementById('deleteDeviceModal').style.display = 'none';
           }
         });
-      });Close modal when clicking the X or outside
-      document.querySelectorAll('.close, .modal').forEach(element => {
-      // CSV Export functionality'click', (e) => {
+      });
+
+      // CSV Export functionality
       document.getElementById('exportCSV').addEventListener('click', function() {
         const devices = Array.from(document.querySelectorAll('#deviceTable tbody tr:not(.device-group-header)'))
-          .map(row => ({ElementById('editDeviceModal').style.display = 'none';
-            name: row.cells[1].textContent,DeviceModal').style.display = 'none';
+          .map(row => ({
+            name: row.cells[1].textContent,
             ipAddress: row.cells[2].textContent,
             operatingSystem: row.cells[3].textContent,
             systemRole: row.cells[4].textContent,
             network: row.dataset.network,
             hostname: row.dataset.hostname,
-            hypervisorInstalledOn: row.dataset.hypervisor,.getElementById('exportCSV').addEventListener('click', function() {
-            domainUserSignedIn: row.dataset.domainUser,        const devices = Array.from(document.querySelectorAll('#deviceTable tbody tr:not(.device-group-header)'))
+            hypervisorInstalledOn: row.dataset.hypervisor,
+            domainUserSignedIn: row.dataset.domainUser,
             zscalerUserSignedIn: row.dataset.zscalerUser,
             zscalerAppSegment: row.dataset.zscalerSegment,
             notes: row.dataset.notes
-          }));System: row.cells[3].textContent,
-            systemRole: row.cells[4].textContent,
+          }));
+
         const headers = ['Name,IP Address,Operating System,System Role,Network,Hostname,Hypervisor,Domain User,Zscaler User,Zscaler App Segment,Notes\n'];
         const csvContent = headers + devices.map(device => 
           `${device.name},${device.ipAddress},${device.operatingSystem},${device.systemRole},${device.network},${device.hostname || ''},${device.hypervisorInstalledOn || ''},${device.domainUserSignedIn || ''},${device.zscalerUserSignedIn || ''},${device.zscalerAppSegment || ''},${(device.notes || '').replace(/,/g, ';')}`
         ).join('\n');
-ystem,System Role,Network\n'];
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });ces.map(device => 
-        const link = document.createElement('a');ress},${device.operatingSystem},${device.systemRole},${device.network}`
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
         link.setAttribute('href', url);
-        link.setAttribute('download', `devices_export_${new Date().toISOString().split('T')[0]}.csv`);onst blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        link.style.visibility = 'hidden'; const link = document.createElement('a');
-        document.body.appendChild(link);st url = URL.createObjectURL(blob);
-        link.click(); link.setAttribute('href', url);
-        document.body.removeChild(link); link.setAttribute('download', 'devices.csv');
-      });        link.style.visibility = 'hidden';
-
-
-
-
-
-</html></body>  </script>    });        document.body.appendChild(link);
+        link.setAttribute('download', `devices_export_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
       });
