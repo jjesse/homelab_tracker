@@ -53,6 +53,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added consistent styling for login and registration forms
 - Added responsive container layouts for auth forms
 - Added hover effects for auth buttons
+- Added client-side form validation with HTML5 patterns
+- Added password strength requirements display
+- Added visual feedback for form field states
+- Added improved form field styling and layout
 
 ### Changed
 
@@ -75,6 +79,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Streamlined navigation bar with conditional rendering
 - Enhanced form styling with flexbox layout
 - Standardized alert message styling across all pages
+- Enhanced form field validation with better patterns and feedback
+- Improved form field layout with consistent spacing
+- Updated input styling with focus and validation states
 
 ### Fixed
 
@@ -116,6 +123,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed inconsistent page structure across views
 - Fixed duplicate HTML boilerplate in view files
 - Fixed navigation links visibility issues
+- Fixed template engine error with login.ejs by removing incorrect layout include
+- Fixed layout inheritance for login and register pages
 
 ### Security
 
