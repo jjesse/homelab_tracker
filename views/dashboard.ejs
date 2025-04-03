@@ -193,207 +193,183 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Initialize charts
-      const osData = aggregateDeviceData('operatingSystem');
-      const networkData = aggregateDeviceData('network');
-      const roleData = aggregateDeviceData('systemRole');
+      // Initialize charts with empty data
+      let charts = {
+        osChart: null,
+        networkChart: null,
+        roleChart: null
+      };
 
-      createChart('osChart', 'Operating Systems', osData);
-      createChart('networkChart', 'Networks', networkData);
-      createChart('roleChart', 'System Roles', roleData);
+      updateCharts();
 
       // Group by functionality
       document.getElementById('groupBy').addEventListener('change', function(e) {
         const groupBy = e.target.value;
+        const tbody = document.querySelector('#deviceTable tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+
         if (!groupBy) {
-          showAllDevices();
+          // Show all rows normally
+          rows.forEach(row => row.style.display = '');
           return;
         }
-        groupDevices(groupBy);
-      });
 
-      // Bulk actions
-      setupBulkActions();
+        // Group the rows by the selected property
+        const groups = {};
+        rows.forEach(row => {
+          const value = row.dataset[groupBy.toLowerCase()];
+          if (!groups[value]) {
+            groups[value] = [];
+          }
+          groups[value].push(row);
+        });
 
-      // View Device Modal Functions
-      const viewModal = document.getElementById('viewDeviceModal');
-      const editModal = document.getElementById('editDeviceModal');
-      const deleteModal = document.getElementById('deleteDeviceModal');
+        // Clear the table body
+        tbody.innerHTML = '';
 
-      document.querySelectorAll('.view-device').forEach(button => {
-        button.addEventListener('click', async (e) => {
-          const deviceId = e.target.dataset.id;
-          const response = await fetch(`/devices/${deviceId}`);
-          const device = await response.json();
-          displayDeviceDetails(device);
-          viewModal.style.display = 'block';
+        // Add grouped rows with headers
+        Object.entries(groups).forEach(([groupName, groupRows]) => {
+          // Add group header
+          const groupHeader = document.createElement('tr');
+          groupHeader.className = 'device-group-header';
+          groupHeader.innerHTML = `
+            <td colspan="6" style="background: #f8f9fa; font-weight: bold; padding: 0.5rem 1rem;">
+              ${groupBy}: ${groupName} (${groupRows.length} devices)
+            </td>
+          `;
+          tbody.appendChild(groupHeader);
+
+          // Add group rows
+          groupRows.forEach(row => tbody.appendChild(row));
         });
       });
 
-      document.querySelectorAll('.edit-device').forEach(button => {
-        button.addEventListener('click', async (e) => {
-          const deviceId = e.target.dataset.id;
-          const response = await fetch(`/devices/${deviceId}`);
-          const device = await response.json();
-          populateEditForm(device);
-          editModal.style.display = 'block';
-        });
-      });
+      // Sorting functionality
+      document.querySelectorAll('th[data-sort]').forEach(th => {
+        th.addEventListener('click', function() {
+          const tbody = document.querySelector('#deviceTable tbody');
+          const rows = Array.from(tbody.querySelectorAll('tr:not(.device-group-header)'));
+          const column = this.dataset.sort;
+          const columnIndex = Array.from(th.parentNode.children).indexOf(th);
+          const isAscending = !this.classList.contains('sort-asc');
 
-      // Delete Device Functionality
-      let deviceToDelete = null;
+          // Update sort direction indicator
+          document.querySelectorAll('th[data-sort]').forEach(header => {
+            header.classList.remove('sort-asc', 'sort-desc');
+          });
+          this.classList.toggle('sort-asc', isAscending);
+          this.classList.toggle('sort-desc', !isAscending);
 
-      document.querySelectorAll('.delete-device').forEach(button => {
-        button.addEventListener('click', (e) => {
-          e.preventDefault();
-          deviceToDelete = e.target.dataset.id;
-          deleteModal.style.display = 'block';
-        });
-      });
-
-      document.getElementById('cancelDelete').addEventListener('click', () => {
-        deleteModal.style.display = 'none';
-        deviceToDelete = null;
-      });
-
-      document.getElementById('confirmDelete').addEventListener('click', async () => {
-        if (!deviceToDelete) return;
-
-        try {
-          const response = await fetch(`/devices/${deviceToDelete}`, {
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-              'CSRF-Token': document.querySelector('[name="_csrf"]').value
-            }
+          // Sort the rows
+          rows.sort((a, b) => {
+            const aValue = a.children[columnIndex].textContent.trim();
+            const bValue = b.children[columnIndex].textContent.trim();
+            return isAscending ? 
+              aValue.localeCompare(bValue) : 
+              bValue.localeCompare(aValue);
           });
 
-          if (!response.ok) {
-            throw new Error('Failed to delete device');
-          }
-
-          // Remove the device row from the table
-          const deviceRow = document.querySelector(`tr[data-device-id="${deviceToDelete}"]`);
-          if (deviceRow) {
-            deviceRow.remove();
-            // Update statistics
-            updateDeviceStats();
-            // Update charts
-            updateCharts();
-          }
-
-          // Show success message
-          showNotification('Device deleted successfully', 'success');
-        } catch (error) {
-          console.error('Error:', error);
-          showNotification('Failed to delete device', 'error');
-        } finally {
-          deleteModal.style.display = 'none';
-          deviceToDelete = null;
-        }
+          // Reattach sorted rows
+          rows.forEach(row => tbody.appendChild(row));
+        });
       });
 
-      function showNotification(message, type) {
-        const notification = document.createElement('div');
-        notification.className = `alert ${type}`;
-        notification.textContent = message;
-        
-        const container = document.querySelector('.dashboard-container');
-        container.insertBefore(notification, container.firstChild);
-        
-        setTimeout(() => notification.remove(), 3000);
-      }
-
-      function updateDeviceStats() {
-        const totalDevices = document.querySelectorAll('#deviceTable tbody tr').length;
-        document.querySelector('.stat-number').textContent = totalDevices;
-      }
-
       function updateCharts() {
-        const osData = aggregateDeviceData('operatingSystem');
-        const networkData = aggregateDeviceData('network');
-        const roleData = aggregateDeviceData('systemRole');
+        const devices = Array.from(document.querySelectorAll('#deviceTable tbody tr:not(.device-group-header)'));
+        
+        // Update OS Chart
+        const osData = aggregateData(devices, 'os');
+        if (charts.osChart) {
+          charts.osChart.destroy();
+        }
+        charts.osChart = createChart('osChart', 'Operating Systems', osData);
 
-        createChart('osChart', 'Operating Systems', osData);
-        createChart('networkChart', 'Networks', networkData);
-        createChart('roleChart', 'System Roles', roleData);
+        // Update Network Chart
+        const networkData = aggregateData(devices, 'network');
+        if (charts.networkChart) {
+          charts.networkChart.destroy();
+        }
+        charts.networkChart = createChart('networkChart', 'Networks', networkData);
+
+        // Update Role Chart
+        const roleData = aggregateData(devices, 'role');
+        if (charts.roleChart) {
+          charts.roleChart.destroy();
+        }
+        charts.roleChart = createChart('roleChart', 'System Roles', roleData);
       }
+
+      function aggregateData(devices, property) {
+        const counts = devices.reduce((acc, device) => {
+          const value = device.dataset[property];
+          acc[value] = (acc[value] || 0) + 1;
+          return acc;
+        }, {});
+
+        return {
+          labels: Object.keys(counts),
+          data: Object.values(counts)
+        };
+      }
+
+      // Update the existing createChart function
+      function createChart(canvasId, label, data) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        return new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: data.labels,
+            datasets: [{
+              data: data.data,
+              backgroundColor: [
+                '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+                '#FF9F40', '#4BC0C0', '#36A2EB', '#FF6384', '#9966FF'
+              ]
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                display: true
+              },
+              title: {
+                display: true,
+                text: label
+              }
+            }
+          }
+        });
+      }
+
+      // Update charts when changes occur
+      function updateDashboard() {
+        updateDeviceStats();
+        updateCharts();
+      }
+
+      // Add this to the delete success handler
+      document.getElementById('confirmDelete').addEventListener('click', async () => {
+        let deviceToDelete = null;
+        // ...existing delete code...
+        if (response.ok) {
+          // ...existing success code...
+          updateDashboard();
+        }
+      });
 
       // Close modal when clicking the X or outside
       document.querySelectorAll('.close, .modal').forEach(element => {
         element.addEventListener('click', (e) => {
           if (e.target === element) {
-            viewModal.style.display = 'none';
-            editModal.style.display = 'none';
-            deleteModal.style.display = 'none';
+            document.getElementById('viewDeviceModal').style.display = 'none';
+            document.getElementById('editDeviceModal').style.display = 'none';
+            document.getElementById('deleteDeviceModal').style.display = 'none';
           }
         });
       });
     });
-
-    function aggregateDeviceData(property) {
-      const devices = Array.from(document.querySelectorAll('#deviceTable tbody tr'));
-      const data = devices.reduce((acc, device) => {
-        const value = device.dataset[property.toLowerCase()];
-        acc[value] = (acc[value] || 0) + 1;
-        return acc;
-      }, {});
-      return {
-        labels: Object.keys(data),
-        data: Object.values(data)
-      };
-    }
-
-    function createChart(canvasId, label, data) {
-      const ctx = document.getElementById(canvasId).getContext('2d');
-      new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: data.labels,
-          datasets: [{
-            data: data.data,
-            backgroundColor: [
-              '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'
-            ]
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: 'bottom'
-            },
-            title: {
-              display: true,
-              text: label
-            }
-          }
-        }
-      });
-    }
-
-    function displayDeviceDetails(device) {
-      const detailsList = document.querySelector('.device-details');
-      detailsList.innerHTML = Object.entries(device)
-        .filter(([key]) => key !== '_id' && key !== '__v')
-        .map(([key, value]) => `
-          <dt>${key.replace(/([A-Z])/g, ' $1').trim()}</dt>
-          <dd>${value}</dd>
-        `).join('');
-    }
-
-    function populateEditForm(device) {
-      const form = document.getElementById('editDeviceForm');
-      Object.entries(device).forEach(([key, value]) => {
-        const input = form.querySelector(`[name="${key}"]`);
-        if (input) {
-          input.value = value;
-        }
-      });
-      document.getElementById('editDeviceId').value = device._id;
-    }
-
-    // Add more JavaScript functions for grouping and bulk actions
   </script>
 </body>
 </html>

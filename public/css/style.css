@@ -183,6 +183,19 @@ footer {
   color: #999;
 }
 
+th[data-sort] {
+  position: relative;
+  cursor: pointer;
+}
+
+th[data-sort].sort-asc .sort-arrow:after {
+  content: "↑";
+}
+
+th[data-sort].sort-desc .sort-arrow:after {
+  content: "↓";
+}
+
 .actions {
   display: flex;
   gap: 0.5rem;
@@ -260,6 +273,13 @@ footer {
   font-weight: bold;
   margin-bottom: 0.5rem;
   color: #007bff;
+}
+
+.device-group-header td {
+  background: #f8f9fa !important;
+  font-weight: bold;
+  color: #007bff;
+  border-top: 2px solid #007bff;
 }
 
 /* Modal Styles */
