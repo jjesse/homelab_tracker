@@ -15,6 +15,7 @@ This web application allows you to store details about your home lab devices. Yo
 - HTTPS support
 - Docker containerization
 - MongoDB integration
+- CSV export functionality for device data
 
 ## Technologies Used
 

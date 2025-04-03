@@ -81,6 +81,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added dynamic UI updates after device deletion
 - Added success/error notifications
 - Added animation for notifications
+- Added CSV export functionality for device data
+- Export includes device name, IP address, operating system, system role, and network information
 
 ### Changed
 

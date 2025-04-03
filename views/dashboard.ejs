@@ -46,6 +46,7 @@
         </select>
         <div class="bulk-actions">
           <button id="selectAll" class="btn btn-secondary">Select All</button>
+          <button id="exportCSV" class="btn btn-success">Export CSV</button>
           <select id="bulkAction" class="form-control" disabled>
             <option value="">Bulk Actions...</option>
             <option value="delete">Delete Selected</option>
@@ -418,6 +419,34 @@
             document.getElementById('deleteDeviceModal').style.display = 'none';
           }
         });
+      });
+
+      // CSV Export functionality
+      document.getElementById('exportCSV').addEventListener('click', function() {
+        const devices = Array.from(document.querySelectorAll('#deviceTable tbody tr:not(.device-group-header)'))
+          .map(row => ({
+            name: row.cells[1].textContent,
+            ipAddress: row.cells[2].textContent,
+            operatingSystem: row.cells[3].textContent,
+            systemRole: row.cells[4].textContent,
+            network: row.dataset.network,
+            deviceId: row.dataset.deviceId
+          }));
+
+        const headers = ['Name,IP Address,Operating System,System Role,Network\n'];
+        const csvContent = headers + devices.map(device => 
+          `${device.name},${device.ipAddress},${device.operatingSystem},${device.systemRole},${device.network}`
+        ).join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'devices.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
       });
     });
   </script>
