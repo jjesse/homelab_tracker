@@ -57,6 +57,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added password strength requirements display
 - Added visual feedback for form field states
 - Added improved form field styling and layout
+- Added device management interface with sortable columns
+- Added device search functionality
+- Added action buttons for device management
+- Added responsive table design for devices
 
 ### Changed
 
@@ -82,6 +86,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced form field validation with better patterns and feedback
 - Improved form field layout with consistent spacing
 - Updated input styling with focus and validation states
+- Improved dashboard layout with better organization
+- Enhanced device list view with table format
+- Updated device management controls
 
 ### Fixed
 

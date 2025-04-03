@@ -5,7 +5,16 @@ This web application allows you to store details about your home lab devices. Yo
 ## Features
 
 - User authentication (login and registration)
-- Add and view devices
+- Device Management:
+  - Sortable device table
+  - Real-time device search
+  - View device details
+  - Edit device information
+  - Delete devices
+  - Responsive table design
+- HTTPS support
+- Docker containerization
+- MongoDB integration
 
 ## Technologies Used
 
@@ -157,6 +166,7 @@ SSL_CERT_PATH=./certs/server.crt
 ### Setting JWT_SECRET and SESSION_SECRET
 
 Both secrets should be:
+
 - At least 32 characters long
 - Random and unpredictable
 - Unique for each environment
@@ -195,6 +205,7 @@ SESSION_SECRET=generated_session_secret_from_above_command
    - The rest can be left as default
 
 2. Set proper permissions (Unix systems):
+
    ```sh
    chmod 600 server.key
    chmod 644 server.crt
@@ -272,6 +283,47 @@ SESSION_SECRET=generated_session_secret_from_above_command
 
 1. After logging in, navigate to the dashboard: `http://localhost:5000/dashboard`
 2. Your devices will be listed under "Your Devices".
+
+## Device Management
+
+The dashboard provides a comprehensive device management interface with the following features:
+
+### Device Table
+
+- Sortable columns (click column headers to sort)
+- Real-time search filtering
+- Responsive design for all screen sizes
+
+### Device Actions
+
+- View: See detailed device information
+- Edit: Modify device properties
+- Delete: Remove devices from your inventory
+
+### Adding Devices
+
+1. Click "Add New Device" button
+2. Fill in the required fields:
+   - Device Name
+   - IP Address
+   - Operating System
+   - Hostname
+   - Network
+   - System Role
+   - Hypervisor Information
+   - Domain User
+   - Zscaler Configuration
+3. Add optional notes
+4. Submit the form
+
+### Search and Filter
+
+Use the search box above the device table to filter devices by any field:
+
+- Device name
+- IP address
+- Operating system
+- System role
 
 ## API Routes
 
