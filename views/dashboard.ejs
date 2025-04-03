@@ -3,26 +3,64 @@
 <head>
   <title>Dashboard</title>
   <link rel="stylesheet" href="/styles/dashboard.css">
+  <link rel="stylesheet" href="/css/style.css">
   <script src="/scripts/dashboard.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="dashboard-container">
     <div class="dashboard-header">
       <h1>Dashboard</h1>
       <p>Welcome, <%= user.name %></p>
-      <a href="/users/logout" class="btn btn-secondary">Logout</a>
     </div>
 
+    <!-- Statistics Section -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Total Devices</h3>
+        <p class="stat-number"><%= user.devices.length %></p>
+      </div>
+      <div class="stat-card">
+        <h3>By Operating System</h3>
+        <canvas id="osChart"></canvas>
+      </div>
+      <div class="stat-card">
+        <h3>By Network</h3>
+        <canvas id="networkChart"></canvas>
+      </div>
+      <div class="stat-card">
+        <h3>By Role</h3>
+        <canvas id="roleChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Device Management -->
     <div class="device-management">
-      <div class="controls">
-        <input type="text" id="deviceSearch" placeholder="Search devices..." class="search-input">
-        <button id="addDeviceBtn" class="btn btn-primary">Add New Device</button>
+      <!-- Grouping and Bulk Actions -->
+      <div class="management-controls">
+        <select id="groupBy" class="form-control">
+          <option value="">Group by...</option>
+          <option value="operatingSystem">Operating System</option>
+          <option value="network">Network</option>
+          <option value="systemRole">System Role</option>
+        </select>
+        <div class="bulk-actions">
+          <button id="selectAll" class="btn btn-secondary">Select All</button>
+          <select id="bulkAction" class="form-control" disabled>
+            <option value="">Bulk Actions...</option>
+            <option value="delete">Delete Selected</option>
+            <option value="updateNetwork">Update Network</option>
+            <option value="updateRole">Update Role</option>
+          </select>
+          <button id="applyBulk" class="btn btn-primary" disabled>Apply</button>
+        </div>
       </div>
 
       <div class="device-table-container">
         <table id="deviceTable" class="device-table">
           <thead>
             <tr>
+              <th><input type="checkbox" id="selectAllCheckbox"></th>
               <th data-sort="name">Device Name <span class="sort-arrow">↕</span></th>
               <th data-sort="ipAddress">IP Address <span class="sort-arrow">↕</span></th>
               <th data-sort="operatingSystem">OS <span class="sort-arrow">↕</span></th>
@@ -33,7 +71,8 @@
           <tbody>
             <% if(user.devices && user.devices.length > 0) { %>
               <% user.devices.forEach(function(device) { %>
-                <tr>
+                <tr data-os="<%= device.operatingSystem %>" data-network="<%= device.network %>" data-role="<%= device.systemRole %>" data-device-id="<%= device._id %>">
+                  <td><input type="checkbox" class="device-select" value="<%= device._id %>"></td>
                   <td><%= device.name %></td>
                   <td><%= device.ipAddress %></td>
                   <td><%= device.operatingSystem %></td>
@@ -51,57 +90,310 @@
       </div>
     </div>
 
-    <!-- Add Device Modal -->
-    <div id="addDeviceModal" class="modal">
-      <form action="/devices/add" method="POST">
-        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-        <div>
-          <label for="name">Device Name:</label>
-          <input type="text" name="name" required>
-        </div>
-        <div>
-          <label for="ipAddress">IP Address:</label>
-          <input type="text" name="ipAddress" required>
-        </div>
-        <div>
-          <label for="operatingSystem">Operating System:</label>
-          <input type="text" name="operatingSystem" required>
-        </div>
-        <div>
-          <label for="hostname">Hostname:</label>
-          <input type="text" name="hostname" required>
-        </div>
-        <div>
-          <label for="network">Network:</label>
-          <input type="text" name="network" required>
-        </div>
-        <div>
-          <label for="systemRole">System Role:</label>
-          <input type="text" name="systemRole" required>
-        </div>
-        <div>
-          <label for="hypervisorInstalledOn">Hypervisor Installed On:</label>
-          <input type="text" name="hypervisorInstalledOn" required>
-        </div>
-        <div>
-          <label for="domainUserSignedIn">Domain User Signed In:</label>
-          <input type="text" name="domainUserSignedIn" required>
-        </div>
-        <div>
-          <label for="zscalerUserSignedIn">Zscaler User Signed In:</label>
-          <input type="text" name="zscalerUserSignedIn" required>
-        </div>
-        <div>
-          <label for="zscalerAppSegment">Zscaler App Segment:</label>
-          <input type="text" name="zscalerAppSegment" required>
-        </div>
-        <div>
-          <label for="notes">Notes:</label>
-          <textarea name="notes"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Add Device</button>
-      </form>
+    <h2>Add Device</h2>
+    <!-- Add Device Form -->
+    <form action="/devices/add" method="POST" class="device-form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div>
+        <label for="name">Device Name:</label>
+        <input type="text" name="name" required>
+      </div>
+      <div>
+        <label for="ipAddress">IP Address:</label>
+        <input type="text" name="ipAddress" required>
+      </div>
+      <div>
+        <label for="operatingSystem">Operating System:</label>
+        <input type="text" name="operatingSystem" required>
+      </div>
+      <div>
+        <label for="hostname">Hostname:</label>
+        <input type="text" name="hostname" required>
+      </div>
+      <div>
+        <label for="network">Network:</label>
+        <input type="text" name="network" required>
+      </div>
+      <div>
+        <label for="systemRole">System Role:</label>
+        <input type="text" name="systemRole" required>
+      </div>
+      <div>
+        <label for="hypervisorInstalledOn">Hypervisor Installed On:</label>
+        <input type="text" name="hypervisorInstalledOn" required>
+      </div>
+      <div>
+        <label for="domainUserSignedIn">Domain User Signed In:</label>
+        <input type="text" name="domainUserSignedIn" required>
+      </div>
+      <div>
+        <label for="zscalerUserSignedIn">Zscaler User Signed In:</label>
+        <input type="text" name="zscalerUserSignedIn" required>
+      </div>
+      <div>
+        <label for="zscalerAppSegment">Zscaler App Segment:</label>
+        <input type="text" name="zscalerAppSegment" required>
+      </div>
+      <div>
+        <label for="notes">Notes:</label>
+        <textarea name="notes"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Add Device</button>
+    </form>
+  </div>
+
+  <!-- View Device Modal -->
+  <div id="viewDeviceModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Device Details</h2>
+        <span class="close">&times;</span>
+      </div>
+      <div class="modal-body">
+        <dl class="device-details">
+          <!-- Details will be populated by JavaScript -->
+        </dl>
+      </div>
     </div>
   </div>
+
+  <!-- Edit Device Modal -->
+  <div id="editDeviceModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Edit Device</h2>
+        <span class="close">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="editDeviceForm" class="device-form">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <input type="hidden" name="deviceId" id="editDeviceId">
+          <!-- Copy of the add device form fields with validation -->
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteDeviceModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Confirm Delete</h2>
+        <span class="close">&times;</span>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this device? This action cannot be undone.</p>
+        <div class="modal-actions">
+          <button id="confirmDelete" class="btn btn-danger">Delete</button>
+          <button id="cancelDelete" class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize charts
+      const osData = aggregateDeviceData('operatingSystem');
+      const networkData = aggregateDeviceData('network');
+      const roleData = aggregateDeviceData('systemRole');
+
+      createChart('osChart', 'Operating Systems', osData);
+      createChart('networkChart', 'Networks', networkData);
+      createChart('roleChart', 'System Roles', roleData);
+
+      // Group by functionality
+      document.getElementById('groupBy').addEventListener('change', function(e) {
+        const groupBy = e.target.value;
+        if (!groupBy) {
+          showAllDevices();
+          return;
+        }
+        groupDevices(groupBy);
+      });
+
+      // Bulk actions
+      setupBulkActions();
+
+      // View Device Modal Functions
+      const viewModal = document.getElementById('viewDeviceModal');
+      const editModal = document.getElementById('editDeviceModal');
+      const deleteModal = document.getElementById('deleteDeviceModal');
+
+      document.querySelectorAll('.view-device').forEach(button => {
+        button.addEventListener('click', async (e) => {
+          const deviceId = e.target.dataset.id;
+          const response = await fetch(`/devices/${deviceId}`);
+          const device = await response.json();
+          displayDeviceDetails(device);
+          viewModal.style.display = 'block';
+        });
+      });
+
+      document.querySelectorAll('.edit-device').forEach(button => {
+        button.addEventListener('click', async (e) => {
+          const deviceId = e.target.dataset.id;
+          const response = await fetch(`/devices/${deviceId}`);
+          const device = await response.json();
+          populateEditForm(device);
+          editModal.style.display = 'block';
+        });
+      });
+
+      // Delete Device Functionality
+      let deviceToDelete = null;
+
+      document.querySelectorAll('.delete-device').forEach(button => {
+        button.addEventListener('click', (e) => {
+          e.preventDefault();
+          deviceToDelete = e.target.dataset.id;
+          deleteModal.style.display = 'block';
+        });
+      });
+
+      document.getElementById('cancelDelete').addEventListener('click', () => {
+        deleteModal.style.display = 'none';
+        deviceToDelete = null;
+      });
+
+      document.getElementById('confirmDelete').addEventListener('click', async () => {
+        if (!deviceToDelete) return;
+
+        try {
+          const response = await fetch(`/devices/${deviceToDelete}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              'CSRF-Token': document.querySelector('[name="_csrf"]').value
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to delete device');
+          }
+
+          // Remove the device row from the table
+          const deviceRow = document.querySelector(`tr[data-device-id="${deviceToDelete}"]`);
+          if (deviceRow) {
+            deviceRow.remove();
+            // Update statistics
+            updateDeviceStats();
+            // Update charts
+            updateCharts();
+          }
+
+          // Show success message
+          showNotification('Device deleted successfully', 'success');
+        } catch (error) {
+          console.error('Error:', error);
+          showNotification('Failed to delete device', 'error');
+        } finally {
+          deleteModal.style.display = 'none';
+          deviceToDelete = null;
+        }
+      });
+
+      function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `alert ${type}`;
+        notification.textContent = message;
+        
+        const container = document.querySelector('.dashboard-container');
+        container.insertBefore(notification, container.firstChild);
+        
+        setTimeout(() => notification.remove(), 3000);
+      }
+
+      function updateDeviceStats() {
+        const totalDevices = document.querySelectorAll('#deviceTable tbody tr').length;
+        document.querySelector('.stat-number').textContent = totalDevices;
+      }
+
+      function updateCharts() {
+        const osData = aggregateDeviceData('operatingSystem');
+        const networkData = aggregateDeviceData('network');
+        const roleData = aggregateDeviceData('systemRole');
+
+        createChart('osChart', 'Operating Systems', osData);
+        createChart('networkChart', 'Networks', networkData);
+        createChart('roleChart', 'System Roles', roleData);
+      }
+
+      // Close modal when clicking the X or outside
+      document.querySelectorAll('.close, .modal').forEach(element => {
+        element.addEventListener('click', (e) => {
+          if (e.target === element) {
+            viewModal.style.display = 'none';
+            editModal.style.display = 'none';
+            deleteModal.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    function aggregateDeviceData(property) {
+      const devices = Array.from(document.querySelectorAll('#deviceTable tbody tr'));
+      const data = devices.reduce((acc, device) => {
+        const value = device.dataset[property.toLowerCase()];
+        acc[value] = (acc[value] || 0) + 1;
+        return acc;
+      }, {});
+      return {
+        labels: Object.keys(data),
+        data: Object.values(data)
+      };
+    }
+
+    function createChart(canvasId, label, data) {
+      const ctx = document.getElementById(canvasId).getContext('2d');
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: data.labels,
+          datasets: [{
+            data: data.data,
+            backgroundColor: [
+              '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            },
+            title: {
+              display: true,
+              text: label
+            }
+          }
+        }
+      });
+    }
+
+    function displayDeviceDetails(device) {
+      const detailsList = document.querySelector('.device-details');
+      detailsList.innerHTML = Object.entries(device)
+        .filter(([key]) => key !== '_id' && key !== '__v')
+        .map(([key, value]) => `
+          <dt>${key.replace(/([A-Z])/g, ' $1').trim()}</dt>
+          <dd>${value}</dd>
+        `).join('');
+    }
+
+    function populateEditForm(device) {
+      const form = document.getElementById('editDeviceForm');
+      Object.entries(device).forEach(([key, value]) => {
+        const input = form.querySelector(`[name="${key}"]`);
+        if (input) {
+          input.value = value;
+        }
+      });
+      document.getElementById('editDeviceId').value = device._id;
+    }
+
+    // Add more JavaScript functions for grouping and bulk actions
+  </script>
 </body>
 </html>

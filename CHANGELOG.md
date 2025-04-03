@@ -61,6 +61,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added device search functionality
 - Added action buttons for device management
 - Added responsive table design for devices
+- Added device statistics with Chart.js visualization
+- Added device grouping functionality
+- Added bulk operations for devices
+- Added device status monitoring
+- Added interactive charts for device distribution
+- Added device grouping by various properties
+- Added bulk action controls
+- Added view device modal with detailed information display
+- Added edit device modal with form validation
+- Added responsive modal design
+- Added form field validation with visual feedback
+- Added GET /devices/:id endpoint for retrieving single device
+- Added PUT /devices/:id endpoint for updating devices
+- Added DELETE /devices/:id endpoint for removing devices
+- Added user validation to device routes
+- Added proper error handling for device operations
+- Added delete confirmation modal
+- Added dynamic UI updates after device deletion
+- Added success/error notifications
+- Added animation for notifications
 
 ### Changed
 
@@ -89,6 +109,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved dashboard layout with better organization
 - Enhanced device list view with table format
 - Updated device management controls
+- Enhanced dashboard with statistics panels
+- Improved device table with selection capabilities
+- Updated device management interface with grouping controls
+- Enhanced device deletion with confirmation dialog
+- Improved error handling for device operations
+- Updated statistics and charts after device deletion
 
 ### Fixed
 
@@ -140,6 +166,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implemented rate limiting to protect against brute-force attacks.
 - Improved password hashing.
 - Enhanced session security.
+- Added user ownership validation for device operations.
 
 ### Verified
 
