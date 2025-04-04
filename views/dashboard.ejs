@@ -228,13 +228,13 @@
           let value;
           switch(property) {
             case 'operatingSystem':
-              value = device.querySelector('td:nth-child(4)').textContent.trim();
+              value = device.querySelector('td:nth-child(5)').textContent.trim(); // OS column
               break;
             case 'network':
-              value = device.dataset.network;
+              value = device.querySelector('td:nth-child(6)').textContent.trim(); // Network column
               break;
             case 'role':
-              value = device.dataset.role;
+              value = device.querySelector('td:nth-child(7)').textContent.trim(); // System Role column
               break;
           }
           counts[value] = (counts[value] || 0) + 1;
