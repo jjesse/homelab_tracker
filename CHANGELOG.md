@@ -179,6 +179,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved checkbox state synchronization between Select All and individual checkboxes
 - Added Redis service configuration and health check
 - Updated docker-compose.yml with Redis service and volume
+- Fixed CSRF configuration by adding cookie-parser and proper cookie settings
+- Updated CSRF middleware placement to work correctly with session
 
 ### Security
 

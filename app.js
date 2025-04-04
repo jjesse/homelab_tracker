@@ -15,6 +15,7 @@ const compression = require('compression');
 const { apiLimiter, loginLimiter, secureHeaders, sanitize } = require('./middleware/security');
 const { errorHandler } = require('./middleware/errorHandler');
 const { sessionStore } = require('./config/redis');
+const cookieParser = require('cookie-parser'); // Add this line
 require('dotenv').config();
 
 const app = express();
@@ -73,17 +74,9 @@ app.use(sanitize);
 app.use(limiter);
 app.use('/api/', apiLimiter);
 app.use('/users/login', loginLimiter);
-app.use(csrfProtection);
-app.use((req, res, next) => {
-  res.locals.csrfToken = req.csrfToken();
-  next();
-});
 
-// Performance middleware
-app.use(compression());
-
-// Logging middleware
-app.use(morgan('dev'));
+// Add cookie parser before session middleware
+app.use(cookieParser());
 
 // Session
 app.use(session({
@@ -101,6 +94,25 @@ app.use(session({
 // Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
+
+// CSRF protection with proper cookie config
+app.use(csrf({
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production'
+  }
+}));
+
+app.use((req, res, next) => {
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
+
+// Performance middleware
+app.use(compression());
+
+// Logging middleware
+app.use(morgan('dev'));
 
 // Connect flash
 app.use(flash());
