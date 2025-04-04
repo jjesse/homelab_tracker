@@ -139,6 +139,7 @@ footer {
   max-width: 1200px;
   margin: 0 auto;
   padding: 1rem;
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 .dashboard-header {
@@ -149,7 +150,8 @@ footer {
 }
 
 .device-table-container {
-  margin-bottom: 2rem; /* Add spacing between table and form */
+  margin-top: 2rem; /* Add spacing after stats grid */
+  margin-bottom: 2rem;
   overflow-x: auto;
 }
 
@@ -244,6 +246,7 @@ th[data-sort].sort-desc .sort-arrow:after {
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1rem;
   margin-bottom: 2rem;
+  max-height: 400px; /* Add fixed height */
 }
 
 .stat-card {
@@ -251,7 +254,7 @@ th[data-sort].sort-desc .sort-arrow:after {
   padding: 1.5rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  min-height: 300px; /* Add minimum height for charts */
+  height: 300px; /* Fixed height instead of min-height */
   display: flex;
   flex-direction: column;
 }
@@ -259,7 +262,8 @@ th[data-sort].sort-desc .sort-arrow:after {
 .stat-card canvas {
   flex: 1;
   width: 100% !important;
-  height: 200px !important;
+  height: 200px !important; /* Fixed height for charts */
+  max-height: 200px; /* Add max-height */
 }
 
 .stat-number {
