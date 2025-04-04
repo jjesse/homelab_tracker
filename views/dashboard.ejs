@@ -32,9 +32,13 @@
         <h3>By Role</h3>
         <canvas id="roleChart"></canvas>
       </div>
-    </div> class="stat-card">
+      <div class="stat-card">
         <h3>By Hypervisor</h3>
-    <!-- Device Management -->Chart"></canvas>
+        <canvas id="hypervisorChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Device Management Section -->
     <div class="device-management">
       <!-- Grouping and Bulk Actions -->
       <div class="management-controls">
@@ -43,21 +47,20 @@
           <option value="operatingSystem">Operating System</option>
           <option value="network">Network</option>
           <option value="systemRole">System Role</option>
-        </select> value="">Group by...</option>
-        <div class="bulk-actions">System">Operating System</option>
+        </select>
+        <div class="bulk-actions">
           <button id="selectAll" class="btn btn-secondary">Select All</button>
           <button id="exportCSV" class="btn btn-success">Export CSV</button>
           <select id="bulkAction" class="form-control" disabled>
             <option value="">Bulk Actions...</option>
-            <option value="delete">Delete Selected</option>Select All</button>
-            <option value="updateNetwork">Update Network</option>SV</button>
-            <option value="updateRole">Update Role</option>bled>
-          </select> value="">Bulk Actions...</option>
-          <button id="applyBulk" class="btn btn-primary" disabled>Apply</button>
-        </div>ption value="updateNetwork">Update Network</option>
-      </div><option value="updateRole">Update Role</option>
+            <option value="delete">Delete Selected</option>
+            <option value="updateNetwork">Update Network</option>
+            <option value="updateRole">Update Role</option>
           </select>
-      <div class="device-table-container">n btn-primary" disabled>Apply</button>
+          <button id="applyBulk" class="btn btn-primary" disabled>Apply</button>
+        </div>
+      </div>
+      <div class="device-table-container">
         <table id="deviceTable" class="device-table">
           <thead>
             <tr>
@@ -66,53 +69,54 @@
               <th data-sort="ipAddress">IP Address <span class="sort-arrow">↕</span></th>
               <th data-sort="hostname">Hostname <span class="sort-arrow">↕</span></th>
               <th data-sort="operatingSystem">OS <span class="sort-arrow">↕</span></th>
-              <th data-sort="network">Network <span class="sort-arrow">↕</span></th>>
-              <th data-sort="systemRole">Role <span class="sort-arrow">↕</span></th></th>
+              <th data-sort="network">Network <span class="sort-arrow">↕</span></th>
+              <th data-sort="systemRole">Role <span class="sort-arrow">↕</span></th>
               <th data-sort="hypervisor">Hypervisor <span class="sort-arrow">↕</span></th>
               <th data-sort="domainUser">Domain User <span class="sort-arrow">↕</span></th>
               <th data-sort="zscalerUser">Zscaler User <span class="sort-arrow">↕</span></th>
               <th data-sort="zscalerSegment">Zscaler Segment <span class="sort-arrow">↕</span></th>
-              <th>Notes</th>"hypervisor">Hypervisor <span class="sort-arrow">↕</span></th>
-              <th>Actions</th>omainUser">Domain User <span class="sort-arrow">↕</span></th>
-            </tr> data-sort="zscalerUser">Zscaler User <span class="sort-arrow">↕</span></th>
-          </thead>data-sort="zscalerSegment">Zscaler Segment <span class="sort-arrow">↕</span></th>
-          <tbody>>Notes</th>
+              <th>Notes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
             <% const devices = (user && user.devices) ? user.devices : []; %>
             <% if(devices.length > 0) { %>
               <% devices.forEach(function(device) { %>
                 <tr data-device-id="<%= device._id %>">
                   <td><input type="checkbox" class="device-select" value="<%= device._id %>"></td>
                   <td><%= device.name %></td>
-                  <td><%= device.ipAddress %></td>{ %>
-                  <td><%= device.hostname %></td>d %>">
-                  <td><%= device.operatingSystem %></td>ce-select" value="<%= device._id %>"></td>
+                  <td><%= device.ipAddress %></td>
+                  <td><%= device.hostname %></td>
+                  <td><%= device.operatingSystem %></td>
                   <td><%= device.network %></td>
                   <td><%= device.systemRole %></td>
                   <td><%= device.hypervisorInstalledOn %></td>
                   <td><%= device.domainUserSignedIn %></td>
                   <td><%= device.zscalerUserSignedIn %></td>
                   <td><%= device.zscalerAppSegment %></td>
-                  <td><%= device.notes || '' %></td>On %></td>
-                  <td class="actions">nUserSignedIn %></td>
+                  <td><%= device.notes || '' %></td>
+                  <td class="actions">
                     <button class="btn btn-info btn-sm view-device" data-id="<%= device._id %>">View</button>
-                    <button class="btn btn-warning btn-sm edit-device" data-id="<%= device._id %>">Edit</button>
-                    <button class="btn btn-danger btn-sm delete-device" data-id="<%= device._id %>">Delete</button>
-                  </td>lass="actions">
-                </tr>button class="btn btn-info btn-sm view-device" data-id="<%= device._id %>">View</button>
                     <button class="btn btn-warning btn-sm edit-device" data-id="<%= device._id %>">Edit</button>
                     <button class="btn btn-danger btn-sm delete-device" data-id="<%= device._id %>">Delete</button>
                   </td>
                 </tr>
-      </div>  <% }) %>
-    </div>  <% } %>
+              <% }) %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <h2>Add Device</h2>
     <!-- Add Device Form -->
     <form action="/devices/add" method="POST" class="device-form">
       <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-      <div> Device</h2>
+      <div>
         <label for="name">Device Name:</label>
-        <input type="text" name="name" required>ass="device-form">
-      </div> type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <input type="text" name="name" required>
+      </div>
       <div>
         <label for="ipAddress">IP Address:</label>
         <input type="text" name="ipAddress" required>
@@ -122,12 +126,12 @@
         <input type="text" name="operatingSystem" required>
       </div>
       <div>
-        <label for="hostname">Hostname:</label>System:</label>
-        <input type="text" name="hostname" required>quired>
+        <label for="hostname">Hostname:</label>
+        <input type="text" name="hostname" required>
       </div>
       <div>
-        <label for="network">Network:</label>l>
-        <input type="text" name="network" required>>
+        <label for="network">Network:</label>
+        <input type="text" name="network" required>
       </div>
       <div>
         <label for="systemRole">System Role:</label>
@@ -138,156 +142,159 @@
         <input type="text" name="hypervisorInstalledOn" required>
       </div>
       <div>
-        <label for="domainUserSignedIn">Domain User Signed In:</label>abel>
-        <input type="text" name="domainUserSignedIn" required>ed>
+        <label for="domainUserSignedIn">Domain User Signed In:</label>
+        <input type="text" name="domainUserSignedIn" required>
       </div>
       <div>
         <label for="zscalerUserSignedIn">Zscaler User Signed In:</label>
         <input type="text" name="zscalerUserSignedIn" required>
       </div>
       <div>
-        <label for="zscalerAppSegment">Zscaler App Segment:</label>abel>
-        <input type="text" name="zscalerAppSegment" required>d>
+        <label for="zscalerAppSegment">Zscaler App Segment:</label>
+        <input type="text" name="zscalerAppSegment" required>
       </div>
       <div>
-        <label for="notes">Notes:</label>caler App Segment:</label>
-        <textarea name="notes"></textarea>pSegment" required>
+        <label for="notes">Notes:</label>
+        <textarea name="notes"></textarea>
       </div>
       <button type="submit" class="btn btn-primary">Add Device</button>
-    </form>bel for="notes">Notes:</label>
-  </div><textarea name="notes"></textarea>
+    </form>
+
+  </div>
+
   <!-- View Device Modal -->
-  <div id="viewDeviceModal" class="modal">-primary">Add Device</button>
+  <div id="viewDeviceModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
         <h2>Device Details</h2>
         <span class="close">&times;</span>
-      </div>ss="modal-content">
-      <div class="modal-body">">
+      </div>
+      <div class="modal-body">
         <dl class="device-details">
           <!-- Details will be populated by JavaScript -->
         </dl>
-      </div>lass="modal-body">
-    </div>l class="device-details">
-  </div>  <!-- Details will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
   <!-- Edit Device Modal -->
   <div id="editDeviceModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
         <h2>Edit Device</h2>
         <span class="close">&times;</span>
-      </div>ss="modal-content">
-      <div class="modal-body">">
+      </div>
+      <div class="modal-body">
         <form id="editDeviceForm" class="device-form">
           <input type="hidden" name="_csrf" value="<%= csrfToken %>">
           <input type="hidden" name="deviceId" id="editDeviceId">
           <!-- Copy of the add device form fields with validation -->
-        </form>d="editDeviceForm" class="device-form">
-      </div>nput type="hidden" name="_csrf" value="<%= csrfToken %>">
-    </div><input type="hidden" name="deviceId" id="editDeviceId">
-  </div>  <!-- Copy of the add device form fields with validation -->
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- Delete Confirmation Modal -->
   <div id="deleteDeviceModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>Confirm Delete</h2>l -->
-        <span class="close">&times;</span>">
-      </div>ss="modal-content">
-      <div class="modal-body">">
+        <h2>Confirm Delete</h2>
+        <span class="close">&times;</span>
+      </div>
+      <div class="modal-body">
         <p>Are you sure you want to delete this device? This action cannot be undone.</p>
-        <div class="modal-actions"></span>
+        <div class="modal-actions">
           <button id="confirmDelete" class="btn btn-danger">Delete</button>
           <button id="cancelDelete" class="btn btn-secondary">Cancel</button>
-        </div> you sure you want to delete this device? This action cannot be undone.</p>
-      </div> class="modal-actions">
-    </div><button id="confirmDelete" class="btn btn-danger">Delete</button>
-  </div>  <button id="cancelDelete" class="btn btn-secondary">Cancel</button>
-  <script>div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Initialize charts with empty data
       let charts = {
         osChart: null,
-        networkChart: null,er('DOMContentLoaded', function() {
-        roleChart: null,rts with empty data
-        hypervisorChart: nullt charts = {
-      };        osChart: null,
+        networkChart: null,
+        roleChart: null,
+        hypervisorChart: null
+      };
 
-      // Initial chart creationll,
-      updateCharts();        hypervisorChart: null
+      // Initial chart creation
+      updateCharts();
 
       function updateCharts() {
-        const devices = Array.from(document.querySelectorAll('#deviceTable tbody tr:not(.device-group-header)'));ation
+        const devices = Array.from(document.querySelectorAll('#deviceTable tbody tr:not(.device-group-header)'));
         // Update OS Chart
         updateChart('osChart', 'Operating Systems', aggregateDeviceData(devices, 'operatingSystem'));
         updateChart('networkChart', 'Networks', aggregateDeviceData(devices, 'network'));
-        updateChart('roleChart', 'System Roles', aggregateDeviceData(devices, 'role')); const devices = Array.from(document.querySelectorAll('#deviceTable tbody tr:not(.device-group-header)'));
-        updateChart('hypervisorChart', 'Hypervisors', aggregateDeviceData(devices, 'hypervisor'));        // Update OS Chart
-      }regateDeviceData(devices, 'operatingSystem'));
-rkChart', 'Networks', aggregateDeviceData(devices, 'network'));
-      function aggregateDeviceData(devices, property) {ystem Roles', aggregateDeviceData(devices, 'role'));
-        const counts = {};'hypervisorChart', 'Hypervisors', aggregateDeviceData(devices, 'hypervisor'));
+        updateChart('roleChart', 'System Roles', aggregateDeviceData(devices, 'role'));
+        updateChart('hypervisorChart', 'Hypervisors', aggregateDeviceData(devices, 'hypervisor'));
+      }
+
+      function aggregateDeviceData(devices, property) {
+        const counts = {};
         devices.forEach(device => {
           let value;
           switch(property) {
-            case 'operatingSystem': = {};
-              value = device.querySelector('td:nth-child(5)').textContent.trim(); // OS columnice => {
+            case 'operatingSystem':
+              value = device.querySelector('td:nth-child(5)').textContent.trim(); // OS column
               break;
-            case 'network':perty) {
-              value = device.querySelector('td:nth-child(6)').textContent.trim(); // Network columningSystem':
+            case 'network':
+              value = device.querySelector('td:nth-child(6)').textContent.trim(); // Network column
               break;
             case 'role':
-              value = device.querySelector('td:nth-child(7)').textContent.trim(); // System Role column case 'network':
-              break;child(6)').textContent.trim(); // Network column
-            case 'hypervisor':   break;
-              value = device.querySelector('td:nth-child(8)').textContent.trim(); // Hypervisor column 'role':
-              break;ctor('td:nth-child(7)').textContent.trim(); // System Role column
+              value = device.querySelector('td:nth-child(7)').textContent.trim(); // System Role column
+              break;
+            case 'hypervisor':
+              value = device.querySelector('td:nth-child(8)').textContent.trim(); // Hypervisor column
+              break;
           }
-          counts[value] = (counts[value] || 0) + 1;  case 'hypervisor':
-        });       value = device.querySelector('td:nth-child(8)').textContent.trim(); // Hypervisor column
-        return {              break;
+          counts[value] = (counts[value] || 0) + 1;
+        });
+        return {
           labels: Object.keys(counts),
           data: Object.values(counts)
-        };});
+        };
       }
-ounts),
+
       function updateChart(canvasId, title, data) {
-        const ctx = document.getElementById(canvasId).getContext('2d');;
-              }
+        const ctx = document.getElementById(canvasId).getContext('2d');
         // Destroy existing chart if it exists
-        if (charts[canvasId]) { data) {
-          charts[canvasId].destroy();cument.getElementById(canvasId).getContext('2d');
+        if (charts[canvasId]) {
+          charts[canvasId].destroy();
         }
-t if it exists
-        // Create new chartsId]) {
-        charts[canvasId] = new Chart(ctx, {troy();
+        // Create new chart
+        charts[canvasId] = new Chart(ctx, {
           type: 'pie',
           data: {
-            labels: data.labels,t
-            datasets: [{ new Chart(ctx, {
+            labels: data.labels,
+            datasets: [{
               data: data.data,
               backgroundColor: [
-                '#FF6384',labels,
-                '#36A2EB',asets: [{
-                '#FFCE56',data: data.data,
-                '#4BC0C0',  backgroundColor: [
-                '#9966FF',6384',
+                '#FF6384',
+                '#36A2EB',
+                '#FFCE56',
+                '#4BC0C0',
+                '#9966FF',
                 '#FF9F40'
               ]
-            }]C0',
-          },F',
+            }]
+          },
           options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-              legend: {: {
-                position: 'bottom',onsive: true,
-                labels: {pectRatio: false,
+              legend: {
+                position: 'bottom',
+                labels: {
                   padding: 20,
                   usePointStyle: true
-                }bottom',
-              },labels: {
-              title: {g: 20,
-                display: true,yle: true
+                }
+              },
+              title: {
+                display: true,
                 text: title,
                 padding: 20
               },
@@ -295,53 +302,53 @@ t if it exists
                 callbacks: {
                   label: function(context) {
                     const label = context.label || '';
-                    const value = context.parsed;ltip: {
-                    const total = context.dataset.data.reduce((a, b) => a + b, 0); callbacks: {
-                    const percentage = Math.round((value * 100) / total);     label: function(context) {
-                    return `${label}: ${value} (${percentage}%)`;         const label = context.label || '';
-                  }         const value = context.parsed;
-                }             const total = context.dataset.data.reduce((a, b) => a + b, 0);
-              }                    const percentage = Math.round((value * 100) / total);
-            }lue} (${percentage}%)`;
+                    const value = context.parsed;
+                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                    const percentage = Math.round((value * 100) / total);
+                    return `${label}: ${value} (${percentage}%)`;
+                  }
+                }
+              }
+            }
           }
         });
       }
-     }
-      // Update charts after delete or add          }
+
+      // Update charts after delete or add
       function updateDashboard() {
         updateDeviceStats();
         updateCharts();
-      }er delete or add
+      }
 
       // Make sure to call updateCharts after any table changes
-      document.getElementById('confirmDelete').addEventListener('click', async () => {pdateCharts();
+      document.getElementById('confirmDelete').addEventListener('click', async () => {
         // ...existing delete code...
         if (response.ok) {
-          // ...existing success code...teCharts after any table changes
-          updateDashboard(); => {
+          // ...existing success code...
+          updateDashboard();
         }
       });
 
-      // Group by functionality          updateDashboard();
+      // Group by functionality
       document.getElementById('groupBy').addEventListener('change', function(e) {
         const groupBy = e.target.value;
         const tbody = document.querySelector('#deviceTable tbody');
-        const rows = Array.from(tbody.querySelectorAll('tr')); functionality
-ument.getElementById('groupBy').addEventListener('change', function(e) {
-        if (!groupBy) {        const groupBy = e.target.value;
-          // Show all rows normallyiceTable tbody');
-          rows.forEach(row => row.style.display = '');.from(tbody.querySelectorAll('tr'));
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+
+        if (!groupBy) {
+          // Show all rows normally
+          rows.forEach(row => row.style.display = '');
           return;
         }
-ally
-        // Group the rows by the selected propertyow.style.display = '');
-        const groups = {};eturn;
+
+        // Group the rows by the selected property
+        const groups = {};
         rows.forEach(row => {
           const value = row.dataset[groupBy.toLowerCase()];
-          if (!groups[value]) {        // Group the rows by the selected property
+          if (!groups[value]) {
             groups[value] = [];
           }
-          groups[value].push(row);          const value = row.dataset[groupBy.toLowerCase()];
+          groups[value].push(row);
         });
 
         // Clear the table body
@@ -351,143 +358,143 @@ ally
         Object.entries(groups).forEach(([groupName, groupRows]) => {
           // Add group header
           const groupHeader = document.createElement('tr');
-          groupHeader.className = 'device-group-header';dd grouped rows with headers
-          groupHeader.innerHTML = `groupName, groupRows]) => {
-            <td colspan="6" style="background: #f8f9fa; font-weight: bold; padding: 0.5rem 1rem;">er
+          groupHeader.className = 'device-group-header';
+          groupHeader.innerHTML = `
+            <td colspan="6" style="background: #f8f9fa; font-weight: bold; padding: 0.5rem 1rem;">
               ${groupBy}: ${groupName} (${groupRows.length} devices)
-            </td>roupHeader.className = 'device-group-header';
-          `; groupHeader.innerHTML = `
-          tbody.appendChild(groupHeader);            <td colspan="6" style="background: #f8f9fa; font-weight: bold; padding: 0.5rem 1rem;">
-          // Add group rows(${groupRows.length} devices)
+            </td>
+          `;
+          tbody.appendChild(groupHeader);
+          // Add group rows
           groupRows.forEach(row => tbody.appendChild(row));
         });
-      });hild(groupHeader);
-  // Add group rows
-      // Improved sorting functionality          groupRows.forEach(row => tbody.appendChild(row));
+      });
+
+      // Improved sorting functionality
       let currentSort = {
         column: null,
         ascending: true
       };
-      let currentSort = {
+
       document.querySelectorAll('th[data-sort]').forEach(th => {
         th.addEventListener('click', function() {
           const sortBy = this.dataset.sort;
           const columnIndex = Array.from(th.parentNode.children).indexOf(th);
--sort]').forEach(th => {
-          // Toggle sort direction if same column, otherwise default to ascendingtion() {
-          if (currentSort.column === sortBy) {onst sortBy = this.dataset.sort;
-            currentSort.ascending = !currentSort.ascending;          const columnIndex = Array.from(th.parentNode.children).indexOf(th);
-          } else {
-            currentSort.column = sortBy;to ascending
-            currentSort.ascending = true; sortBy) {
-          }urrentSort.ascending = !currentSort.ascending;
 
-          // Update sort indicators            currentSort.column = sortBy;
+          // Toggle sort direction if same column, otherwise default to ascending
+          if (currentSort.column === sortBy) {
+            currentSort.ascending = !currentSort.ascending;
+          } else {
+            currentSort.column = sortBy;
+            currentSort.ascending = true;
+          }
+
+          // Update sort indicators
           document.querySelectorAll('.sort-arrow').forEach(arrow => {
             arrow.textContent = '↕';
           });
-          this.querySelector('.sort-arrow').textContent = currentSort.ascending ? '↑' : '↓';          // Update sort indicators
-lectorAll('.sort-arrow').forEach(arrow => {
-          // Get all data rows (excluding headers and group headers) '↕';
-          const tbody = document.querySelector('#deviceTable tbody');
-          const rows = Array.from(tbody.querySelectorAll('tr:not(.device-group-header)'));ort.ascending ? '↑' : '↓';
+          this.querySelector('.sort-arrow').textContent = currentSort.ascending ? '↑' : '↓';
 
-          // Sort the rowss and group headers)
-          rows.sort((a, b) => {ector('#deviceTable tbody');
-            let aVal = a.children[columnIndex].textContent.trim();y.querySelectorAll('tr:not(.device-group-header)'));
+          // Get all data rows (excluding headers and group headers)
+          const tbody = document.querySelector('#deviceTable tbody');
+          const rows = Array.from(tbody.querySelectorAll('tr:not(.device-group-header)'));
+
+          // Sort the rows
+          rows.sort((a, b) => {
+            let aVal = a.children[columnIndex].textContent.trim();
             let bVal = b.children[columnIndex].textContent.trim();
 
-            // Special handling for IP addressess.sort((a, b) => {
-            if (sortBy === 'ipAddress') {            let aVal = a.children[columnIndex].textContent.trim();
-              aVal = ipToNumber(aVal);.trim();
+            // Special handling for IP addresses
+            if (sortBy === 'ipAddress') {
+              aVal = ipToNumber(aVal);
               bVal = ipToNumber(bVal);
-              return currentSort.ascending ? aVal - bVal : bVal - aVal;dresses
-            } {
- aVal = ipToNumber(aVal);
-            // Regular string comparison for other columns              bVal = ipToNumber(bVal);
-            return currentSort.ascending ? ascending ? aVal - bVal : bVal - aVal;
+              return currentSort.ascending ? aVal - bVal : bVal - aVal;
+            }
+
+            // Regular string comparison for other columns
+            return currentSort.ascending ? 
               aVal.localeCompare(bVal) : 
               bVal.localeCompare(aVal);
-          });   // Regular string comparison for other columns
-            return currentSort.ascending ? 
+          });
+
           // Reattach sorted rows
-          rows.forEach(row => tbody.appendChild(row));e(aVal);
+          rows.forEach(row => tbody.appendChild(row));
         });
       });
 
-      // Helper function to convert IP to sortable number   rows.forEach(row => tbody.appendChild(row));
-      function ipToNumber(ip) {        });
+      // Helper function to convert IP to sortable number
+      function ipToNumber(ip) {
         return ip.split('.')
           .map((octet, index) => parseInt(octet) * Math.pow(256, 3 - index))
-          .reduce((acc, val) => acc + val, 0); number
+          .reduce((acc, val) => acc + val, 0);
       }
 
       // Close modal when clicking the X or outside
       document.querySelectorAll('.close, .modal').forEach(element => {
         element.addEventListener('click', (e) => {
           if (e.target === element) {
-            document.getElementById('viewDeviceModal').style.display = 'none';Close modal when clicking the X or outside
-            document.getElementById('editDeviceModal').style.display = 'none';      document.querySelectorAll('.close, .modal').forEach(element => {
-            document.getElementById('deleteDeviceModal').style.display = 'none';ener('click', (e) => {
+            document.getElementById('viewDeviceModal').style.display = 'none';
+            document.getElementById('editDeviceModal').style.display = 'none';
+            document.getElementById('deleteDeviceModal').style.display = 'none';
           }
-        });;
-      });= 'none';
-isplay = 'none';
+        });
+      });
+
       // Initialize controls
-      const selectAllBtn = document.getElementById('selectAll');        });
+      const selectAllBtn = document.getElementById('selectAll');
       const selectAllCheckbox = document.getElementById('selectAllCheckbox');
       const bulkActionSelect = document.getElementById('bulkAction');
       const applyBulkBtn = document.getElementById('applyBulk');
-      const exportCSVBtn = document.getElementById('exportCSV');ent.getElementById('selectAll');
-st selectAllCheckbox = document.getElementById('selectAllCheckbox');
-      // Improved checkbox delegation using event bubblingst bulkActionSelect = document.getElementById('bulkAction');
-      document.getElementById('deviceTable').addEventListener('change', function(e) {      const applyBulkBtn = document.getElementById('applyBulk');
-        if (e.target.matches('.device-select, #selectAllCheckbox')) {entById('exportCSV');
+      const exportCSVBtn = document.getElementById('exportCSV');
+
+      // Improved checkbox delegation using event bubbling
+      document.getElementById('deviceTable').addEventListener('change', function(e) {
+        if (e.target.matches('.device-select, #selectAllCheckbox')) {
           updateControlsState();
         }
-      });e) {
-AllCheckbox')) {
-      // Fixed updateControlsState function  updateControlsState();
+      });
+
+      // Fixed updateControlsState function
       function updateControlsState() {
         const deviceCheckboxes = document.querySelectorAll('.device-select');
         const checkedBoxes = document.querySelectorAll('.device-select:checked');
-        const hasSelection = checkedBoxes.length > 0; Fixed updateControlsState function
+        const hasSelection = checkedBoxes.length > 0;
         
         exportCSVBtn.disabled = !hasSelection;
         bulkActionSelect.disabled = !hasSelection;
-        applyBulkBtn.disabled = !hasSelection || !bulkActionSelect.value; const hasSelection = checkedBoxes.length > 0;
+        applyBulkBtn.disabled = !hasSelection || !bulkActionSelect.value;
                 
-        // Update select all checkbox state without triggering eventsction;
+        // Update select all checkbox state without triggering events
         selectAllCheckbox.checked = checkedBoxes.length === deviceCheckboxes.length && deviceCheckboxes.length > 0;
         selectAllCheckbox.indeterminate = hasSelection && checkedBoxes.length < deviceCheckboxes.length;
       }
 
-      // Fixed Select All button handlerked = checkedBoxes.length === deviceCheckboxes.length && deviceCheckboxes.length > 0;
-      selectAllBtn.addEventListener('click', () => {electAllCheckbox.indeterminate = hasSelection && checkedBoxes.length < deviceCheckboxes.length;
-        const deviceCheckboxes = document.querySelectorAll('.device-select');      }
+      // Fixed Select All button handler
+      selectAllBtn.addEventListener('click', () => {
+        const deviceCheckboxes = document.querySelectorAll('.device-select');
         const newState = !selectAllCheckbox.checked;
         deviceCheckboxes.forEach(checkbox => checkbox.checked = newState);
         updateControlsState();
-      });ctorAll('.device-select');
-        const newState = !selectAllCheckbox.checked;
-      // Fixed CSV Export handlerheckbox.checked = newState);
-      exportCSVBtn.addEventListener('click', () => {        updateControlsState();
+      });
+
+      // Fixed CSV Export handler
+      exportCSVBtn.addEventListener('click', () => {
         const selectedRows = Array.from(document.querySelectorAll('.device-select:checked'))
           .map(checkbox => checkbox.closest('tr'));
-rt handler
-        if (selectedRows.length === 0) return;stener('click', () => {
-dRows = Array.from(document.querySelectorAll('.device-select:checked'))
-        const headers = [box => checkbox.closest('tr'));
+
+        if (selectedRows.length === 0) return;
+
+        const headers = [
           'Name',
-          'IP Address',s.length === 0) return;
+          'IP Address',
           'Operating System',
           'Hostname',
           'Network',
-          'System Role',ress',
-          'Hypervisor','Operating System',
-          'Domain User',          'Hostname',
+          'System Role',
+          'Hypervisor',
+          'Domain User',
           'Zscaler User',
-          'Zscaler Segment',Role',
+          'Zscaler Segment',
           'Notes'
         ];
 
@@ -495,14 +502,14 @@ dRows = Array.from(document.querySelectorAll('.device-select:checked'))
           return [
             row.querySelector('td:nth-child(2)').textContent.trim(), // Name
             row.querySelector('td:nth-child(3)').textContent.trim(), // IP Address
-            row.querySelector('td:nth-child(4)').textContent.trim(), // OSs.map(row => {
+            row.querySelector('td:nth-child(4)').textContent.trim(), // OS
             row.dataset.hostname,
-            row.dataset.network,hild(2)').textContent.trim(), // Name
-            row.querySelector('td:nth-child(5)').textContent.trim(), // Roleth-child(3)').textContent.trim(), // IP Address
-            row.dataset.hypervisor,), // OS
-            row.dataset.domainUser,t.hostname,
-            row.dataset.zscalerUser, row.dataset.network,
-            row.dataset.zscalerSegment,            row.querySelector('td:nth-child(5)').textContent.trim(), // Role
+            row.dataset.network,
+            row.querySelector('td:nth-child(5)').textContent.trim(), // Role
+            row.dataset.hypervisor,
+            row.dataset.domainUser,
+            row.dataset.zscalerUser,
+            row.dataset.zscalerSegment,
             row.dataset.notes || ''
           ].map(field => `"${(field || '').replace(/"/g, '""')}"`)
            .join(',');
@@ -512,22 +519,13 @@ dRows = Array.from(document.querySelectorAll('.device-select:checked'))
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
-        link.setAttribute('href', url);rs.join(','), ...csvData].join('\n');
-        link.setAttribute('download', `devices_export_${new Date().toISOString().split('T')[0]}.csv`);onst blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        document.body.appendChild(link);        const url = URL.createObjectURL(blob);
-        link.click();teElement('a');
-        document.body.removeChild(link);ref', url);
-        URL.revokeObjectURL(url); link.setAttribute('download', `devices_export_${new Date().toISOString().split('T')[0]}.csv`);
-      });ument.body.appendChild(link);
- link.click();
-      // Initialize control states document.body.removeChild(link);
-      updateControlsState();        URL.revokeObjectURL(url);
-
-
-
-
-
-</html></body>  </script>    });      });
+        link.setAttribute('href', url);
+        link.setAttribute('download', `devices_export_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      });
 
       // Initialize control states
       updateControlsState();
