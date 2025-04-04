@@ -81,6 +81,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added dynamic UI updates after device deletion
 - Added success/error notifications
 - Added animation for notifications
+- Added CSV export functionality for device data
+- Export includes device name, IP address, operating system, system role, and network information
+- Added Redis service to docker-compose.yml for session storage
+- Added compression middleware for HTTP response compression
+- Added missing NPM dependencies:
+  - compression for HTTP compression
+  - connect-redis for Redis session store
+  - express-mongo-sanitize for MongoDB query sanitization
+  - ioredis for Redis client
+  - winston for logging
+- Added new "By Hypervisor" pie chart to dashboard
+  - Shows distribution of devices by hypervisor
+  - Uses data from "Hypervisor Installed On" field
+  - Maintains consistent styling with other charts
 
 ### Changed
 
@@ -115,6 +129,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced device deletion with confirmation dialog
 - Improved error handling for device operations
 - Updated statistics and charts after device deletion
+- Enhanced device table display to show all device fields including:
+  - Hostname
+  - Network
+  - Hypervisor details
+  - Domain user information
+  - Zscaler configuration
+  - Notes
 
 ### Fixed
 
@@ -158,6 +179,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed navigation links visibility issues
 - Fixed template engine error with login.ejs by removing incorrect layout include
 - Fixed layout inheritance for login and register pages
+- Fixed "device is not defined" error in dashboard.ejs by adding proper null checks
+- Added fallback for cases where user.devices is undefined
+- Improved error handling for empty device lists
+- Fixed Select All functionality not working properly with dynamic table updates
+- Fixed CSV export to properly handle special characters and include all device fields
+- Fixed Select All functionality by properly handling checkbox state changes
+- Fixed CSV export by correctly accessing data attributes and handling empty values
+- Added error message when trying to export without selected devices
+- Improved checkbox state synchronization between Select All and individual checkboxes
+- Added Redis service configuration and health check
+- Updated docker-compose.yml with Redis service and volume
+- Fixed CSRF configuration by adding cookie-parser and proper cookie settings
+- Updated CSRF middleware placement to work correctly with session
+- Fixed pie charts data aggregation:
+  - Corrected "By Network" chart to use Network field
+  - Corrected "By Role" chart to use System Role field
+  - Updated data source column indices to match table structure
 
 ### Security
 
@@ -171,3 +209,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Verified
 
 - Confirmed docker-compose.yml `depends_on` configuration is correctly set up for app service dependency on MongoDB with health check condition
+
+## [Upcoming]
+
+### Security Changes
+
+- Add input sanitization middleware
+- Implement API rate limiting per endpoint
+- Add password complexity validation
+- Add account lockout mechanism
+- Configure secure headers
+
+### Testing
+
+- Add Jest unit test suite
+- Add API integration tests
+- Add test coverage reporting
+- Add CI pipeline configuration
+
+### Performance
+
+- Implement Redis caching
+- Optimize MongoDB queries
+- Add compression middleware
+- Add static asset optimization
+
+### Error Handling
+
+- Add global error handler
+- Standardize error responses
+- Implement error logging service
+- Add validation middleware

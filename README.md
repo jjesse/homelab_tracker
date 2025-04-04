@@ -15,6 +15,7 @@ This web application allows you to store details about your home lab devices. Yo
 - HTTPS support
 - Docker containerization
 - MongoDB integration
+- CSV export functionality for device data
 
 ## Technologies Used
 
@@ -111,6 +112,14 @@ The application is containerized using Docker with the following features:
   - Health check using mongosh
   - JSON file logging with rotation (10MB max size, 3 files)
   - Persistent data storage with named volume
+
+- **Redis**: Version 7 running on port 6379
+  - Memory: 256MB
+  - CPU: 0.3 cores
+  - Used for session storage
+  - Health check using redis-cli ping
+  - Persistent data storage with named volume
+  - Alpine-based image for smaller footprint
 
 ### Environment Setup
 
@@ -289,7 +298,18 @@ SESSION_SECRET=generated_session_secret_from_above_command
 The dashboard provides a comprehensive device management interface with the following features:
 
 ### Device Table
-
+- Displays comprehensive device information including:
+  - Device Name
+  - IP Address
+  - Hostname
+  - Operating System
+  - Network
+  - System Role
+  - Hypervisor Information
+  - Domain User
+  - Zscaler User
+  - Zscaler Segment
+  - Notes
 - Sortable columns (click column headers to sort)
 - Real-time search filtering
 - Responsive design for all screen sizes

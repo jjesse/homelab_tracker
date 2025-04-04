@@ -11,6 +11,11 @@ const morgan = require('morgan');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
+const compression = require('compression');
+const { apiLimiter, loginLimiter, secureHeaders, sanitize } = require('./middleware/security');
+const { errorHandler } = require('./middleware/errorHandler');
+const { sessionStore } = require('./config/redis');
+const cookieParser = require('cookie-parser'); // Add this line
 require('dotenv').config();
 
 const app = express();
@@ -62,8 +67,20 @@ app.use(express.static('public'));
 // Bodyparser
 app.use(express.urlencoded({ extended: false }));
 
+// Security middleware
+app.use(helmet());
+app.use(secureHeaders);
+app.use(sanitize);
+app.use(limiter);
+app.use('/api/', apiLimiter);
+app.use('/users/login', loginLimiter);
+
+// Add cookie parser before session middleware
+app.use(cookieParser());
+
 // Session
 app.use(session({
+  store: sessionStore,
   secret: process.env.SESSION_SECRET || 'fallback_secret_do_not_use_in_production',
   resave: false,
   saveUninitialized: false,
@@ -78,6 +95,25 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// CSRF protection with proper cookie config
+app.use(csrf({
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production'
+  }
+}));
+
+app.use((req, res, next) => {
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
+
+// Performance middleware
+app.use(compression());
+
+// Logging middleware
+app.use(morgan('dev'));
+
 // Connect flash
 app.use(flash());
 
@@ -89,18 +125,6 @@ app.use(function (req, res, next) {
   res.locals.user = req.user || null;
   next();
 });
-
-// Security middleware
-app.use(helmet());
-app.use(limiter);
-app.use(csrfProtection);
-app.use((req, res, next) => {
-  res.locals.csrfToken = req.csrfToken();
-  next();
-});
-
-// Logging middleware
-app.use(morgan('dev'));
 
 // Health check endpoint
 app.get('/health', async (req, res) => {
@@ -128,10 +152,7 @@ app.use('/users', require('./routes/users'));
 app.use('/devices', require('./routes/devices'));
 
 // Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
-});
+app.use(errorHandler);
 
 // Redirect HTTP to HTTPS
 app.use((req, res, next) => {

@@ -139,6 +139,7 @@ footer {
   max-width: 1200px;
   margin: 0 auto;
   padding: 1rem;
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 .dashboard-header {
@@ -149,7 +150,8 @@ footer {
 }
 
 .device-table-container {
-  margin-bottom: 2rem; /* Add spacing between table and form */
+  margin-top: 2rem; /* Add spacing after stats grid */
+  margin-bottom: 2rem;
   overflow-x: auto;
 }
 
@@ -173,19 +175,29 @@ footer {
   cursor: pointer;
 }
 
-.device-table tbody tr:hover {
+device-table tbody tr:hover {
   background: #f8f9fa;
-}
-
-.sort-arrow {
-  display: inline-block;
-  margin-left: 0.5rem;
-  color: #999;
 }
 
 th[data-sort] {
   position: relative;
   cursor: pointer;
+  user-select: none;
+}
+
+th[data-sort]:hover {
+  background-color: #e9ecef;
+}
+
+.sort-arrow {
+  display: inline-block;
+  margin-left: 0.5rem;
+  transition: transform 0.2s ease;
+  color: #6c757d;
+}
+
+th[data-sort]:hover .sort-arrow {
+  color: #007bff;
 }
 
 th[data-sort].sort-asc .sort-arrow:after {
@@ -222,11 +234,19 @@ th[data-sort].sort-desc .sort-arrow:after {
   opacity: 0.9;
 }
 
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #6c757d !important;
+  pointer-events: none;
+}
+
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr); /* Fixed 3 columns */
+  gap: 1.5rem;
   margin-bottom: 2rem;
+  max-height: none; /* Remove fixed height */
 }
 
 .stat-card {
@@ -234,6 +254,22 @@ th[data-sort].sort-desc .sort-arrow:after {
   padding: 1.5rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  height: 300px; /* Increase height */
+  display: flex;
+  flex-direction: column;
+  min-width: 300px; /* Add minimum width */
+}
+
+.stat-card canvas {
+  flex: 1;
+  width: 100% !important;
+  height: 220px !important; /* Increase chart height */
+  max-height: 220px;
+}
+
+.stat-card:first-child {
+  grid-column: 1 / -1; /* Make total devices card span full width */
+  height: 150px; /* Shorter height for total devices card */
 }
 
 .stat-number {
@@ -261,6 +297,20 @@ th[data-sort].sort-desc .sort-arrow:after {
   border: 1px solid #ddd;
   border-radius: 4px;
   min-width: 150px;
+}
+
+.form-control:disabled {
+  background-color: #e9ecef;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.device-select {
+  cursor: pointer;
+}
+
+#selectAllCheckbox {
+  cursor: pointer;
 }
 
 .device-group {
