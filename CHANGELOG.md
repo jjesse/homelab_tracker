@@ -91,6 +91,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - express-mongo-sanitize for MongoDB query sanitization
   - ioredis for Redis client
   - winston for logging
+- Added new "By Hypervisor" pie chart to dashboard
+  - Shows distribution of devices by hypervisor
+  - Uses data from "Hypervisor Installed On" field
+  - Maintains consistent styling with other charts
 
 ### Changed
 
