@@ -64,8 +64,15 @@
               <th><input type="checkbox" id="selectAllCheckbox"></th>
               <th data-sort="name">Device Name <span class="sort-arrow">↕</span></th>
               <th data-sort="ipAddress">IP Address <span class="sort-arrow">↕</span></th>
+              <th data-sort="hostname">Hostname <span class="sort-arrow">↕</span></th>
               <th data-sort="operatingSystem">OS <span class="sort-arrow">↕</span></th>
+              <th data-sort="network">Network <span class="sort-arrow">↕</span></th>
               <th data-sort="systemRole">Role <span class="sort-arrow">↕</span></th>
+              <th data-sort="hypervisor">Hypervisor <span class="sort-arrow">↕</span></th>
+              <th data-sort="domainUser">Domain User <span class="sort-arrow">↕</span></th>
+              <th data-sort="zscalerUser">Zscaler User <span class="sort-arrow">↕</span></th>
+              <th data-sort="zscalerSegment">Zscaler Segment <span class="sort-arrow">↕</span></th>
+              <th>Notes</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -73,12 +80,19 @@
             <% const devices = (user && user.devices) ? user.devices : []; %>
             <% if(devices.length > 0) { %>
               <% devices.forEach(function(device) { %>
-                <tr data-os="<%= device.operatingSystem %>" data-network="<%= device.network %>" data-role="<%= device.systemRole %>" data-device-id="<%= device._id %>" data-hostname="<%= device.hostname %>" data-hypervisor="<%= device.hypervisorInstalledOn %>" data-domain-user="<%= device.domainUserSignedIn %>" data-zscaler-user="<%= device.zscalerUserSignedIn %>" data-zscaler-segment="<%= device.zscalerAppSegment %>" data-notes="<%= device.notes %>">
+                <tr data-device-id="<%= device._id %>">
                   <td><input type="checkbox" class="device-select" value="<%= device._id %>"></td>
                   <td><%= device.name %></td>
                   <td><%= device.ipAddress %></td>
+                  <td><%= device.hostname %></td>
                   <td><%= device.operatingSystem %></td>
+                  <td><%= device.network %></td>
                   <td><%= device.systemRole %></td>
+                  <td><%= device.hypervisorInstalledOn %></td>
+                  <td><%= device.domainUserSignedIn %></td>
+                  <td><%= device.zscalerUserSignedIn %></td>
+                  <td><%= device.zscalerAppSegment %></td>
+                  <td><%= device.notes || '' %></td>
                   <td class="actions">
                     <button class="btn btn-info btn-sm view-device" data-id="<%= device._id %>">View</button>
                     <button class="btn btn-warning btn-sm edit-device" data-id="<%= device._id %>">Edit</button>

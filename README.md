@@ -298,7 +298,18 @@ SESSION_SECRET=generated_session_secret_from_above_command
 The dashboard provides a comprehensive device management interface with the following features:
 
 ### Device Table
-
+- Displays comprehensive device information including:
+  - Device Name
+  - IP Address
+  - Hostname
+  - Operating System
+  - Network
+  - System Role
+  - Hypervisor Information
+  - Domain User
+  - Zscaler User
+  - Zscaler Segment
+  - Notes
 - Sortable columns (click column headers to sort)
 - Real-time search filtering
 - Responsive design for all screen sizes

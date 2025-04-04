@@ -125,6 +125,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced device deletion with confirmation dialog
 - Improved error handling for device operations
 - Updated statistics and charts after device deletion
+- Enhanced device table display to show all device fields including:
+  - Hostname
+  - Network
+  - Hypervisor details
+  - Domain user information
+  - Zscaler configuration
+  - Notes
 
 ### Fixed
 
