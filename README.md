@@ -2,6 +2,9 @@
 
 This web application allows you to store details about your home lab devices. You can log in to access the app and store information about each device, such as the computer name, IP address, and operating system.
 
+![Home Lab Overview](./assets/overview.png)
+
+
 ## Features
 
 - User authentication (login and registration)
