@@ -136,6 +136,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Domain user information
   - Zscaler configuration
   - Notes
+- Enhanced Edit functionality with form-based editing and real-time updates
+- Improved Delete functionality with proper error handling and UI feedback
+- Updated device table to show only Edit and Delete actions
 
 ### Fixed
 
@@ -240,3 +243,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Standardize error responses
 - Implement error logging service
 - Add validation middleware
+
+### Removed
+
+- Removed View device functionality and associated modal as it was redundant
