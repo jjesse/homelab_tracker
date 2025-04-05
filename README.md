@@ -4,7 +4,6 @@ This web application allows you to store details about your home lab devices. Yo
 
 ![Home Lab Overview](./assets/overview.png)
 
-
 ## Features
 
 - User authentication (login and registration)
@@ -301,6 +300,7 @@ SESSION_SECRET=generated_session_secret_from_above_command
 The dashboard provides a comprehensive device management interface with the following features:
 
 ### Device Table
+
 - Displays comprehensive device information including:
   - Device Name
   - IP Address
@@ -319,9 +319,8 @@ The dashboard provides a comprehensive device management interface with the foll
 
 ### Device Actions
 
-- View: See detailed device information
-- Edit: Modify device properties
-- Delete: Remove devices from your inventory
+- Edit: Modify device properties through an interactive form
+- Delete: Remove devices from your inventory with confirmation dialog
 
 ### Adding Devices
 

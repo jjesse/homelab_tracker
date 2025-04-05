@@ -97,7 +97,6 @@
                   <td><%= device.zscalerAppSegment %></td>
                   <td><%= device.notes || '' %></td>
                   <td class="actions">
-                    <button class="btn btn-info btn-sm view-device" data-id="<%= device._id %>">View</button>
                     <button class="btn btn-warning btn-sm edit-device" data-id="<%= device._id %>">Edit</button>
                     <button class="btn btn-danger btn-sm delete-device" data-id="<%= device._id %>">Delete</button>
                   </td>
@@ -529,6 +528,100 @@
 
       // Initialize control states
       updateControlsState();
+    });
+
+    // Edit device handler
+    document.querySelectorAll('.edit-device').forEach(button => {
+      button.addEventListener('click', async (e) => {
+        const deviceId = e.target.dataset.id;
+        const row = e.target.closest('tr');
+        
+        // Get current values
+        const name = row.querySelector('td:nth-child(2)').textContent;
+        const ipAddress = row.querySelector('td:nth-child(3)').textContent;
+        const hostname = row.querySelector('td:nth-child(4)').textContent;
+        const operatingSystem = row.querySelector('td:nth-child(5)').textContent;
+        const network = row.querySelector('td:nth-child(6)').textContent;
+        const systemRole = row.querySelector('td:nth-child(7)').textContent;
+        const hypervisor = row.querySelector('td:nth-child(8)').textContent;
+        const domainUser = row.querySelector('td:nth-child(9)').textContent;
+        const zscalerUser = row.querySelector('td:nth-child(10)').textContent;
+        const zscalerSegment = row.querySelector('td:nth-child(11)').textContent;
+        const notes = row.querySelector('td:nth-child(12)').textContent;
+
+        // Populate edit modal
+        document.getElementById('editDeviceId').value = deviceId;
+        document.querySelector('#editDeviceForm input[name="name"]').value = name;
+        document.querySelector('#editDeviceForm input[name="ipAddress"]').value = ipAddress;
+        document.querySelector('#editDeviceForm input[name="hostname"]').value = hostname;
+        document.querySelector('#editDeviceForm input[name="operatingSystem"]').value = operatingSystem;
+        document.querySelector('#editDeviceForm input[name="network"]').value = network;
+        document.querySelector('#editDeviceForm input[name="systemRole"]').value = systemRole;
+        document.querySelector('#editDeviceForm input[name="hypervisorInstalledOn"]').value = hypervisor;
+        document.querySelector('#editDeviceForm input[name="domainUserSignedIn"]').value = domainUser;
+        document.querySelector('#editDeviceForm input[name="zscalerUserSignedIn"]').value = zscalerUser;
+        document.querySelector('#editDeviceForm input[name="zscalerAppSegment"]').value = zscalerSegment;
+        document.querySelector('#editDeviceForm textarea[name="notes"]').value = notes || '';
+
+        // Show edit modal
+        document.getElementById('editDeviceModal').style.display = 'block';
+      });
+    });
+
+    // Handle edit form submission
+    document.getElementById('editDeviceForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const deviceId = document.getElementById('editDeviceId').value;
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData);
+
+      try {
+        const response = await fetch(`/devices/${deviceId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'CSRF-Token': '<%= csrfToken %>'
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          window.location.reload();
+        } else {
+          throw new Error('Failed to update device');
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        alert('Failed to update device');
+      }
+    });
+
+    // Delete device handler
+    document.querySelectorAll('.delete-device').forEach(button => {
+      button.addEventListener('click', async (e) => {
+        const deviceId = e.target.dataset.id;
+        if (confirm('Are you sure you want to delete this device? This action cannot be undone.')) {
+          try {
+            const response = await fetch(`/devices/${deviceId}`, {
+              method: 'DELETE',
+              headers: {
+                'CSRF-Token': '<%= csrfToken %>'
+              }
+            });
+
+            if (response.ok) {
+              e.target.closest('tr').remove();
+              updateDeviceStats();
+              updateCharts();
+            } else {
+              throw new Error('Failed to delete device');
+            }
+          } catch (err) {
+            console.error('Error:', err);
+            alert('Failed to delete device');
+          }
+        }
+      });
     });
   </script>
 </body>
