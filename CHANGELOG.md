@@ -199,6 +199,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Corrected "By Network" chart to use Network field
   - Corrected "By Role" chart to use System Role field
   - Updated data source column indices to match table structure
+- Fixed Edit Device functionality by adding missing form fields to edit modal
+- Ensured Edit Device form properly populates with current device data
 
 ### Security
 
