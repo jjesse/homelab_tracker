@@ -139,6 +139,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced Edit functionality with form-based editing and real-time updates
 - Improved Delete functionality with proper error handling and UI feedback
 - Updated device table to show only Edit and Delete actions
+- Improved device edit functionality:
+  - Enhanced form to handle both add and edit operations
+  - Added proper form state management
+  - Added cancel edit button
+  - Improved form submission handling
+  - Added automatic form population when editing
+  - Added visual feedback for edit mode
 
 ### Fixed
 
@@ -201,6 +208,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated data source column indices to match table structure
 - Fixed Edit Device functionality by adding missing form fields to edit modal
 - Ensured Edit Device form properly populates with current device data
+- Fixed edit functionality not properly updating device information
+- Fixed form not clearing after canceling edit
+- Fixed form submission method not changing between add/edit modes
+- Improved edit UI feedback and usability
 
 ### Security
 

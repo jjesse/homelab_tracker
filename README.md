@@ -319,7 +319,12 @@ The dashboard provides a comprehensive device management interface with the foll
 
 ### Device Actions
 
-- Edit: Modify device properties through an interactive form
+- Edit: Modify device properties
+  - Click the "Edit" button next to a device
+  - Form will be populated with device data
+  - Make desired changes
+  - Click "Update Device" to save changes
+  - Click "Cancel" to discard changes
 - Delete: Remove devices from your inventory with confirmation dialog
 
 ### Adding Devices
