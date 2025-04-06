@@ -212,6 +212,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed form not clearing after canceling edit
 - Fixed form submission method not changing between add/edit modes
 - Improved edit UI feedback and usability
+- Fixed delete confirmation showing both browser confirm and modal
+- Fixed delete success message showing error incorrectly
+- Fixed edit functionality by removing duplicate event listeners
+- Improved edit form handling and state management
 
 ### Security
 
