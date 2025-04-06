@@ -77,9 +77,20 @@ router.put('/:id', ensureAuthenticated, async (req, res) => {
       return res.status(404).json({ message: 'Device not found' });
     }
 
-    const updates = req.body;
-    delete updates._id; // Prevent _id modification
-    delete updates.user; // Prevent user modification
+    // Validate that updates are allowed fields
+    const allowedUpdates = [
+      'name', 'ipAddress', 'operatingSystem', 'hostname',
+      'network', 'systemRole', 'hypervisorInstalledOn',
+      'domainUserSignedIn', 'zscalerUserSignedIn',
+      'zscalerAppSegment', 'notes'
+    ];
+
+    const updates = Object.keys(req.body)
+      .filter(key => allowedUpdates.includes(key))
+      .reduce((obj, key) => {
+        obj[key] = req.body[key];
+        return obj;
+      }, {});
 
     const updatedDevice = await Device.findByIdAndUpdate(
       req.params.id,
@@ -96,7 +107,7 @@ router.put('/:id', ensureAuthenticated, async (req, res) => {
 // Delete device
 router.delete('/:id', ensureAuthenticated, async (req, res) => {
   try {
-    const device = await Device.findOne({ 
+    const device = await Device.findOneAndDelete({ 
       _id: req.params.id,
       user: req.user.id 
     });
@@ -105,15 +116,13 @@ router.delete('/:id', ensureAuthenticated, async (req, res) => {
       return res.status(404).json({ message: 'Device not found' });
     }
 
-    await Device.findByIdAndDelete(req.params.id);
-    
     // Remove device reference from user
     await User.findByIdAndUpdate(
       req.user.id,
       { $pull: { devices: req.params.id } }
     );
 
-    res.json({ message: 'Device deleted' });
+    res.json({ message: 'Device deleted successfully' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

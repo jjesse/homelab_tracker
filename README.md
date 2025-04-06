@@ -2,6 +2,8 @@
 
 This web application allows you to store details about your home lab devices. You can log in to access the app and store information about each device, such as the computer name, IP address, and operating system.
 
+![Home Lab Overview](./assets/overview.png)
+
 ## Features
 
 - User authentication (login and registration)
@@ -298,6 +300,7 @@ SESSION_SECRET=generated_session_secret_from_above_command
 The dashboard provides a comprehensive device management interface with the following features:
 
 ### Device Table
+
 - Displays comprehensive device information including:
   - Device Name
   - IP Address
@@ -316,9 +319,13 @@ The dashboard provides a comprehensive device management interface with the foll
 
 ### Device Actions
 
-- View: See detailed device information
 - Edit: Modify device properties
-- Delete: Remove devices from your inventory
+  - Click the "Edit" button next to a device
+  - Form will be populated with device data
+  - Make desired changes
+  - Click "Update Device" to save changes
+  - Click "Cancel" to discard changes
+- Delete: Remove devices from your inventory with confirmation dialog
 
 ### Adding Devices
 
