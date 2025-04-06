@@ -629,11 +629,18 @@
       // Form submission handler
       deviceForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const formData = new FormData(deviceForm);
-        const method = deviceForm.method;
+        const method = deviceForm.method.toUpperCase();
         const url = deviceForm.action;
 
         try {
+          // For regular form submission (Add)
+          if (method === 'POST') {
+            deviceForm.submit();
+            return;
+          }
+
+          // For edit (PUT)
+          const formData = new FormData(deviceForm);
           const response = await fetch(url, {
             method: method,
             headers: {

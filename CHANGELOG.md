@@ -216,6 +216,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed delete success message showing error incorrectly
 - Fixed edit functionality by removing duplicate event listeners
 - Improved edit form handling and state management
+- Fixed device form submission:
+  - Fixed add device functionality by using regular form submission
+  - Fixed edit device functionality by using fetch with proper JSON data
+  - Added proper handling of POST vs PUT methods
+  - Fixed form data validation issues
 
 ### Security
 
