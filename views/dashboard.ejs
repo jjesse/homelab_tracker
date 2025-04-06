@@ -109,54 +109,57 @@
     </div>
 
     <h2>Add Device</h2>
-    <!-- Add Device Form -->
-    <form action="/devices/add" method="POST" class="device-form">
+    <!-- Device Form -->
+    <form id="deviceForm" action="/devices/add" method="POST" class="device-form">
       <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <input type="hidden" id="deviceId" name="deviceId" value="">
+      <h2 id="formTitle">Add Device</h2>
       <div>
         <label for="name">Device Name:</label>
-        <input type="text" name="name" required>
+        <input type="text" id="name" name="name" required>
       </div>
       <div>
         <label for="ipAddress">IP Address:</label>
-        <input type="text" name="ipAddress" required>
+        <input type="text" id="ipAddress" name="ipAddress" required>
       </div>
       <div>
         <label for="operatingSystem">Operating System:</label>
-        <input type="text" name="operatingSystem" required>
+        <input type="text" id="operatingSystem" name="operatingSystem" required>
       </div>
       <div>
         <label for="hostname">Hostname:</label>
-        <input type="text" name="hostname" required>
+        <input type="text" id="hostname" name="hostname" required>
       </div>
       <div>
         <label for="network">Network:</label>
-        <input type="text" name="network" required>
+        <input type="text" id="network" name="network" required>
       </div>
       <div>
         <label for="systemRole">System Role:</label>
-        <input type="text" name="systemRole" required>
+        <input type="text" id="systemRole" name="systemRole" required>
       </div>
       <div>
         <label for="hypervisorInstalledOn">Hypervisor Installed On:</label>
-        <input type="text" name="hypervisorInstalledOn" required>
+        <input type="text" id="hypervisorInstalledOn" name="hypervisorInstalledOn" required>
       </div>
       <div>
         <label for="domainUserSignedIn">Domain User Signed In:</label>
-        <input type="text" name="domainUserSignedIn" required>
+        <input type="text" id="domainUserSignedIn" name="domainUserSignedIn" required>
       </div>
       <div>
         <label for="zscalerUserSignedIn">Zscaler User Signed In:</label>
-        <input type="text" name="zscalerUserSignedIn" required>
+        <input type="text" id="zscalerUserSignedIn" name="zscalerUserSignedIn" required>
       </div>
       <div>
         <label for="zscalerAppSegment">Zscaler App Segment:</label>
-        <input type="text" name="zscalerAppSegment" required>
+        <input type="text" id="zscalerAppSegment" name="zscalerAppSegment" required>
       </div>
       <div>
         <label for="notes">Notes:</label>
-        <textarea name="notes"></textarea>
+        <textarea id="notes" name="notes"></textarea>
       </div>
-      <button type="submit" class="btn btn-primary">Add Device</button>
+      <button type="submit" id="submitButton" class="btn btn-primary">Add Device</button>
+      <button type="button" id="cancelEdit" class="btn btn-secondary" style="display: none;">Cancel</button>
     </form>
 
   </div>
@@ -664,6 +667,84 @@
             console.error('Error:', err);
             alert('Failed to delete device');
           }
+        }
+      });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const deviceForm = document.getElementById('deviceForm');
+      const formTitle = document.getElementById('formTitle');
+      const submitButton = document.getElementById('submitButton');
+      const cancelEdit = document.getElementById('cancelEdit');
+      const deviceId = document.getElementById('deviceId');
+
+      // Edit button click handler
+      document.querySelectorAll('.edit-device').forEach(button => {
+        button.addEventListener('click', async (e) => {
+          const row = e.target.closest('tr');
+          deviceId.value = e.target.dataset.id;
+          
+          // Update form fields with device data
+          document.getElementById('name').value = row.cells[1].textContent;
+          document.getElementById('ipAddress').value = row.cells[2].textContent;
+          document.getElementById('hostname').value = row.cells[3].textContent;
+          document.getElementById('operatingSystem').value = row.cells[4].textContent;
+          document.getElementById('network').value = row.cells[5].textContent;
+          document.getElementById('systemRole').value = row.cells[6].textContent;
+          document.getElementById('hypervisorInstalledOn').value = row.cells[7].textContent;
+          document.getElementById('domainUserSignedIn').value = row.cells[8].textContent;
+          document.getElementById('zscalerUserSignedIn').value = row.cells[9].textContent;
+          document.getElementById('zscalerAppSegment').value = row.cells[10].textContent;
+          document.getElementById('notes').value = row.cells[11].textContent;
+
+          // Update form state
+          formTitle.textContent = 'Edit Device';
+          submitButton.textContent = 'Update Device';
+          deviceForm.action = `/devices/${deviceId.value}`;
+          deviceForm.method = 'PUT';
+          cancelEdit.style.display = 'inline-block';
+          
+          // Scroll to form
+          deviceForm.scrollIntoView({ behavior: 'smooth' });
+        });
+      });
+
+      // Cancel edit button handler
+      cancelEdit.addEventListener('click', () => {
+        deviceForm.reset();
+        formTitle.textContent = 'Add Device';
+        submitButton.textContent = 'Add Device';
+        deviceForm.action = '/devices/add';
+        deviceForm.method = 'POST';
+        deviceId.value = '';
+        cancelEdit.style.display = 'none';
+      });
+
+      // Form submission handler
+      deviceForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(deviceForm);
+        const method = deviceForm.method;
+        const url = deviceForm.action;
+
+        try {
+          const response = await fetch(url, {
+            method: method,
+            headers: {
+              'Content-Type': 'application/json',
+              'CSRF-Token': '<%= csrfToken %>'
+            },
+            body: JSON.stringify(Object.fromEntries(formData))
+          });
+
+          if (response.ok) {
+            window.location.reload();
+          } else {
+            throw new Error('Failed to save device');
+          }
+        } catch (err) {
+          console.error('Error:', err);
+          alert('Failed to save device');
         }
       });
     });
