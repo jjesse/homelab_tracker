@@ -146,6 +146,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improved form submission handling
   - Added automatic form population when editing
   - Added visual feedback for edit mode
+- Reduced MongoDB logging verbosity in Docker:
+  - Added --quiet flag to mongod command
+  - Configured logging to /dev/null for connection logs
+  - Added log filtering options
 
 ### Fixed
 
