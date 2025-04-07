@@ -628,37 +628,17 @@
 
       // Form submission handler
       deviceForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const method = deviceForm.method.toUpperCase();
-        const url = deviceForm.action;
-
-        try {
-          // For regular form submission (Add)
-          if (method === 'POST') {
+        if (deviceId.value) {
+          // This is an edit operation
+          e.preventDefault();
+          try {
             deviceForm.submit();
-            return;
+          } catch (err) {
+            console.error('Error:', err);
+            alert('Failed to save device');
           }
-
-          // For edit (PUT)
-          const formData = new FormData(deviceForm);
-          const response = await fetch(url, {
-            method: method,
-            headers: {
-              'Content-Type': 'application/json',
-              'CSRF-Token': '<%= csrfToken %>'
-            },
-            body: JSON.stringify(Object.fromEntries(formData))
-          });
-
-          if (response.ok) {
-            window.location.reload();
-          } else {
-            throw new Error('Failed to save device');
-          }
-        } catch (err) {
-          console.error('Error:', err);
-          alert('Failed to save device');
         }
+        // For new devices, let the form submit normally
       });
 
       // Delete device handler

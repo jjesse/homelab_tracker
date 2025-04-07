@@ -105,6 +105,48 @@ router.put('/:id', ensureAuthenticated, async (req, res) => {
   }
 });
 
+// Update device - support both PUT and POST for edit operations
+router.post('/:id', ensureAuthenticated, async (req, res) => {
+  try {
+    const device = await Device.findOne({ 
+      _id: req.params.id,
+      user: req.user.id 
+    });
+    
+    if (!device) {
+      req.flash('error_msg', 'Device not found');
+      return res.redirect('/dashboard');
+    }
+
+    const allowedUpdates = [
+      'name', 'ipAddress', 'operatingSystem', 'hostname',
+      'network', 'systemRole', 'hypervisorInstalledOn',
+      'domainUserSignedIn', 'zscalerUserSignedIn',
+      'zscalerAppSegment', 'notes'
+    ];
+
+    const updates = Object.keys(req.body)
+      .filter(key => allowedUpdates.includes(key))
+      .reduce((obj, key) => {
+        obj[key] = req.body[key];
+        return obj;
+      }, {});
+
+    await Device.findByIdAndUpdate(
+      req.params.id,
+      { $set: updates },
+      { new: true, runValidators: true }
+    );
+
+    req.flash('success_msg', 'Device updated successfully');
+    res.redirect('/dashboard');
+  } catch (err) {
+    console.error('Error updating device:', err);
+    req.flash('error_msg', 'Error updating device');
+    res.redirect('/dashboard');
+  }
+});
+
 // Delete device
 router.delete('/:id', ensureAuthenticated, async (req, res) => {
   try {
