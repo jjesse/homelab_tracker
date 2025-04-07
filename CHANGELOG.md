@@ -146,6 +146,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improved form submission handling
   - Added automatic form population when editing
   - Added visual feedback for edit mode
+- Reduced MongoDB logging verbosity in Docker:
+  - Added --quiet flag to mongod command
+  - Configured logging to /dev/null for connection logs
+  - Added log filtering options
 
 ### Fixed
 
@@ -216,6 +220,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed delete success message showing error incorrectly
 - Fixed edit functionality by removing duplicate event listeners
 - Improved edit form handling and state management
+- Fixed device form submission:
+  - Fixed add device functionality by using regular form submission
+  - Fixed edit device functionality by using fetch with proper JSON data
+  - Added proper handling of POST vs PUT methods
+  - Fixed form data validation issues
+- Fixed the edit button functionality on the dashboard to correctly populate the form with device data and ensure proper form submission.
+- Fixed device validation error when adding a new device by ensuring form field names match the `Device` model and logging request body for debugging.
 
 ### Security
 

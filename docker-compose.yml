@@ -51,8 +51,8 @@ services:
 
   mongo:
     image: mongo:7.0
+    command: ["mongod", "--auth", "--logpath", "/dev/null", "--quiet"]
     restart: unless-stopped
-    command: mongod --auth
     ports:
       - "27017:27017"
     volumes:
@@ -80,6 +80,9 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+        mode: non-blocking
+        env: "prod"
+        env-regex: "^(MONGODB_|MONGO_)"
 
   redis:
     image: redis:7-alpine
