@@ -2,3 +2,4 @@
 .env
 certs/
 gitup.sh
+.github/copilot-instructions.md
