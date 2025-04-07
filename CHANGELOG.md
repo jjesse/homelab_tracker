@@ -225,6 +225,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed edit device functionality by using fetch with proper JSON data
   - Added proper handling of POST vs PUT methods
   - Fixed form data validation issues
+- Fixed the edit button functionality on the dashboard to correctly populate the form with device data and ensure proper form submission.
 
 ### Security
 

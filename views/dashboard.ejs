@@ -607,7 +607,7 @@
           formTitle.textContent = 'Edit Device';
           submitButton.textContent = 'Update Device';
           deviceForm.action = `/devices/${deviceId.value}`;
-          deviceForm.method = 'PUT';
+          deviceForm.method = 'POST'; // Change to POST for compatibility
           cancelEdit.style.display = 'inline-block';
           
           // Scroll to form

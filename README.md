@@ -394,6 +394,9 @@ Please read through our contributing guidelines. Included are directions for ope
 
 All notable changes to this project are documented in the [CHANGELOG.md](CHANGELOG.md) file.
 
+### Fixed
+- Resolved an issue where the edit button on the dashboard was not correctly populating the form with device data or submitting changes properly.
+
 ## License
 
 This project is licensed under the MIT License.
