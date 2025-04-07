@@ -227,6 +227,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed form data validation issues
 - Fixed the edit button functionality on the dashboard to correctly populate the form with device data and ensure proper form submission.
 - Fixed device validation error when adding a new device by ensuring form field names match the `Device` model and logging request body for debugging.
+- Added support for POST method in device update route to fix device editing functionality
+- Enhanced error handling for device updates with proper flash messages
 
 ### Security
 
