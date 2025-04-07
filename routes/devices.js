@@ -33,6 +33,7 @@ router.get('/:id', ensureAuthenticated, async (req, res) => {
 // Add new device
 router.post('/add', ensureAuthenticated, async (req, res) => {
   try {
+    console.log('Request Body:', req.body); // Log the request body for debugging
     const newDevice = new Device({
       name: req.body.name,
       ipAddress: req.body.ipAddress,
@@ -59,7 +60,7 @@ router.post('/add', ensureAuthenticated, async (req, res) => {
     req.flash('success_msg', 'Device added successfully');
     res.redirect('/dashboard');
   } catch (err) {
-    console.error(err);
+    console.error('Error adding device:', err); // Log the error for debugging
     req.flash('error_msg', 'Error adding device');
     res.redirect('/dashboard');
   }

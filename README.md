@@ -372,6 +372,16 @@ Use the search box above the device table to filter devices by any field:
 - Enhanced session security with `httpOnly`, `secure`, and `sameSite` options.
 - Utilized `morgan` for logging.
 
+## Troubleshooting
+
+### Device Validation Errors
+
+If you encounter validation errors when adding a device, ensure the following:
+
+1. All required fields are filled in the form.
+2. The form field `name` attributes match the `Device` model field names exactly.
+3. Check the server logs for the request body to verify the data being sent.
+
 ## Development
 
 To run the application in debug mode:
