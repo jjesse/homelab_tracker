@@ -45,8 +45,8 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
-        max-file: "3"
+        max-size: "50m"
+        max-file: "5"
         mode: non-blocking
 
   mongo:
@@ -78,8 +78,8 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
-        max-file: "3"
+        max-size: "50m"
+        max-file: "5"
         mode: non-blocking
         env: "prod"
         env-regex: "^(MONGODB_|MONGO_)"
@@ -104,6 +104,11 @@ services:
     volumes:
       - redis_data:/data
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
 
 volumes:
   mongodb_data:

@@ -240,28 +240,120 @@ SESSION_SECRET=generated_session_secret_from_above_command
 - **Certificate Not Found**: Make sure the certificates are properly mounted in Docker by checking the volume mapping in docker-compose.yml
 - **Permission Issues**: Ensure the certificates are readable by the node process in the container
 
+## Production Deployment
+
+### Automatic Startup Configuration
+
+1. Copy the application to /opt/homelab:
+
+   ```bash
+   sudo mkdir /opt/homelab
+   sudo cp -r . /opt/homelab/
+   ```
+
+2. Set proper permissions:
+
+   ```bash
+   sudo chown -R root:root /opt/homelab
+   sudo chmod -R 755 /opt/homelab
+   ```
+
+3. Install systemd service:
+
+   ```bash
+   sudo cp homelab.service /etc/systemd/system/
+   sudo systemctl daemon-reload
+   sudo systemctl enable homelab
+   sudo systemctl start homelab
+   ```
+
+4. Verify service status:
+
+   ```bash
+   sudo systemctl status homelab
+   ```
+
+### Production Environment Setup
+
+1. Configure SSL certificates:
+
+   ```bash
+   sudo certbot certonly --standalone -d yourdomain.com
+   ```
+
+2. Update .env file with production settings:
+
+   ```bash
+   MONGO_USERNAME=secure_production_username
+   MONGO_PASSWORD=secure_production_password
+   NODE_ENV=production
+   SSL_KEY_PATH=/etc/letsencrypt/live/yourdomain.com/privkey.pem
+   SSL_CERT_PATH=/etc/letsencrypt/live/yourdomain.com/fullchain.pem
+   ```
+
+3. Configure automatic SSL renewal:
+
+   ```bash
+   sudo certbot renew --dry-run
+   ```
+
+### Monitoring
+
+Monitor application logs:
+
+```bash
+sudo docker-compose logs -f
+```
+
+Monitor service status:
+
+```bash
+sudo systemctl status homelab
+sudo journalctl -u homelab
+```
+
 ## File Structure
 
 ```
-/home/jjesse/git/homelab
-├── models
-│   ├── User.js
-│   └── Device.js
-├── routes
-│   ├── index.js
-│   └── users.js
-├── views
-│   ├── index.ejs
-│   ├── login.ejs
-│   ├── register.ejs
-│   └── dashboard.ejs
-├── app.js
-├── config
-│   ├── passport.js
-│   └── auth.js
-├── Dockerfile
-├── docker-compose.yml
-└── README.md
+/homelab
+├── config/
+│   ├── auth.js           # Authentication middleware
+│   ├── passport.js       # Passport.js configuration
+│   └── redis.js         # Redis configuration
+├── middleware/
+│   ├── errorHandler.js   # Global error handling
+│   └── security.js       # Security middleware
+├── models/
+│   ├── Device.js        # Device data model
+│   └── User.js          # User data model
+├── public/
+│   └── css/
+│       └── style.css    # Global styles
+├── routes/
+│   ├── devices.js       # Device routes
+│   ├── index.js         # Main routes
+│   └── users.js         # User routes
+├── services/
+│   └── dashboard.service.ts  # Dashboard business logic
+├── tests/
+│   └── setup.js         # Test configuration
+├── views/
+│   ├── dashboard.ejs    # Dashboard view
+│   ├── index.ejs        # Home page
+│   ├── layout.ejs       # Main layout template
+│   ├── login.ejs        # Login form
+│   └── register.ejs     # Registration form
+├── .env.example         # Environment variables template
+├── .gitignore          # Git ignore rules
+├── app.js              # Main application file
+├── CHANGELOG.md        # Change history
+├── docker-compose.yml  # Docker services configuration
+├── Dockerfile         # Container build instructions
+├── homelab.service    # Systemd service file
+├── jest.config.js     # Jest testing configuration
+├── package.json       # Dependencies and scripts
+├── README.md          # Project documentation
+└── wait-for-it.sh     # Docker startup script
 ```
 
 ## Usage
@@ -405,6 +497,7 @@ Please read through our contributing guidelines. Included are directions for ope
 All notable changes to this project are documented in the [CHANGELOG.md](CHANGELOG.md) file.
 
 ### Fixed
+
 - Resolved an issue where the edit button on the dashboard was not correctly populating the form with device data or submitting changes properly.
 
 ## License
