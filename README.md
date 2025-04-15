@@ -247,7 +247,7 @@ SESSION_SECRET=generated_session_secret_from_above_command
 1. Copy the application to /opt/homelab:
 
    ```bash
-   sudo mkdir /opt/homelab
+   sudo mkdir -p /opt/homelab
    sudo cp -r . /opt/homelab/
    ```
 
@@ -256,12 +256,14 @@ SESSION_SECRET=generated_session_secret_from_above_command
    ```bash
    sudo chown -R root:root /opt/homelab
    sudo chmod -R 755 /opt/homelab
+   sudo chmod 644 /opt/homelab/homelab.service
    ```
 
 3. Install systemd service:
 
    ```bash
    sudo cp homelab.service /etc/systemd/system/
+   sudo chmod 644 /etc/systemd/system/homelab.service
    sudo systemctl daemon-reload
    sudo systemctl enable homelab
    sudo systemctl start homelab
@@ -271,6 +273,29 @@ SESSION_SECRET=generated_session_secret_from_above_command
 
    ```bash
    sudo systemctl status homelab
+   ```
+
+5. Troubleshooting Service:
+   If the service fails to start:
+
+   ```bash
+   # Check service status
+   sudo systemctl status homelab
+   
+   # Check detailed logs
+   sudo journalctl -xeu homelab.service
+   
+   # Verify Docker permissions
+   sudo usermod -aG docker $USER
+   sudo systemctl restart docker
+   
+   # Check if docker-compose exists and is executable
+   which docker-compose
+   sudo chmod +x $(which docker-compose)
+   
+   # Verify environment file
+   sudo ls -l /opt/homelab/.env
+   sudo chmod 600 /opt/homelab/.env
    ```
 
 ### Production Environment Setup
