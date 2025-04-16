@@ -76,21 +76,27 @@ This web application allows you to store details about your home lab devices. Yo
    cp .env.example .env
    ```
 
-   Then edit the .env file with your settings.
+   Then edit the .env file with your settings. Important: Set the DOCKER_PLATFORM variable based on your system architecture:
 
-3. Build the Docker image:
+   For x86_64 systems (most PCs and servers):
 
-   ```sh
-   docker-compose build
+   ```
+   DOCKER_PLATFORM=linux/amd64
    ```
 
-4. Start the Docker container:
+   For ARM64 systems (Raspberry Pi 4, Apple M1/M2):
 
-   ```sh
-   docker-compose up
+   ```
+   DOCKER_PLATFORM=linux/arm64
    ```
 
-5. Open your browser and navigate to `https://localhost:8443` or `http://localhost:8080`.
+3. Build and start the containers:
+
+   ```sh
+   docker-compose up --build
+   ```
+
+4. Open your browser and navigate to `https://localhost:8443` or `http://localhost:8080`.
 
    **Note:** The Docker setup now includes a defined network for service communication and a health check for the MongoDB service.
 

@@ -53,6 +53,7 @@ services:
 
   mongo:
     image: mongo:7.0
+    platform: ${DOCKER_PLATFORM:-linux/amd64}  # Add platform selection
     command: ["mongod", "--auth", "--logpath", "/dev/null", "--quiet"]
     restart: unless-stopped
     ports:

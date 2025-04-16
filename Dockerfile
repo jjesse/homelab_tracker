@@ -1,7 +1,29 @@
-FROM node:latest
+# Build stage
+FROM --platform=${BUILDPLATFORM:-linux/amd64} node:latest AS builder
 
-# Install curl and netcat for health checks
-RUN apt-get update && apt-get install -y curl netcat-traditional
+# Install build dependencies based on architecture
+RUN case "$(arch)" in \
+        x86_64) echo "Installing x86_64 dependencies..." ;; \
+        aarch64) echo "Installing ARM64 dependencies..." ;; \
+        *) echo "Unsupported architecture" && exit 1 ;; \
+    esac
+
+WORKDIR /app
+
+# Copy package files and install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Runtime stage
+FROM --platform=${TARGETPLATFORM:-linux/amd64} node:latest
+
+# Install curl and netcat for health checks based on architecture
+RUN apt-get update && \
+    case "$(arch)" in \
+        x86_64) apt-get install -y curl netcat-traditional ;; \
+        aarch64) apt-get install -y curl netcat-traditional ;; \
+        *) echo "Unsupported architecture" && exit 1 ;; \
+    esac
 
 WORKDIR /app
 
@@ -12,18 +34,13 @@ RUN mkdir -p certs && \
     chown -R node:node uploads && \
     chmod 755 uploads
 
-# Copy package files first
-COPY package*.json ./
+# Copy node modules and other files from builder
+COPY --from=builder /app/node_modules ./node_modules
+COPY . .
 
-# Install dependencies
-RUN npm install
-
-# Copy wait-for-it script and set permissions
+# Copy and set permissions for wait-for-it script
 COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
 RUN chmod +x /usr/local/bin/wait-for-it.sh
-
-# Copy the rest of the application code
-COPY . .
 
 # Set proper permissions
 RUN chown -R node:node /app
