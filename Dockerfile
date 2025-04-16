@@ -5,8 +5,12 @@ RUN apt-get update && apt-get install -y curl netcat-traditional
 
 WORKDIR /app
 
-# Create required directories
-RUN mkdir -p certs
+# Create required directories with proper permissions
+RUN mkdir -p certs && \
+    mkdir -p uploads && \
+    chown -R node:node /app && \
+    chown -R node:node uploads && \
+    chmod 755 uploads
 
 # Copy package files first
 COPY package*.json ./

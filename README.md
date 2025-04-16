@@ -344,7 +344,7 @@ sudo journalctl -u homelab
 ├── config/
 │   ├── auth.js           # Authentication middleware
 │   ├── passport.js       # Passport.js configuration
-│   └── redis.js         # Redis configuration
+│   └── redis.js          # Redis configuration
 ├── middleware/
 │   ├── errorHandler.js   # Global error handling
 │   └── security.js       # Security middleware
@@ -362,6 +362,7 @@ sudo journalctl -u homelab
 │   └── dashboard.service.ts  # Dashboard business logic
 ├── tests/
 │   └── setup.js         # Test configuration
+├── uploads/             # Temporary storage for CSV uploads
 ├── views/
 │   ├── dashboard.ejs    # Dashboard view
 │   ├── index.ejs        # Home page
@@ -373,12 +374,12 @@ sudo journalctl -u homelab
 ├── app.js              # Main application file
 ├── CHANGELOG.md        # Change history
 ├── docker-compose.yml  # Docker services configuration
-├── Dockerfile         # Container build instructions
-├── homelab.service    # Systemd service file
-├── jest.config.js     # Jest testing configuration
-├── package.json       # Dependencies and scripts
-├── README.md          # Project documentation
-└── wait-for-it.sh     # Docker startup script
+├── Dockerfile          # Container build instructions
+├── homelab.service     # Systemd service file
+├── jest.config.js      # Jest testing configuration
+├── package.json        # Dependencies and scripts
+├── README.md           # Project documentation
+└── wait-for-it.sh      # Docker startup script
 ```
 
 ## Usage
@@ -411,6 +412,31 @@ sudo journalctl -u homelab
 
 1. After logging in, navigate to the dashboard: `http://localhost:5000/dashboard`
 2. Your devices will be listed under "Your Devices".
+
+### CSV Import/Export
+
+#### Importing Devices
+
+1. Click the "Import CSV" button on the dashboard
+2. Select a CSV file with the following headers:
+   - Device Name
+   - IP Address
+   - Operating System
+   - Hostname
+   - Network
+   - System Role
+   - Hypervisor
+   - Domain User
+   - Zscaler User
+   - Zscaler Segment
+   - Notes
+
+The CSV file should have a header row and follow this format:
+
+```csv
+Device Name,IP Address,Operating System,Hostname,Network,System Role,Hypervisor,Domain User,Zscaler User,Zscaler Segment,Notes
+PC01,192.168.1.100,Windows 10,PC01.local,LAN,Workstation,None,user1,zuser1,segment1,Test PC
+```
 
 ## Device Management
 

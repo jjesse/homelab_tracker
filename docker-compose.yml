@@ -28,6 +28,7 @@ services:
       start_period: 30s
     command: >
       sh -c '
+      find /app/uploads -type f -mtime +1 -delete;
       /usr/local/bin/wait-for-it.sh mongo:27017 -t 60 &&
       npm start || { echo "App failed to start"; exit 1; }'
     deploy:
@@ -42,6 +43,7 @@ services:
       - .:/app
       - /app/node_modules
       - ./certs:/app/certs
+      - uploads_data:/app/uploads
     logging:
       driver: "json-file"
       options:
@@ -115,6 +117,9 @@ volumes:
     name: homelab_mongodb_data
   redis_data:
     name: homelab_redis_data
+  uploads_data:
+    name: homelab_uploads
+    driver: local
 
 networks:
   homelab_network:

@@ -2,7 +2,21 @@ const express = require('express');
 const router = express.Router();
 const { ensureAuthenticated } = require('../config/auth');
 const Device = require('../models/Device');
-const User = require('../models/User'); // Added User model
+const User = require('../models/User');
+const multer = require('multer');
+const csv = require('fast-csv');
+const fs = require('fs');
+
+// Configure multer for CSV uploads
+const upload = multer({ 
+  dest: 'uploads/',
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype !== 'text/csv') {
+      return cb(new Error('Only CSV files are allowed'));
+    }
+    cb(null, true);
+  }
+});
 
 // Get all devices for a user
 router.get('/', ensureAuthenticated, async (req, res) => {
@@ -169,6 +183,79 @@ router.delete('/:id', ensureAuthenticated, async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
+});
+
+// Import devices from CSV
+router.post('/import', ensureAuthenticated, upload.single('csvFile'), async (req, res) => {
+  if (!req.file) {
+    req.flash('error_msg', 'No file uploaded');
+    return res.redirect('/dashboard');
+  }
+
+  const devices = [];
+  try {
+    // Parse CSV with strict column validation
+    await new Promise((resolve, reject) => {
+      csv.parseFile(req.file.path, { 
+        headers: true,
+        strictColumnHandling: true,
+        trim: true,
+        skipRows: 0,
+        validateHeader: true,
+        headers: [
+          'Device Name', 'IP Address', 'Operating System', 'Hostname',
+          'Network', 'System Role', 'Hypervisor', 'Domain User',
+          'Zscaler User', 'Zscaler Segment', 'Notes'
+        ]
+      })
+        .on('data', (data) => {
+          devices.push({
+            name: data['Device Name'],
+            ipAddress: data['IP Address'],
+            operatingSystem: data['Operating System'],
+            hostname: data['Hostname'],
+            network: data['Network'],
+            systemRole: data['System Role'],
+            hypervisorInstalledOn: data['Hypervisor'],
+            domainUserSignedIn: data['Domain User'],
+            zscalerUserSignedIn: data['Zscaler User'],
+            zscalerAppSegment: data['Zscaler Segment'],
+            notes: data['Notes'],
+            user: req.user.id
+          });
+        })
+        .on('end', resolve)
+        .on('error', reject);
+    });
+
+    // Insert devices and get their IDs
+    const savedDevices = await Device.insertMany(devices);
+    
+    // Update user's devices array with new device IDs
+    await User.findByIdAndUpdate(
+      req.user.id,
+      { $push: { devices: { $each: savedDevices.map(d => d._id) } } },
+      { new: true }
+    );
+
+    // Set flag to reload charts
+    req.session.reloadCharts = true;
+
+    // Clean up uploaded file
+    fs.unlinkSync(req.file.path);
+    
+    req.flash('success_msg', `Successfully imported ${devices.length} devices`);
+  } catch (err) {
+    console.error('CSV import error:', err);
+    req.flash('error_msg', 'Error importing CSV file. Please check the format and try again.');
+    
+    // Clean up on error
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+  }
+  
+  res.redirect('/dashboard');
 });
 
 module.exports = router;
