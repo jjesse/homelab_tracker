@@ -90,6 +90,12 @@ This web application allows you to store details about your home lab devices. Yo
    DOCKER_PLATFORM=linux/arm64
    ```
 
+   Important: For ARM systems without ARMv8.2-A support, also set:
+   ```
+   MONGO_IMAGE=mongo:4.4.18
+   ```
+   Note: MongoDB 7.0+ requires ARMv8.2-A or higher. Use MongoDB 4.4.18 for older ARM systems.
+
 3. Build and start the containers:
 
    ```sh
