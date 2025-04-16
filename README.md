@@ -76,25 +76,34 @@ This web application allows you to store details about your home lab devices. Yo
    cp .env.example .env
    ```
 
-   Then edit the .env file with your settings. Important: Set the DOCKER_PLATFORM variable based on your system architecture:
+   Then edit the .env file with your settings. Important:
 
-   For x86_64 systems (most PCs and servers):
+   1. Set the DOCKER_PLATFORM variable based on your system architecture:
 
-   ```
-   DOCKER_PLATFORM=linux/amd64
-   ```
+      For x86_64 systems (most PCs and servers):
+      ```
+      DOCKER_PLATFORM=linux/amd64
+      ```
 
-   For ARM64 systems (Raspberry Pi 4, Apple M1/M2):
+      For ARM64 systems (Raspberry Pi 4, Apple M1/M2):
+      ```
+      DOCKER_PLATFORM=linux/arm64
+      ```
 
-   ```
-   DOCKER_PLATFORM=linux/arm64
-   ```
+   2. Set the MongoDB version based on your architecture:
 
-   Important: For ARM systems without ARMv8.2-A support, also set:
-   ```
-   MONGO_IMAGE=mongo:4.4.18
-   ```
-   Note: MongoDB 7.0+ requires ARMv8.2-A or higher. Use MongoDB 4.4.18 for older ARM systems.
+      For modern ARM64 systems with ARMv8.2-A or higher (Apple M1/M2, newer servers):
+      ```
+      MONGO_IMAGE=mongo:7.0
+      ```
+
+      For older ARM systems or those without ARMv8.2-A support:
+      ```
+      MONGO_IMAGE=mongo:4.4.18
+      ```
+
+      Note: MongoDB versions 5.0 and newer require ARMv8.2-A features. If you see warnings about 
+      missing ARMv8.2-A features, use MongoDB 4.4.18 which has better compatibility with older ARM systems.
 
 3. Build and start the containers:
 
@@ -119,12 +128,13 @@ The application is containerized using Docker with the following features:
   - Health check endpoint: `/health`
   - JSON file logging with rotation (10MB max size, 3 files)
 
-- **MongoDB**: Version 7.0 running on port 27017
+- **MongoDB**: 
+  - Version: Based on architecture (7.0 for modern systems, 4.4.18 for better ARM compatibility)
   - Memory: 1GB
   - CPU: 1.0 cores
   - Authentication enabled
   - Health check using mongosh
-  - JSON file logging with rotation (10MB max size, 3 files)
+  - JSON file logging with rotation (50MB max size, 5 files)
   - Persistent data storage with named volume
 
 - **Redis**: Version 7 running on port 6379

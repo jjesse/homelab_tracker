@@ -1,5 +1,5 @@
 # Build stage
-FROM --platform=${BUILDPLATFORM:-linux/amd64} node:latest AS builder
+FROM node:latest AS builder
 
 # Install build dependencies based on architecture
 RUN case "$(arch)" in \
@@ -15,7 +15,7 @@ COPY package*.json ./
 RUN npm install
 
 # Runtime stage
-FROM --platform=${TARGETPLATFORM:-linux/amd64} node:latest
+FROM node:latest
 
 # Install curl and netcat for health checks based on architecture
 RUN apt-get update && \

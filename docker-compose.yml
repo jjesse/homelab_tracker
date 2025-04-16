@@ -52,7 +52,7 @@ services:
         mode: non-blocking
 
   mongo:
-    image: ${MONGO_IMAGE:-mongo:7.0}
+    image: ${MONGO_IMAGE:-mongo:4.4.18}  # Changed from 7.0 to 4.4.18 for better ARM compatibility
     platform: ${DOCKER_PLATFORM:-linux/amd64}  # Add platform selection
     command: ["mongod", "--auth", "--logpath", "/dev/null", "--quiet"]
     restart: unless-stopped
