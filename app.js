@@ -154,13 +154,16 @@ app.use('/devices', require('./routes/devices'));
 // Error handling middleware
 app.use(errorHandler);
 
-// Redirect HTTP to HTTPS
+// Remove or comment out the HTTP to HTTPS redirect middleware 
+// since we're handling both HTTP and HTTPS at the container level
+/*
 app.use((req, res, next) => {
   if (!req.secure) {
     return res.redirect(`https://${req.headers.host}${req.url}`);
   }
   next();
 });
+*/
 
 // HTTPS Configuration
 const sslOptions = {
@@ -171,5 +174,8 @@ const sslOptions = {
 const PORT = process.env.PORT || 5000;
 
 // Create HTTPS server
-https.createServer(sslOptions, app)
-  .listen(PORT, () => console.log(`HTTPS Server running on port ${PORT}`));
+const server = https.createServer(sslOptions, app);
+
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`HTTPS Server running on port ${PORT}`);
+});

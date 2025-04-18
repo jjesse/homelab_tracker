@@ -4,8 +4,8 @@ services:
   app:
     build: .
     ports:
-      - "8443:5000"  # Changed from 443:5000
-      - "8080:5000"  # Changed from 80:5000
+      - "443:5000"  # HTTPS traffic
+      - "80:5000"   # HTTP traffic
     env_file:
       - .env
     environment:
