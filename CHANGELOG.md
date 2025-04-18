@@ -207,6 +207,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improved server binding to listen on all interfaces
   - Removed redundant HTTP to HTTPS redirect middleware
 - Fixed Redis authentication warning by properly configuring password
+- Fixed CSV import functionality:
+  - Added proper form submission handling
+  - Added loading indicator during import
+  - Fixed file input trigger
+  - Fixed form submission event handling
 
 ### Security
 

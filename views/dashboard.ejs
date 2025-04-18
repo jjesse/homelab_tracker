@@ -51,7 +51,7 @@
         <div class="bulk-actions">
           <button id="selectAll" class="btn btn-secondary">Select All</button>
           <button id="exportCSV" class="btn btn-success">Export CSV</button>
-          <form action="/devices/import" method="POST" enctype="multipart/form-data" style="display: inline;">
+          <form action="/devices/import" method="POST" enctype="multipart/form-data" id="importForm" style="display: inline;">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <input type="file" id="csvImport" name="csvFile" accept=".csv" style="display: none;">
             <button type="button" class="btn btn-info" onclick="document.getElementById('csvImport').click()">Import CSV</button>
@@ -699,16 +699,11 @@
       // File input change handler with loading indicator
       document.getElementById('csvImport').addEventListener('change', function() {
         if (this.files.length > 0) {
-          const btn = document.querySelector('.btn-info');
+          const btn = this.closest('form').querySelector('.btn-info');
           btn.textContent = 'Importing...';
           btn.disabled = true;
-          this.closest('form').submit();
-        }
-      });
-
-      document.getElementById('csvImport').addEventListener('change', function() {
-        if (this.files.length > 0) {
-          this.closest('form').submit();
+          // Get the form by ID and submit it
+          document.getElementById('importForm').submit();
         }
       });
 
