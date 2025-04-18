@@ -102,7 +102,11 @@ This web application allows you to store details about your home lab devices. Yo
    docker-compose up --build
    ```
 
-4. Open your browser and navigate to `https://localhost:8443` or `http://localhost:8080`.
+4. Open your browser and navigate to:
+   - HTTPS: `https://localhost`
+   - HTTP: `http://localhost`
+
+   **Note:** The app now uses standard ports (80/443) and accepts both HTTP and HTTPS traffic.
 
    **Note:** The Docker setup now includes a defined network for service communication and a health check for the MongoDB service.
 

@@ -196,6 +196,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Corrected "By Network" chart to use Network field
   - Corrected "By Role" chart to use System Role field
   - Updated data source column indices to match table structure
+- Fixed web access issues:
+  - Updated port mappings to use standard ports (80/443)
+  - Fixed HTTPS redirect loop
+  - Improved server binding to listen on all interfaces
+  - Removed redundant HTTP to HTTPS redirect middleware
+- Fixed Redis authentication warning by properly configuring password
 
 ### Security
 
