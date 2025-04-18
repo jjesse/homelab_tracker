@@ -136,6 +136,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Domain user information
   - Zscaler configuration
   - Notes
+- Improved CSV import documentation:
+  - Added clear instructions for CSV file format
+  - Added example CSV content
+  - Clarified required vs optional fields
+  - Documented location of Import CSV button
 
 ### Fixed
 

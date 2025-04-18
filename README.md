@@ -432,27 +432,23 @@ sudo journalctl -u homelab
 ### CSV Import/Export
 
 #### Importing Devices
+The Import CSV button is located in the Device Management section of the dashboard, next to the "Select All" button.
 
-1. Click the "Import CSV" button on the dashboard
-2. Select a CSV file with the following headers:
-   - Device Name
-   - IP Address
-   - Operating System
-   - Hostname
-   - Network
-   - System Role
-   - Hypervisor
-   - Domain User
-   - Zscaler User
-   - Zscaler Segment
-   - Notes
-
-The CSV file should have a header row and follow this format:
-
+1. Click the "Import CSV" button
+2. Select your CSV file
+3. The file must be formatted with these exact column headers:
 ```csv
 Device Name,IP Address,Operating System,Hostname,Network,System Role,Hypervisor,Domain User,Zscaler User,Zscaler Segment,Notes
-PC01,192.168.1.100,Windows 10,PC01.local,LAN,Workstation,None,user1,zuser1,segment1,Test PC
 ```
+
+Example CSV content:
+```csv
+Device Name,IP Address,Operating System,Hostname,Network,System Role,Hypervisor,Domain User,Zscaler User,Zscaler Segment,Notes
+Lab PC 1,192.168.1.100,Windows 10,LAB-PC1,Internal,Workstation,None,domain\user1,zscaler1,segment1,Test machine
+Lab PC 2,192.168.1.101,Ubuntu 22.04,LAB-PC2,DMZ,Server,ESXi,domain\user2,zscaler2,segment2,Production server
+```
+
+**Note**: All columns except Notes are required. The import will fail if required fields are missing.
 
 ## Device Management
 
