@@ -189,7 +189,18 @@ router.delete('/:id', ensureAuthenticated, async (req, res) => {
 router.post('/import', ensureAuthenticated, upload.single('csvFile'), async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ message: 'No file uploaded' });
+      return res.status(400).json({ 
+        success: false,
+        message: 'No file uploaded' 
+      });
+    }
+
+    if (req.file.mimetype !== 'text/csv') {
+      fs.unlinkSync(req.file.path); // Clean up invalid file
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid file type. Please upload a CSV file.'
+      });
     }
 
     const devices = [];
@@ -250,15 +261,16 @@ router.post('/import', ensureAuthenticated, upload.single('csvFile'), async (req
     });
   } catch (err) {
     console.error('CSV import error:', err);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error importing CSV file. Please check the format and try again.' 
-    });
     
     // Clean up on error
     if (req.file && fs.existsSync(req.file.path)) {
       fs.unlinkSync(req.file.path);
     }
+
+    res.status(500).json({ 
+      success: false, 
+      message: err.message || 'Error importing CSV file. Please check the format and try again.'
+    });
   }
 });
 

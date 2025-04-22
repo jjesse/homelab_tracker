@@ -223,6 +223,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated import endpoint to handle AJAX submissions
   - Added better error handling and user feedback
   - Fixed form submission to include required CSRF headers
+- Fixed CSV import CSRF handling and file upload:
+  - Removed redundant CSRF token from headers
+  - Improved error handling and messages
+  - Added proper file type validation
+  - Added proper cleanup of failed uploads
+  - Fixed file upload response handling
 
 ### Security
 

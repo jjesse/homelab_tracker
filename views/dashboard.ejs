@@ -707,15 +707,14 @@
           btn.textContent = 'Importing...';
           btn.disabled = true;
 
-          // Create FormData and append CSRF token
           const formData = new FormData(document.getElementById('importForm'));
           
-          // Submit using fetch with proper headers
           fetch('/devices/import', {
             method: 'POST',
             body: formData,
             headers: {
-              'CSRF-Token': '<%= csrfToken %>'
+              // Remove CSRF token from headers since it's in formData
+              // It should only be in one place
             },
             credentials: 'same-origin'
           })
@@ -723,14 +722,14 @@
             if (response.ok) {
               window.location.reload();
             } else {
-              throw new Error('Import failed');
+              return response.json().then(err => { throw new Error(err.message) });
             }
           })
           .catch(error => {
             console.error('Error:', error);
             btn.textContent = 'Import CSV';
             btn.disabled = false;
-            alert('Failed to import CSV file. Please try again.');
+            alert('Failed to import CSV file: ' + error.message);
           });
         }
       });
