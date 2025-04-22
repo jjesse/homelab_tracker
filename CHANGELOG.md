@@ -247,6 +247,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Prevented import path from being treated as device ID
   - Improved route handler order to fix conflict
   - Added better error messaging for routing issues
+- Fixed CSV import not showing imported devices:
+  - Added proper user device array population
+  - Fixed device references in MongoDB
+  - Added forced page reload after import
+  - Added success message with device count
+  - Improved error handling during import
+- Improved CSV import functionality:
+  - Fixed file upload triggering
+  - Added proper multer storage configuration
+  - Fixed CSV parsing and validation
+  - Added clear error messages
+  - Added import progress feedback
+  - Added success confirmation with device count
+  - Added automatic page reload after import
+  - Added CSV format documentation
+  - Fixed MongoDB device association
 
 ### Security
 

@@ -448,6 +448,26 @@ Lab PC 1,192.168.1.100,Windows 10,LAB-PC1,Internal,Workstation,None,domain\user1
 
 **Note**: All fields except Notes are required. The import will fail if required fields are missing.
 
+### CSV Import Format
+
+To import devices using CSV:
+
+1. Create a CSV file with the following headers:
+```csv
+Device Name,IP Address,Operating System,Hostname,Network,System Role,Hypervisor,Domain User,Zscaler User,Zscaler Segment,Notes
+```
+
+2. Example row:
+```csv
+Lab PC 1,192.168.1.100,Windows 10,LAB-PC1,Internal,Workstation,VMware,domain\user1,zscaler1,segment1,Test machine
+```
+
+3. Click "Import CSV" on the dashboard
+4. Select your CSV file
+5. Wait for import confirmation
+
+All fields except Notes are required. The import will fail if required fields are missing.
+
 ## Device Management
 
 The dashboard provides a comprehensive device management interface with the following features:

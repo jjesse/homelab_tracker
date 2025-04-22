@@ -51,7 +51,7 @@
         <div class="bulk-actions">
           <button id="selectAll" class="btn btn-secondary">Select All</button>
           <button id="exportCSV" class="btn btn-success">Export CSV</button>
-          <form action="/devices/import" method="POST" enctype="multipart/form-data" id="importForm" style="display: inline;">
+          <form id="importForm" style="display: inline;">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <input type="file" id="csvImport" name="csvFile" accept=".csv" style="display: none;">
             <button type="button" id="importButton" class="btn btn-info">Import CSV</button>
@@ -726,7 +726,8 @@
           })
           .then(data => {
             if (data.success) {
-              window.location.reload();
+              alert(`Successfully imported ${data.deviceCount} devices. Reloading page...`);
+              window.location.reload(true); // Force reload from server
             } else {
               throw new Error(data.message || 'Import failed');
             }
@@ -740,7 +741,49 @@
         }
       });
 
-      // ...rest of existing code...
+      // File import handlers
+      document.getElementById('importButton').addEventListener('click', function() {
+        document.getElementById('csvImport').click();
+      });
+
+      document.getElementById('csvImport').addEventListener('change', function() {
+        if (this.files.length > 0) {
+          const formData = new FormData();
+          formData.append('csvFile', this.files[0]);
+          formData.append('_csrf', document.querySelector('input[name="_csrf"]').value);
+
+          const btn = document.getElementById('importButton');
+          btn.textContent = 'Importing...';
+          btn.disabled = true;
+
+          fetch('/devices/import', {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin'
+          })
+          .then(async response => {
+            if (!response.ok) throw new Error('Import failed');
+            return response.json();
+          })
+          .then(data => {
+            if (data.success) {
+              alert(`Successfully imported ${data.deviceCount} devices`);
+              window.location.reload();
+            } else {
+              throw new Error(data.message);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('Import failed: ' + error.message);
+          })
+          .finally(() => {
+            btn.textContent = 'Import CSV';
+            btn.disabled = false;
+            this.value = ''; // Reset file input
+          });
+        }
+      });
     });
   </script>
 </body>
