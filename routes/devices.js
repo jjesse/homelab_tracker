@@ -187,13 +187,12 @@ router.delete('/:id', ensureAuthenticated, async (req, res) => {
 
 // Import devices from CSV
 router.post('/import', ensureAuthenticated, upload.single('csvFile'), async (req, res) => {
-  if (!req.file) {
-    req.flash('error_msg', 'No file uploaded');
-    return res.redirect('/dashboard');
-  }
-
-  const devices = [];
   try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    const devices = [];
     // Parse CSV with strict column validation
     await new Promise((resolve, reject) => {
       csv.parseFile(req.file.path, { 
@@ -244,18 +243,23 @@ router.post('/import', ensureAuthenticated, upload.single('csvFile'), async (req
     // Clean up uploaded file
     fs.unlinkSync(req.file.path);
     
-    req.flash('success_msg', `Successfully imported ${devices.length} devices`);
+    // Send JSON response instead of redirect
+    res.json({ 
+      success: true, 
+      message: `Successfully imported ${devices.length} devices`
+    });
   } catch (err) {
     console.error('CSV import error:', err);
-    req.flash('error_msg', 'Error importing CSV file. Please check the format and try again.');
+    res.status(500).json({ 
+      success: false, 
+      message: 'Error importing CSV file. Please check the format and try again.' 
+    });
     
     // Clean up on error
     if (req.file && fs.existsSync(req.file.path)) {
       fs.unlinkSync(req.file.path);
     }
   }
-  
-  res.redirect('/dashboard');
 });
 
 module.exports = router;

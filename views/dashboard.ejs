@@ -701,17 +701,37 @@
         document.getElementById('csvImport').click();
       });
 
-      document.getElementById('csvImport').addEventListener('change', function(e) {
+      document.getElementById('csvImport').addEventListener('change', function() {
         if (this.files.length > 0) {
           const btn = document.getElementById('importButton');
           btn.textContent = 'Importing...';
           btn.disabled = true;
+
+          // Create FormData and append CSRF token
+          const formData = new FormData(document.getElementById('importForm'));
           
-          // Show filename being imported
-          const filename = e.target.files[0].name;
-          btn.title = `Importing ${filename}...`;
-          
-          document.getElementById('importForm').submit();
+          // Submit using fetch with proper headers
+          fetch('/devices/import', {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'CSRF-Token': '<%= csrfToken %>'
+            },
+            credentials: 'same-origin'
+          })
+          .then(response => {
+            if (response.ok) {
+              window.location.reload();
+            } else {
+              throw new Error('Import failed');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            btn.textContent = 'Import CSV';
+            btn.disabled = false;
+            alert('Failed to import CSV file. Please try again.');
+          });
         }
       });
 
