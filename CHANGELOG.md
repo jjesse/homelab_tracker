@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.2]
 
 ### Added
 
@@ -210,8 +210,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed CSV import functionality:
   - Added proper form submission handling
   - Added loading indicator during import
-  - Fixed file input trigger
-  - Fixed form submission event handling
+  - Fixed file input trigger by adding dedicated click handler
+  - Fixed form submission event handling 
+  - Fixed Import CSV button not triggering file selection dialog
+- Enhanced CSV import functionality:
+  - Fixed file input triggering on Import CSV button click
+  - Added visual feedback during import process
+  - Added filename tooltip during import
+  - Verified form configuration and file upload handling 
 
 ### Security
 

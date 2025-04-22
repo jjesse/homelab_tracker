@@ -54,7 +54,7 @@
           <form action="/devices/import" method="POST" enctype="multipart/form-data" id="importForm" style="display: inline;">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <input type="file" id="csvImport" name="csvFile" accept=".csv" style="display: none;">
-            <button type="button" class="btn btn-info" onclick="document.getElementById('csvImport').click()">Import CSV</button>
+            <button type="button" id="importButton" class="btn btn-info">Import CSV</button>
           </form>
           <select id="bulkAction" class="form-control" disabled>
             <option value="">Bulk Actions...</option>
@@ -697,12 +697,20 @@
       <% } %>
 
       // File input change handler with loading indicator
-      document.getElementById('csvImport').addEventListener('change', function() {
+      document.getElementById('importButton').addEventListener('click', function() {
+        document.getElementById('csvImport').click();
+      });
+
+      document.getElementById('csvImport').addEventListener('change', function(e) {
         if (this.files.length > 0) {
-          const btn = this.closest('form').querySelector('.btn-info');
+          const btn = document.getElementById('importButton');
           btn.textContent = 'Importing...';
           btn.disabled = true;
-          // Get the form by ID and submit it
+          
+          // Show filename being imported
+          const filename = e.target.files[0].name;
+          btn.title = `Importing ${filename}...`;
+          
           document.getElementById('importForm').submit();
         }
       });
