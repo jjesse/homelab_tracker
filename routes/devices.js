@@ -30,6 +30,88 @@ router.get('/', ensureAuthenticated, async (req, res) => {
   }
 });
 
+// Import devices from CSV - Move this BEFORE the /:id routes
+router.post('/import', [ensureAuthenticated, upload.single('csvFile')], async (req, res) => {
+  try {
+    // Add error handling for missing file
+    if (!req.file) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Please upload a valid CSV file'
+      });
+    }
+
+    const devices = [];
+    // Parse CSV with strict column validation
+    await new Promise((resolve, reject) => {
+      csv.parseFile(req.file.path, { 
+        headers: true,
+        strictColumnHandling: true,
+        trim: true,
+        skipRows: 0,
+        validateHeader: true,
+        headers: [
+          'Device Name', 'IP Address', 'Operating System', 'Hostname',
+          'Network', 'System Role', 'Hypervisor', 'Domain User',
+          'Zscaler User', 'Zscaler Segment', 'Notes'
+        ]
+      })
+        .on('data', (data) => {
+          devices.push({
+            name: data['Device Name'],
+            ipAddress: data['IP Address'],
+            operatingSystem: data['Operating System'],
+            hostname: data['Hostname'],
+            network: data['Network'],
+            systemRole: data['System Role'],
+            hypervisorInstalledOn: data['Hypervisor'],
+            domainUserSignedIn: data['Domain User'],
+            zscalerUserSignedIn: data['Zscaler User'],
+            zscalerAppSegment: data['Zscaler Segment'],
+            notes: data['Notes'],
+            user: req.user.id
+          });
+        })
+        .on('end', resolve)
+        .on('error', reject);
+    });
+
+    // Insert devices and get their IDs
+    const savedDevices = await Device.insertMany(devices);
+    
+    // Update user's devices array with new device IDs
+    await User.findByIdAndUpdate(
+      req.user.id,
+      { $push: { devices: { $each: savedDevices.map(d => d._id) } } },
+      { new: true }
+    );
+
+    // Set flag to reload charts
+    req.session.reloadCharts = true;
+
+    // Clean up uploaded file
+    fs.unlinkSync(req.file.path);
+    
+    // Send JSON response instead of redirect
+    res.json({ 
+      success: true, 
+      message: `Successfully imported ${devices.length} devices`
+    });
+  } catch (err) {
+    console.error('CSV import error:', err);
+    
+    // Clean up on error
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+
+    res.status(500).json({ 
+      success: false, 
+      message: err.message || 'Error importing CSV file. Please check the format and try again.'
+    });
+  }
+});
+
 // Get single device
 router.get('/:id', ensureAuthenticated, async (req, res) => {
   try {
@@ -184,88 +266,6 @@ router.delete('/:id', ensureAuthenticated, async (req, res) => {
     res.json({ message: 'Device deleted successfully' });
   } catch (err) {
     res.status(500).json({ message: err.message });
-  }
-});
-
-// Import devices from CSV
-router.post('/import', [ensureAuthenticated, upload.single('csvFile')], async (req, res) => {
-  try {
-    // Add error handling for missing file
-    if (!req.file) {
-      return res.status(400).json({ 
-        success: false,
-        message: 'Please upload a valid CSV file'
-      });
-    }
-
-    const devices = [];
-    // Parse CSV with strict column validation
-    await new Promise((resolve, reject) => {
-      csv.parseFile(req.file.path, { 
-        headers: true,
-        strictColumnHandling: true,
-        trim: true,
-        skipRows: 0,
-        validateHeader: true,
-        headers: [
-          'Device Name', 'IP Address', 'Operating System', 'Hostname',
-          'Network', 'System Role', 'Hypervisor', 'Domain User',
-          'Zscaler User', 'Zscaler Segment', 'Notes'
-        ]
-      })
-        .on('data', (data) => {
-          devices.push({
-            name: data['Device Name'],
-            ipAddress: data['IP Address'],
-            operatingSystem: data['Operating System'],
-            hostname: data['Hostname'],
-            network: data['Network'],
-            systemRole: data['System Role'],
-            hypervisorInstalledOn: data['Hypervisor'],
-            domainUserSignedIn: data['Domain User'],
-            zscalerUserSignedIn: data['Zscaler User'],
-            zscalerAppSegment: data['Zscaler Segment'],
-            notes: data['Notes'],
-            user: req.user.id
-          });
-        })
-        .on('end', resolve)
-        .on('error', reject);
-    });
-
-    // Insert devices and get their IDs
-    const savedDevices = await Device.insertMany(devices);
-    
-    // Update user's devices array with new device IDs
-    await User.findByIdAndUpdate(
-      req.user.id,
-      { $push: { devices: { $each: savedDevices.map(d => d._id) } } },
-      { new: true }
-    );
-
-    // Set flag to reload charts
-    req.session.reloadCharts = true;
-
-    // Clean up uploaded file
-    fs.unlinkSync(req.file.path);
-    
-    // Send JSON response instead of redirect
-    res.json({ 
-      success: true, 
-      message: `Successfully imported ${devices.length} devices`
-    });
-  } catch (err) {
-    console.error('CSV import error:', err);
-    
-    // Clean up on error
-    if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
-    }
-
-    res.status(500).json({ 
-      success: false, 
-      message: err.message || 'Error importing CSV file. Please check the format and try again.'
-    });
   }
 });
 

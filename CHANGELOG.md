@@ -241,6 +241,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added better validation in multer configuration
   - Fixed content-type checking in fetch response
   - Added more descriptive error messages
+- Fixed CSV import route conflict:
+  - Reordered routes to handle /import before /:id
+  - Fixed MongoDB ObjectId cast error
+  - Prevented import path from being treated as device ID
+  - Improved route handler order to fix conflict
+  - Added better error messaging for routing issues
 
 ### Security
 
