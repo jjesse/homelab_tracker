@@ -1,6 +1,7 @@
-// ...existing code...
 .env
 certs/
 gitup.sh
 .github/copilot-instructions.md
-/uploads/
+/uploads/*
+!public/styles/
+!public/scripts/

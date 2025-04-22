@@ -9,18 +9,19 @@ const fs = require('fs');
 
 // Configure multer for CSV uploads
 const storage = multer.diskStorage({
-  destination: 'uploads/',
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname);
+  destination: function(req, file, cb) {
+    cb(null, 'uploads/')
+  },
+  filename: function(req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname)
   }
 });
 
-const upload = multer({ 
+const upload = multer({
   storage: storage,
-  fileFilter: (req, file, cb) => {
-    const validMimeTypes = ['text/csv', 'application/vnd.ms-excel', 'application/csv', 'text/x-csv'];
-    if (!validMimeTypes.includes(file.mimetype)) {
-      return cb(new Error('Only CSV files are allowed'), false);
+  fileFilter: function(req, file, cb) {
+    if (!file.originalname.match(/\.(csv)$/)) {
+      return cb(new Error('Only CSV files are allowed'));
     }
     cb(null, true);
   }
@@ -37,49 +38,50 @@ router.get('/', ensureAuthenticated, async (req, res) => {
 });
 
 // Import devices from CSV - Move this BEFORE the /:id routes
-router.post('/import', [ensureAuthenticated, upload.single('csvFile')], async (req, res) => {
+router.post('/import', ensureAuthenticated, upload.single('csvFile'), async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
-        message: 'Please upload a valid CSV file'
+        message: 'No file uploaded'
       });
     }
 
     const devices = [];
     await new Promise((resolve, reject) => {
-      csv.parseFile(req.file.path, { 
+      csv.parseFile(req.file.path, {
         headers: true,
-        skipRows: 0,
         trim: true
       })
       .on('data', (data) => {
-        // Map the CSV fields to device fields
-        const device = {
-          name: data.name || data['Device Name'],
-          ipAddress: data.ipAddress || data['IP Address'],
-          operatingSystem: data.operatingSystem || data['Operating System'],
-          hostname: data.hostname || data['Hostname'],
+        devices.push({
+          name: data.name,
+          ipAddress: data.ipAddress,
+          operatingSystem: data.operatingSystem,
+          hostname: data.hostname,
           network: data.network || 'Default',
-          systemRole: data.systemRole || data['System Role'] || 'Standard',
-          hypervisorInstalledOn: data.hypervisorInstalledOn || data['Hypervisor'] || 'None',
-          domainUserSignedIn: data.domainUserSignedIn || data['Domain User'] || 'None',
-          zscalerUserSignedIn: data.zscalerUserSignedIn || data['Zscaler User'] || 'None',
-          zscalerAppSegment: data.zscalerAppSegment || data['Zscaler Segment'] || 'None',
-          notes: data.notes || data['Notes'] || '',
+          systemRole: data.systemRole || 'Standard',
+          hypervisorInstalledOn: data.hypervisorInstalledOn || 'None',
+          domainUserSignedIn: data.domainUserSignedIn || 'None',
+          zscalerUserSignedIn: data.zscalerUserSignedIn || 'None',
+          zscalerAppSegment: data.zscalerAppSegment || 'None',
+          notes: data.notes || '',
           user: req.user.id
-        };
-
-        // Validate required fields
-        if (!device.name || !device.ipAddress || !device.operatingSystem || !device.hostname) {
-          throw new Error('Missing required fields: Name, IP Address, Operating System, and Hostname are required');
-        }
-
-        devices.push(device);
+        });
       })
       .on('end', resolve)
       .on('error', reject);
     });
+
+    // Clean up uploaded file
+    fs.unlinkSync(req.file.path);
+
+    if (devices.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No devices found in CSV file'
+      });
+    }
 
     const savedDevices = await Device.insertMany(devices);
     await User.findByIdAndUpdate(
@@ -87,10 +89,8 @@ router.post('/import', [ensureAuthenticated, upload.single('csvFile')], async (r
       { $push: { devices: { $each: savedDevices.map(d => d._id) } } }
     );
 
-    fs.unlinkSync(req.file.path);
-    
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       message: `Successfully imported ${devices.length} devices`,
       deviceCount: devices.length
     });
@@ -99,9 +99,9 @@ router.post('/import', [ensureAuthenticated, upload.single('csvFile')], async (r
     if (req.file && fs.existsSync(req.file.path)) {
       fs.unlinkSync(req.file.path);
     }
-    res.status(500).json({ 
-      success: false, 
-      message: err.message || 'Error importing CSV file'
+    res.status(500).json({
+      success: false,
+      message: err.message || 'Error importing devices'
     });
   }
 });
