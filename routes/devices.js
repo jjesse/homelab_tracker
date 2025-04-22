@@ -50,23 +50,32 @@ router.post('/import', [ensureAuthenticated, upload.single('csvFile')], async (r
     await new Promise((resolve, reject) => {
       csv.parseFile(req.file.path, { 
         headers: true,
-        skipRows: 0
+        skipRows: 0,
+        trim: true
       })
       .on('data', (data) => {
-        devices.push({
-          name: data['Device Name'],
-          ipAddress: data['IP Address'],
-          operatingSystem: data['Operating System'],
-          hostname: data['Hostname'],
-          network: data['Network'],
-          systemRole: data['System Role'],
-          hypervisorInstalledOn: data['Hypervisor'],
-          domainUserSignedIn: data['Domain User'],
-          zscalerUserSignedIn: data['Zscaler User'],
-          zscalerAppSegment: data['Zscaler Segment'],
+        // Add validation and default values
+        const device = {
+          name: data['Device Name'] || '',
+          ipAddress: data['IP Address'] || '',
+          operatingSystem: data['Operating System'] || '',
+          hostname: data['Hostname'] || '',
+          network: data['Network'] || 'Default',
+          systemRole: data['System Role'] || 'Standard',
+          hypervisorInstalledOn: data['Hypervisor'] || 'None',
+          domainUserSignedIn: data['Domain User'] || 'None',
+          zscalerUserSignedIn: data['Zscaler User'] || 'None',
+          zscalerAppSegment: data['Zscaler Segment'] || 'None',
           notes: data['Notes'] || '',
           user: req.user.id
-        });
+        };
+
+        // Validate required fields
+        if (!device.name || !device.ipAddress || !device.operatingSystem || !device.hostname) {
+          throw new Error('Missing required fields: Name, IP Address, Operating System, and Hostname are required');
+        }
+
+        devices.push(device);
       })
       .on('end', resolve)
       .on('error', reject);

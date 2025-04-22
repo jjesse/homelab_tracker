@@ -91,9 +91,11 @@ This web application allows you to store details about your home lab devices. Yo
    ```
 
    Important: For ARM systems without ARMv8.2-A support, also set:
+
    ```
    MONGO_IMAGE=mongo:4.4.18
    ```
+
    Note: MongoDB 7.0+ requires ARMv8.2-A or higher. Use MongoDB 4.4.18 for older ARM systems.
 
 3. Build and start the containers:
@@ -432,6 +434,7 @@ sudo journalctl -u homelab
 ### CSV Import/Export
 
 #### Importing Devices
+
 To import devices via CSV:
 
 1. Click the "Import CSV" button in the Device Management section
@@ -441,6 +444,7 @@ To import devices via CSV:
 5. Page will refresh with imported devices
 
 **CSV Format Requirements:**
+
 ```csv
 Device Name,IP Address,Operating System,Hostname,Network,System Role,Hypervisor,Domain User,Zscaler User,Zscaler Segment,Notes
 Lab PC 1,192.168.1.100,Windows 10,LAB-PC1,Internal,Workstation,None,domain\user1,zscaler1,segment1,Test machine
@@ -450,23 +454,45 @@ Lab PC 1,192.168.1.100,Windows 10,LAB-PC1,Internal,Workstation,None,domain\user1
 
 ### CSV Import Format
 
-To import devices using CSV:
+Required fields:
+- name (Device Name)
+- ipAddress (IP Address)
+- operatingSystem (Operating System)
+- hostname (Hostname)
 
-1. Create a CSV file with the following headers:
-```csv
-Device Name,IP Address,Operating System,Hostname,Network,System Role,Hypervisor,Domain User,Zscaler User,Zscaler Segment,Notes
-```
+Optional fields (defaults in parentheses):
+- network (Default)
+- systemRole (Standard)
+- hypervisorInstalledOn (None)
+- domainUserSignedIn (None)
+- zscalerUserSignedIn (None)
+- zscalerAppSegment (None)
+- notes (empty)
 
-2. Example row:
+Example CSV format:
 ```csv
+name,ipAddress,operatingSystem,hostname,network,systemRole,hypervisorInstalledOn,domainUserSignedIn,zscalerUserSignedIn,zscalerAppSegment,notes
 Lab PC 1,192.168.1.100,Windows 10,LAB-PC1,Internal,Workstation,VMware,domain\user1,zscaler1,segment1,Test machine
 ```
 
-3. Click "Import CSV" on the dashboard
-4. Select your CSV file
-5. Wait for import confirmation
+Note: The field names must exactly match those shown above. These correspond directly to the database fields in the application.
 
-All fields except Notes are required. The import will fail if required fields are missing.
+Common field name mappings:
+| Display Name | CSV Field Name |
+|--------------|---------------|
+| Device Name | name |
+| IP Address | ipAddress |
+| Operating System | operatingSystem |
+| Hostname | hostname |
+| Network | network |
+| System Role | systemRole |
+| Hypervisor | hypervisorInstalledOn |
+| Domain User | domainUserSignedIn |
+| Zscaler User | zscalerUserSignedIn |
+| Zscaler App Segment | zscalerAppSegment |
+| Notes | notes |
+
+Only the first 4 fields are required, others will use default values if omitted.
 
 ## Device Management
 

@@ -35,11 +35,11 @@ const DeviceSchema = new mongoose.Schema({
   },
   zscalerUserSignedIn: {
     type: String,
-    required: true
+    default: 'None'  // Change from required to optional with default
   },
   zscalerAppSegment: {
     type: String,
-    required: true
+    default: 'None'  // Change from required to optional with default
   },
   notes: {
     type: String

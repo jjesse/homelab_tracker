@@ -263,6 +263,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added automatic page reload after import
   - Added CSV format documentation
   - Fixed MongoDB device association
+- Fixed CSV import validation:
+  - Made Zscaler fields optional with defaults
+  - Added better validation for required fields
+  - Improved empty field handling
+  - Updated CSV import documentation
+  - Added clear field requirements
+  - Added default values for optional fields
 
 ### Security
 
