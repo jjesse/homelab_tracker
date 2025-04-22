@@ -270,6 +270,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated CSV import documentation
   - Added clear field requirements
   - Added default values for optional fields
+- Fixed CSV import file dialog issues:
+  - Prevented double file dialog prompt
+  - Added proper file input clearing
+  - Improved error handling flow
+  - Fixed success/error message timing
+  - Added proper input reset after upload
 
 ### Security
 

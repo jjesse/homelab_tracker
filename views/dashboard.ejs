@@ -56,13 +56,6 @@
             <input type="file" id="csvImport" name="csvFile" accept=".csv" style="display: none;">
             <button type="button" id="importButton" class="btn btn-info">Import CSV</button>
           </form>
-          <select id="bulkAction" class="form-control" disabled>
-            <option value="">Bulk Actions...</option>
-            <option value="delete">Delete Selected</option>
-            <option value="updateNetwork">Update Network</option>
-            <option value="updateRole">Update Role</option>
-          </select>
-          <button id="applyBulk" class="btn btn-primary" disabled>Apply</button>
         </div>
       </div>
       <div class="device-table-container">
@@ -742,47 +735,53 @@
       });
 
       // File import handlers
-      document.getElementById('importButton').addEventListener('click', function() {
-        document.getElementById('csvImport').click();
+      const importButton = document.getElementById('importButton');
+      const csvImport = document.getElementById('csvImport');
+      
+      importButton.addEventListener('click', function() {
+        csvImport.value = ''; // Clear previous selection
+        csvImport.click();
       });
 
-      document.getElementById('csvImport').addEventListener('change', function() {
-        if (this.files.length > 0) {
-          const formData = new FormData();
-          formData.append('csvFile', this.files[0]);
-          formData.append('_csrf', document.querySelector('input[name="_csrf"]').value);
+      csvImport.addEventListener('change', function() {
+        if (this.files.length === 0) return;
 
-          const btn = document.getElementById('importButton');
-          btn.textContent = 'Importing...';
-          btn.disabled = true;
+        importButton.textContent = 'Importing...';
+        importButton.disabled = true;
 
-          fetch('/devices/import', {
-            method: 'POST',
-            body: formData,
-            credentials: 'same-origin'
-          })
-          .then(async response => {
-            if (!response.ok) throw new Error('Import failed');
-            return response.json();
-          })
-          .then(data => {
-            if (data.success) {
-              alert(`Successfully imported ${data.deviceCount} devices`);
-              window.location.reload();
-            } else {
-              throw new Error(data.message);
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            alert('Import failed: ' + error.message);
-          })
-          .finally(() => {
-            btn.textContent = 'Import CSV';
-            btn.disabled = false;
-            this.value = ''; // Reset file input
-          });
-        }
+        const formData = new FormData();
+        formData.append('csvFile', this.files[0]);
+        formData.append('_csrf', document.querySelector('input[name="_csrf"]').value);
+
+        fetch('/devices/import', {
+          method: 'POST',
+          body: formData,
+          credentials: 'same-origin'
+        })
+        .then(async response => {
+          if (!response.ok) {
+            const data = await response.json();
+            throw new Error(data.message || 'Import failed');
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.success) {
+            alert(`Successfully imported ${data.deviceCount} devices. Reloading page...`);
+            window.location.reload();
+          } else {
+            throw new Error(data.message || 'Import failed');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Import failed: ' + error.message);
+        })
+        .finally(() => {
+          importButton.textContent = 'Import CSV';
+          importButton.disabled = false;
+          this.value = ''; // Reset file input
+        });
       });
     });
   </script>
