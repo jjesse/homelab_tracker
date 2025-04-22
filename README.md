@@ -454,26 +454,41 @@ Lab PC 1,192.168.1.100,Windows 10,LAB-PC1,Internal,Workstation,None,domain\user1
 
 ### CSV Import Format
 
-Required fields:
-- name (Device Name)
-- ipAddress (IP Address)
-- operatingSystem (Operating System)
-- hostname (Hostname)
+The CSV file must use one of these two header formats:
 
-Optional fields (defaults in parentheses):
-- network (Default)
-- systemRole (Standard)
-- hypervisorInstalledOn (None)
-- domainUserSignedIn (None)
-- zscalerUserSignedIn (None)
-- zscalerAppSegment (None)
-- notes (empty)
-
-Example CSV format:
+1. Database field names (recommended):
 ```csv
 name,ipAddress,operatingSystem,hostname,network,systemRole,hypervisorInstalledOn,domainUserSignedIn,zscalerUserSignedIn,zscalerAppSegment,notes
 Lab PC 1,192.168.1.100,Windows 10,LAB-PC1,Internal,Workstation,VMware,domain\user1,zscaler1,segment1,Test machine
 ```
+
+2. Display names (alternative):
+```csv
+Device Name,IP Address,Operating System,Hostname,Network,System Role,Hypervisor,Domain User,Zscaler User,Zscaler Segment,Notes
+Lab PC 1,192.168.1.100,Windows 10,LAB-PC1,Internal,Workstation,VMware,domain\user1,zscaler1,segment1,Test machine
+```
+
+Required fields (either format):
+- name / Device Name
+- ipAddress / IP Address
+- operatingSystem / Operating System
+- hostname / Hostname
+
+Optional fields with defaults:
+- network / Network (Default: "Default")
+- systemRole / System Role (Default: "Standard")
+- hypervisorInstalledOn / Hypervisor (Default: "None")
+- domainUserSignedIn / Domain User (Default: "None")
+- zscalerUserSignedIn / Zscaler User (Default: "None")
+- zscalerAppSegment / Zscaler Segment (Default: "None")
+- notes / Notes (Default: empty)
+
+### Sample CSV Files
+
+Download these example files to get started:
+
+- [sample_db_fields.csv](examples/sample_db_fields.csv) - Using database field names
+- [sample_display_fields.csv](examples/sample_display_fields.csv) - Using display names
 
 Note: The field names must exactly match those shown above. These correspond directly to the database fields in the application.
 

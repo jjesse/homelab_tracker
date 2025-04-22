@@ -54,19 +54,19 @@ router.post('/import', [ensureAuthenticated, upload.single('csvFile')], async (r
         trim: true
       })
       .on('data', (data) => {
-        // Add validation and default values
+        // Map the CSV fields to device fields
         const device = {
-          name: data['Device Name'] || '',
-          ipAddress: data['IP Address'] || '',
-          operatingSystem: data['Operating System'] || '',
-          hostname: data['Hostname'] || '',
-          network: data['Network'] || 'Default',
-          systemRole: data['System Role'] || 'Standard',
-          hypervisorInstalledOn: data['Hypervisor'] || 'None',
-          domainUserSignedIn: data['Domain User'] || 'None',
-          zscalerUserSignedIn: data['Zscaler User'] || 'None',
-          zscalerAppSegment: data['Zscaler Segment'] || 'None',
-          notes: data['Notes'] || '',
+          name: data.name || data['Device Name'],
+          ipAddress: data.ipAddress || data['IP Address'],
+          operatingSystem: data.operatingSystem || data['Operating System'],
+          hostname: data.hostname || data['Hostname'],
+          network: data.network || 'Default',
+          systemRole: data.systemRole || data['System Role'] || 'Standard',
+          hypervisorInstalledOn: data.hypervisorInstalledOn || data['Hypervisor'] || 'None',
+          domainUserSignedIn: data.domainUserSignedIn || data['Domain User'] || 'None',
+          zscalerUserSignedIn: data.zscalerUserSignedIn || data['Zscaler User'] || 'None',
+          zscalerAppSegment: data.zscalerAppSegment || data['Zscaler Segment'] || 'None',
+          notes: data.notes || data['Notes'] || '',
           user: req.user.id
         };
 
