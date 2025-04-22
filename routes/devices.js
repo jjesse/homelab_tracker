@@ -186,17 +186,19 @@ router.delete('/:id', ensureAuthenticated, async (req, res) => {
 });
 
 // Import devices from CSV
-router.post('/import', ensureAuthenticated, upload.single('csvFile'), async (req, res) => {
+router.post('/import', [ensureAuthenticated, upload.single('csvFile')], async (req, res) => {
   try {
+    // Add error handling for missing file
     if (!req.file) {
       return res.status(400).json({ 
         success: false,
-        message: 'No file uploaded' 
+        message: 'No file uploaded'
       });
     }
 
-    if (req.file.mimetype !== 'text/csv') {
-      fs.unlinkSync(req.file.path); // Clean up invalid file
+    // Validate file type
+    if (!req.file.mimetype.includes('csv')) {
+      fs.unlinkSync(req.file.path);
       return res.status(400).json({
         success: false,
         message: 'Invalid file type. Please upload a CSV file.'

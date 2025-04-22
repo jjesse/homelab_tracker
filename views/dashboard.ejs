@@ -708,21 +708,22 @@
           btn.disabled = true;
 
           const formData = new FormData(document.getElementById('importForm'));
-          
+
           fetch('/devices/import', {
             method: 'POST',
             body: formData,
+            credentials: 'same-origin',
             headers: {
-              // Remove CSRF token from headers since it's in formData
-              // It should only be in one place
-            },
-            credentials: 'same-origin'
+              // The CSRF token needs to be in a custom header for the csurf middleware
+              'CSRF-Token': document.querySelector('input[name="_csrf"]').value
+            }
           })
-          .then(response => {
-            if (response.ok) {
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
               window.location.reload();
             } else {
-              return response.json().then(err => { throw new Error(err.message) });
+              throw new Error(data.message);
             }
           })
           .catch(error => {

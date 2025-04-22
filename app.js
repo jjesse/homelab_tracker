@@ -99,7 +99,18 @@ app.use(passport.session());
 app.use(csrf({
   cookie: {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production'
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict'
+  },
+  // Add value function to check both body and headers
+  value: function(req) {
+    return (
+      req.body._csrf ||
+      req.query._csrf ||
+      req.headers['csrf-token'] ||
+      req.headers['x-csrf-token'] ||
+      req.headers['x-xsrf-token']
+    );
   }
 }));
 
