@@ -714,16 +714,21 @@
             body: formData,
             credentials: 'same-origin',
             headers: {
-              // The CSRF token needs to be in a custom header for the csurf middleware
               'CSRF-Token': document.querySelector('input[name="_csrf"]').value
             }
           })
-          .then(response => response.json())
+          .then(async response => {
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+              throw new Error('Server error occurred. Please try again.');
+            }
+            return response.json();
+          })
           .then(data => {
             if (data.success) {
               window.location.reload();
             } else {
-              throw new Error(data.message);
+              throw new Error(data.message || 'Import failed');
             }
           })
           .catch(error => {

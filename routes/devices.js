@@ -11,8 +11,10 @@ const fs = require('fs');
 const upload = multer({ 
   dest: 'uploads/',
   fileFilter: (req, file, cb) => {
-    if (file.mimetype !== 'text/csv') {
-      return cb(new Error('Only CSV files are allowed'));
+    // Fix mimetype checking to handle different CSV mime types
+    const validMimeTypes = ['text/csv', 'application/vnd.ms-excel', 'application/csv', 'text/x-csv'];
+    if (!validMimeTypes.includes(file.mimetype)) {
+      return cb(null, false);
     }
     cb(null, true);
   }
@@ -192,16 +194,7 @@ router.post('/import', [ensureAuthenticated, upload.single('csvFile')], async (r
     if (!req.file) {
       return res.status(400).json({ 
         success: false,
-        message: 'No file uploaded'
-      });
-    }
-
-    // Validate file type
-    if (!req.file.mimetype.includes('csv')) {
-      fs.unlinkSync(req.file.path);
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid file type. Please upload a CSV file.'
+        message: 'Please upload a valid CSV file'
       });
     }
 

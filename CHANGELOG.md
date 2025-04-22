@@ -235,6 +235,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added proper file type validation
   - Added proper cleanup of failed uploads
   - Fixed file upload response handling
+- Fixed CSV import error handling:
+  - Added support for multiple CSV mime types
+  - Improved error handling for non-JSON responses
+  - Added better validation in multer configuration
+  - Fixed content-type checking in fetch response
+  - Added more descriptive error messages
 
 ### Security
 
