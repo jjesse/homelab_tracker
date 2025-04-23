@@ -18,7 +18,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({
-  storage: storage,
+  dest: 'uploads/',
   fileFilter: function(req, file, cb) {
     if (!file.originalname.match(/\.(csv)$/)) {
       return cb(new Error('Only CSV files are allowed'));
@@ -41,46 +41,39 @@ router.get('/', ensureAuthenticated, async (req, res) => {
 router.post('/import', ensureAuthenticated, upload.single('csvFile'), async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: 'No file uploaded'
-      });
+      req.flash('error_msg', 'Please select a file to import');
+      return res.redirect('/dashboard');
     }
 
     const devices = [];
     await new Promise((resolve, reject) => {
-      csv.parseFile(req.file.path, {
-        headers: true,
-        trim: true
-      })
-      .on('data', (data) => {
-        devices.push({
-          name: data.name,
-          ipAddress: data.ipAddress,
-          operatingSystem: data.operatingSystem,
-          hostname: data.hostname,
-          network: data.network || 'Default',
-          systemRole: data.systemRole || 'Standard',
-          hypervisorInstalledOn: data.hypervisorInstalledOn || 'None',
-          domainUserSignedIn: data.domainUserSignedIn || 'None',
-          zscalerUserSignedIn: data.zscalerUserSignedIn || 'None',
-          zscalerAppSegment: data.zscalerAppSegment || 'None',
-          notes: data.notes || '',
-          user: req.user.id
-        });
-      })
-      .on('end', resolve)
-      .on('error', reject);
+      csv.parseFile(req.file.path)
+        .on('data', (data) => {
+          devices.push({
+            name: data.name || data['Device Name'],
+            ipAddress: data.ipAddress || data['IP Address'],
+            operatingSystem: data.operatingSystem || data['Operating System'],
+            hostname: data.hostname || data['Hostname'],
+            network: data.network || data['Network'] || 'Default',
+            systemRole: data.systemRole || data['System Role'] || 'Standard',
+            hypervisorInstalledOn: data.hypervisorInstalledOn || data['Hypervisor'] || 'None',
+            domainUserSignedIn: data.domainUserSignedIn || data['Domain User'] || 'None',
+            zscalerUserSignedIn: data.zscalerUserSignedIn || data['Zscaler User'] || 'None',
+            zscalerAppSegment: data.zscalerAppSegment || data['Zscaler Segment'] || 'None',
+            notes: data.notes || data['Notes'] || '',
+            user: req.user.id
+          });
+        })
+        .on('end', resolve)
+        .on('error', reject);
     });
 
-    // Clean up uploaded file
+    // Clean up the uploaded file
     fs.unlinkSync(req.file.path);
 
     if (devices.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'No devices found in CSV file'
-      });
+      req.flash('error_msg', 'No devices found in CSV file');
+      return res.redirect('/dashboard');
     }
 
     const savedDevices = await Device.insertMany(devices);
@@ -89,20 +82,12 @@ router.post('/import', ensureAuthenticated, upload.single('csvFile'), async (req
       { $push: { devices: { $each: savedDevices.map(d => d._id) } } }
     );
 
-    res.json({
-      success: true,
-      message: `Successfully imported ${devices.length} devices`,
-      deviceCount: devices.length
-    });
+    req.flash('success_msg', `Successfully imported ${devices.length} devices`);
+    res.redirect('/dashboard');
   } catch (err) {
-    console.error('CSV import error:', err);
-    if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
-    }
-    res.status(500).json({
-      success: false,
-      message: err.message || 'Error importing devices'
-    });
+    console.error('Import error:', err);
+    req.flash('error_msg', 'Error importing devices: ' + err.message);
+    res.redirect('/dashboard');
   }
 });
 

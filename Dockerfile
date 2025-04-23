@@ -27,11 +27,9 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-# Create required directories with proper permissions
-RUN mkdir -p certs && \
-    mkdir -p uploads && \
-    chown -R node:node /app && \
-    chown -R node:node uploads && \
+# Create uploads directory with proper permissions
+RUN mkdir -p uploads && \
+    chown node:node uploads && \
     chmod 755 uploads
 
 # Copy node modules and other files from builder
@@ -42,7 +40,7 @@ COPY . .
 COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
 RUN chmod +x /usr/local/bin/wait-for-it.sh
 
-# Set proper permissions
+# Set proper permissions for copied files
 RUN chown -R node:node /app
 
 # Switch to non-root user
