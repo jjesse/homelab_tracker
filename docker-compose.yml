@@ -41,7 +41,7 @@ services:
           memory: 256m
     restart: unless-stopped
     volumes:
-      - uploads_data:/app/uploads
+      - uploads_data:/app/uploads  # Named volume for uploads
       - ./certs:/app/certs
       - /app/node_modules
     logging:
@@ -121,9 +121,9 @@ volumes:
     name: homelab_mongodb_data
   redis_data:
     name: homelab_redis_data
-  uploads_data:
-    name: homelab_uploads
-    driver: local
+  uploads_data:             # Define the uploads volume
+    name: homelab_uploads   # Give it a specific name
+    driver: local          # Use local driver
   uploads:
     driver: local
 

@@ -47,7 +47,7 @@ router.post('/import', ensureAuthenticated, upload.single('csvFile'), async (req
 
     const devices = [];
     await new Promise((resolve, reject) => {
-      csv.parseFile(req.file.path)
+      csv.parseFile(req.file.path, { headers: true })
         .on('data', (data) => {
           devices.push({
             name: data.name || data['Device Name'],
@@ -86,6 +86,9 @@ router.post('/import', ensureAuthenticated, upload.single('csvFile'), async (req
     res.redirect('/dashboard');
   } catch (err) {
     console.error('Import error:', err);
+    if (req.file) {
+      fs.unlinkSync(req.file.path);
+    }
     req.flash('error_msg', 'Error importing devices: ' + err.message);
     res.redirect('/dashboard');
   }

@@ -54,7 +54,7 @@
           <form id="importForm" method="post" action="/devices/import" enctype="multipart/form-data">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <input type="file" id="csvImport" name="csvFile" accept=".csv" style="display: none;">
-            <button type="button" class="btn btn-info" onclick="document.getElementById('csvImport').click()">Import CSV</button>
+            <button type="button" id="importButton" class="btn btn-info">Import CSV</button>
           </form>
         </div>
       </div>
