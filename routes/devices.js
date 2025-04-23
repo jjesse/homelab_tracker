@@ -37,7 +37,7 @@ router.get('/', ensureAuthenticated, async (req, res) => {
   }
 });
 
-// Import devices from CSV - Move this BEFORE the /:id routes
+// Import devices from CSV - Keep this BEFORE other routes
 router.post('/import', ensureAuthenticated, upload.single('csvFile'), async (req, res) => {
   try {
     if (!req.file) {

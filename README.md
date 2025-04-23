@@ -116,6 +116,24 @@ This web application allows you to store details about your home lab devices. Yo
 
 The application is containerized using Docker with the following features:
 
+### File Permissions
+
+The application requires specific permissions for file uploads to work correctly:
+
+1. Upload directory permissions:
+   ```bash
+   mkdir -p uploads
+   chmod 755 uploads
+   chown -R node:node uploads
+   ```
+
+2. The Docker container automatically sets these permissions via the Dockerfile:
+   - Creates uploads directory: `mkdir -p uploads`
+   - Sets ownership: `chown -R node:node /app/uploads`
+   - Sets permissions: `chmod 755 /app/uploads`
+
+Note: These permissions are automatically handled by the Docker container. You only need to manually set them if running the application locally without Docker.
+
 ### Services
 
 - **Application**: Node.js application running on port 5000
