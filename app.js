@@ -6,7 +6,7 @@ const session = require('express-session');
 const passport = require('passport');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const csrf = require('csurf');
+const { csrfSync } = require('csrf-sync');
 const morgan = require('morgan');
 const https = require('https');
 const fs = require('fs');
@@ -31,7 +31,15 @@ const limiter = rateLimit({
 });
 
 // CSRF protection
-const csrfProtection = csrf();
+const {
+  // invalidCsrfTokenError, // We can use this for custom error handling if needed
+  generateToken, // Use this in routes to generate, store, and get a CSRF token if needed before middleware
+  // getTokenFromRequest, // Can be customized if token is not in x-csrf-token header
+  // getTokenFromState, // Can be customized if token is not in req.session.csrfToken
+  // storeTokenInState, // Can be customized for session storage
+  // revokeToken, // Can be used to manually revoke tokens
+  csrfSynchronisedProtection // The main middleware
+} = csrfSync();
 
 // DB Config
 const db = process.env.MONGODB_URI;
@@ -95,16 +103,18 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// CSRF protection with proper cookie config
-app.use(csrf({
-  cookie: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production'
-  }
-}));
+// CSRF protection using csrf-sync
+app.use(csrfSynchronisedProtection);
 
+// Middleware to make CSRF token available to views
+// This needs to be AFTER csrfSynchronisedProtection so req.csrfToken() is available
 app.use((req, res, next) => {
-  res.locals.csrfToken = req.csrfToken();
+  // If generateToken is preferred or needed before csrfSynchronisedProtection for some routes:
+  // res.locals.csrfToken = generateToken(req);
+  // Using req.csrfToken() available after the middleware:
+  if (req.csrfToken) {
+    res.locals.csrfToken = req.csrfToken();
+  }
   next();
 });
 
