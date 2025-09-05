@@ -2,6 +2,7 @@
   "name": "homelab",
   "version": "1.0.0",
   "description": "Home Lab Management Application",
+  "type": "module",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
