@@ -1,28 +1,29 @@
-const express = require('express');
-const expressLayouts = require('express-ejs-layouts');
-const mongoose = require('mongoose');
-const flash = require('connect-flash');
-const session = require('express-session');
-const passport = require('passport');
+import express from 'express';
+import expressLayouts from 'express-ejs-layouts';
+import mongoose from 'mongoose';
+import flash from 'connect-flash';
+import session from 'express-session';
+import passport from 'passport';
 import errorHandler from './src/middleware/errorHandler.js';
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const csrf = require('csurf');
-const morgan = require('morgan');
-const https = require('https');
-const fs = require('fs');
-const path = require('path');
-const compression = require('compression');
-const { apiLimiter, loginLimiter, secureHeaders, sanitize } = require('./middleware/security');
-const { errorHandler } = require('./middleware/errorHandler');
-const { sessionStore } = require('./config/redis');
-const cookieParser = require('cookie-parser'); // Add this line
-require('dotenv').config();
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import csrf from 'csurf';
+import morgan from 'morgan';
+import https from 'https';
+import fs from 'fs';
+import path from 'path';
+import compression from 'compression';
+import { apiLimiter, loginLimiter, secureHeaders, sanitize } from './src/middleware/security.js';
+import { redisClient } from './src/config/redis.js';
+import cookieParser from 'cookie-parser';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express();
 
 // Passport Config
-require('./config/passport')(passport);
+import configurePassport from './src/config/passport.js';
+configurePassport();
 
 // Rate limiting
 const limiter = rateLimit({
@@ -159,9 +160,13 @@ app.get('/health', async (req, res) => {
 });
 
 // Routes
-app.use('/', require('./routes/index'));
-app.use('/users', require('./routes/users'));
-app.use('/devices', require('./routes/devices'));
+import indexRouter from './src/routes/index.js';
+import usersRouter from './src/routes/users.js';
+import devicesRouter from './src/routes/devices.js';
+
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+app.use('/devices', devicesRouter);
 
 // Error handling middleware
 app.use(errorHandler);
