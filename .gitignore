@@ -8,3 +8,4 @@ gitup.sh
 !uploads/.gitkeep
 !public/styles/
 !public/scripts/
+node_modules
