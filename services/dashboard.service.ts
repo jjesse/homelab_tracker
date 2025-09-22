@@ -1,18 +1,22 @@
-import { Injectable } from '@angular/core';
-import { Device } from '../models/device.model';
-import { Lab } from '../models/lab.model';
+// Plain TypeScript class (Angular artifacts removed)
+// TODO: Integrate with backend or frontend framework as needed
 
-@Injectable({
-    providedIn: 'root'
-})
 export class DashboardService {
-    getUserDevices(userId: string): Promise<Device[]> {
-        return this.deviceService.getDevices()
-            .then(devices => devices.filter(device => device.userId === userId));
+    deviceService: any;
+    labService: any;
+
+    constructor(deviceService: any, labService: any) {
+        this.deviceService = deviceService;
+        this.labService = labService;
     }
 
-    getUserLabs(userId: string): Promise<Lab[]> {
-        return this.labService.getLabs()
-            .then(labs => labs.filter(lab => lab.userId === userId));
+    async getUserDevices(userId: string): Promise<any[]> {
+        const devices: any[] = await this.deviceService.getDevices();
+        return devices.filter((device: any) => device.userId === userId);
+    }
+
+    async getUserLabs(userId: string): Promise<any[]> {
+        const labs: any[] = await this.labService.getLabs();
+        return labs.filter((lab: any) => lab.userId === userId);
     }
 }

@@ -14,7 +14,7 @@ import fs from 'fs';
 import path from 'path';
 import compression from 'compression';
 import { apiLimiter, loginLimiter, secureHeaders, sanitize } from './src/middleware/security.js';
-import { redisClient } from './src/config/redis.js';
+import { redisClient, sessionStore } from './src/config/redis.js';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 dotenv.config();

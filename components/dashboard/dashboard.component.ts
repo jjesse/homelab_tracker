@@ -1,21 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { DashboardService } from '../../services/dashboard.service';
-import { AuthService } from '../../services/auth.service';
+// Plain TypeScript module (Angular artifacts removed)
+// TODO: Integrate with backend or frontend framework as needed
 
-@Component({
-    selector: 'app-dashboard',
-    templateUrl: './dashboard.component.html'
-})
-export class DashboardComponent implements OnInit {
-    devices: Device[] = [];
-    labs: Lab[] = [];
+export class Dashboard {
+    devices = [];
+    labs = [];
 
-    constructor(
-        private dashboardService: DashboardService,
-        private authService: AuthService
-    ) {}
+    constructor(dashboardService, authService) {
+        this.dashboardService = dashboardService;
+        this.authService = authService;
+    }
 
-    async ngOnInit() {
+    async init() {
         const userId = this.authService.getCurrentUser().id;
         this.devices = await this.dashboardService.getUserDevices(userId);
         this.labs = await this.dashboardService.getUserLabs(userId);

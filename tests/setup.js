@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
+import mongoose from 'mongoose';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
-let mongod;
+let mongod: MongoMemoryServer;
 
 beforeAll(async () => {
   mongod = await MongoMemoryServer.create();
@@ -16,7 +16,7 @@ afterAll(async () => {
 
 beforeEach(async () => {
   const collections = await mongoose.connection.db.collections();
-  for (let collection of collections) {
+  for (const collection of collections) {
     await collection.deleteMany({});
   }
 });
