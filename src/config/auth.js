@@ -1,1 +1,15 @@
-// ...existing code...
+export function ensureAuthenticated(req, res, next) {
+	if (req.isAuthenticated()) {
+		return next();
+	}
+	req.session.returnTo = req.originalUrl;
+	req.flash('error_msg', 'Please log in to view that resource');
+	res.redirect('/users/login');
+}
+
+export function ensureGuest(req, res, next) {
+	if (!req.isAuthenticated()) {
+		return next();
+	}
+	res.redirect('/dashboard');
+}

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { ensureAuthenticated } from '../config/auth.js';
-import User from '../models/User.js';
+import User from '../../dist/models/User.js';
 
 const router = Router();
 

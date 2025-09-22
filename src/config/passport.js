@@ -2,7 +2,7 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
-import User from '../models/User.js';
+import User from '../../dist/models/User.js';
 
 export default function configurePassport() {
 	passport.use(
@@ -38,4 +38,4 @@ export default function configurePassport() {
 	});
 }
 
-export default configurePassport;
+// ...existing code...
