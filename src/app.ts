@@ -9,9 +9,13 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import csrf from 'csurf';
 import morgan from 'morgan';
-import https from 'https';
+import http from 'http';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import compression from 'compression';
 import { apiLimiter, loginLimiter, secureHeaders, sanitize } from './middleware/security.js';
 import { redisClient, sessionStore } from './config/redis.js';
@@ -182,17 +186,11 @@ app.use((req, res, next) => {
 });
 */
 
-// HTTPS Configuration
-const sslOptions = {
-  key: fs.readFileSync(process.env.SSL_KEY_PATH || path.join(__dirname, 'certs/server.key')),
-  cert: fs.readFileSync(process.env.SSL_CERT_PATH || path.join(__dirname, 'certs/server.crt'))
-};
-
 const PORT = Number(process.env.PORT) || 5000;
 
-// Create HTTPS server
-const server = https.createServer(sslOptions, app);
+// Create HTTP server for development
+const server = http.createServer(app);
 
 server.listen(PORT, () => {
-  console.log(`HTTPS Server running on port ${PORT}`);
+  console.log(`HTTP Server running on port ${PORT}`);
 });
