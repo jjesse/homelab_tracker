@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 import flash from 'connect-flash';
 import session from 'express-session';
 import passport from 'passport';
-import errorHandler from './src/middleware/errorHandler.js';
+import errorHandler from './middleware/errorHandler.js';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import csrf from 'csurf';
@@ -13,8 +13,8 @@ import https from 'https';
 import fs from 'fs';
 import path from 'path';
 import compression from 'compression';
-import { apiLimiter, loginLimiter, secureHeaders, sanitize } from './src/middleware/security.js';
-import { redisClient, sessionStore } from './src/config/redis.js';
+import { apiLimiter, loginLimiter, secureHeaders, sanitize } from './middleware/security.js';
+import { redisClient, sessionStore } from './config/redis.js';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -22,7 +22,7 @@ dotenv.config();
 const app = express();
 
 // Passport Config
-import configurePassport from './src/config/passport.js';
+import configurePassport from './config/passport.js';
 configurePassport();
 
 // Rate limiting
@@ -36,21 +36,21 @@ const limiter = rateLimit({
 const csrfProtection = csrf();
 
 // DB Config
-const db = process.env.MONGODB_URI;
+const db = process.env.MONGODB_URI || '';
 
 // Connect to MongoDB with retry logic
 const connectWithRetry = () => {
   mongoose.connect(db, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
     serverSelectionTimeoutMS: 5000,
-    // Wait 5 seconds before timing out
     socketTimeoutMS: 45000,
-    // Close sockets after 45 seconds of inactivity
   })
   .then(() => console.log('MongoDB Connected'))
-  .catch(err => {
-    console.error('MongoDB connection error:', err);
+  .catch((err: unknown) => {
+    if (err instanceof Error) {
+      console.error('MongoDB connection error:', err.message);
+    } else {
+      console.error('MongoDB connection error:', err);
+    }
     console.log('Retrying in 5 seconds...');
     setTimeout(connectWithRetry, 5000);
   });
@@ -153,16 +153,16 @@ app.get('/health', async (req, res) => {
     res.status(503).json({ 
       status: 'ERROR',
       mongodb: 'Disconnected',
-      error: error.message,
+      error: error instanceof Error ? error.message : String(error),
       timestamp: new Date().toISOString()
     });
   }
 });
 
 // Routes
-import indexRouter from './src/routes/index.js';
-import usersRouter from './src/routes/users.js';
-import devicesRouter from './src/routes/devices.js';
+import indexRouter from './routes/index.js';
+import usersRouter from './routes/users.js';
+import devicesRouter from './routes/devices.js';
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
@@ -188,11 +188,11 @@ const sslOptions = {
   cert: fs.readFileSync(process.env.SSL_CERT_PATH || path.join(__dirname, 'certs/server.crt'))
 };
 
-const PORT = process.env.PORT || 5000;
+const PORT = Number(process.env.PORT) || 5000;
 
 // Create HTTPS server
 const server = https.createServer(sslOptions, app);
 
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, () => {
   console.log(`HTTPS Server running on port ${PORT}`);
 });

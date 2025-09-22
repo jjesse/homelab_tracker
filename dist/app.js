@@ -1,0 +1,169 @@
+import express from 'express';
+import expressLayouts from 'express-ejs-layouts';
+import mongoose from 'mongoose';
+import flash from 'connect-flash';
+import session from 'express-session';
+import passport from 'passport';
+import errorHandler from './middleware/errorHandler.js';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import csrf from 'csurf';
+import morgan from 'morgan';
+import https from 'https';
+import fs from 'fs';
+import path from 'path';
+import compression from 'compression';
+import { apiLimiter, loginLimiter, secureHeaders, sanitize } from './middleware/security.js';
+import { sessionStore } from './config/redis.js';
+import cookieParser from 'cookie-parser';
+import dotenv from 'dotenv';
+dotenv.config();
+const app = express();
+// Passport Config
+import configurePassport from './config/passport.js';
+configurePassport();
+// Rate limiting
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    message: 'Too many requests from this IP, please try again after 15 minutes'
+});
+// CSRF protection
+const csrfProtection = csrf();
+// DB Config
+const db = process.env.MONGODB_URI || '';
+// Connect to MongoDB with retry logic
+const connectWithRetry = () => {
+    mongoose.connect(db, {
+        serverSelectionTimeoutMS: 5000,
+        socketTimeoutMS: 45000,
+    })
+        .then(() => console.log('MongoDB Connected'))
+        .catch((err) => {
+        if (err instanceof Error) {
+            console.error('MongoDB connection error:', err.message);
+        }
+        else {
+            console.error('MongoDB connection error:', err);
+        }
+        console.log('Retrying in 5 seconds...');
+        setTimeout(connectWithRetry, 5000);
+    });
+};
+connectWithRetry();
+// EJS
+app.use(expressLayouts);
+app.set('layout', 'layout'); // add this line
+app.set('view engine', 'ejs');
+// Static Files
+app.use(express.static('public'));
+// Bodyparser
+app.use(express.urlencoded({ extended: false }));
+// Security middleware
+app.use(helmet());
+app.use(secureHeaders);
+app.use(sanitize);
+app.use(limiter);
+app.use('/api/', apiLimiter);
+app.use('/users/login', loginLimiter);
+// Add cookie parser before session middleware
+app.use(cookieParser());
+// Session
+app.use(session({
+    store: sessionStore,
+    secret: process.env.SESSION_SECRET || 'fallback_secret_do_not_use_in_production',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Use HTTPS in production
+        sameSite: 'strict'
+    }
+}));
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+// CSRF protection with proper cookie config
+app.use(csrf({
+    cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+    },
+    // Add value function to check both body and headers
+    value: function (req) {
+        return (req.body._csrf ||
+            req.query._csrf ||
+            req.headers['csrf-token'] ||
+            req.headers['x-csrf-token'] ||
+            req.headers['x-xsrf-token']);
+    }
+}));
+app.use((req, res, next) => {
+    res.locals.csrfToken = req.csrfToken();
+    next();
+});
+// Performance middleware
+app.use(compression());
+// Logging middleware
+app.use(morgan('dev'));
+// Connect flash
+app.use(flash());
+// Global variables
+app.use(function (req, res, next) {
+    res.locals.success_msg = req.flash('success_msg');
+    res.locals.error_msg = req.flash('error_msg');
+    res.locals.error = req.flash('error');
+    res.locals.user = req.user || null;
+    next();
+});
+// Health check endpoint
+app.get('/health', async (req, res) => {
+    try {
+        // Check MongoDB connection
+        await mongoose.connection.db.admin().ping();
+        res.status(200).json({
+            status: 'OK',
+            mongodb: 'Connected',
+            timestamp: new Date().toISOString()
+        });
+    }
+    catch (error) {
+        res.status(503).json({
+            status: 'ERROR',
+            mongodb: 'Disconnected',
+            error: error instanceof Error ? error.message : String(error),
+            timestamp: new Date().toISOString()
+        });
+    }
+});
+// Routes
+import indexRouter from './routes/index.js';
+import usersRouter from './routes/users.js';
+import devicesRouter from './routes/devices.js';
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+app.use('/devices', devicesRouter);
+// Error handling middleware
+app.use(errorHandler);
+// Remove or comment out the HTTP to HTTPS redirect middleware 
+// since we're handling both HTTP and HTTPS at the container level
+/*
+app.use((req, res, next) => {
+  if (!req.secure) {
+    return res.redirect(`https://${req.headers.host}${req.url}`);
+  }
+  next();
+});
+*/
+// HTTPS Configuration
+const sslOptions = {
+    key: fs.readFileSync(process.env.SSL_KEY_PATH || path.join(__dirname, 'certs/server.key')),
+    cert: fs.readFileSync(process.env.SSL_CERT_PATH || path.join(__dirname, 'certs/server.crt'))
+};
+const PORT = Number(process.env.PORT) || 5000;
+// Create HTTPS server
+const server = https.createServer(sslOptions, app);
+server.listen(PORT, () => {
+    console.log(`HTTPS Server running on port ${PORT}`);
+});

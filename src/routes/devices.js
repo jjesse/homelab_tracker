@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { ensureAuthenticated } from '../config/auth.js';
 import Device from '../../dist/models/Device.js';
-import User from '../models/User.js';
+import User from '../../dist/models/User.js';
 import multer from 'multer';
 import csv from 'fast-csv';
 import fs from 'fs';
