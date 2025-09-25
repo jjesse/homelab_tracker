@@ -193,19 +193,37 @@ The following environment variables are required:
 | JWT_SECRET | Secret key for JWT token generation | Required |
 | AUTH_TOKEN_EXPIRY | JWT token expiry time (e.g., "1d" for one day) | "1d" |
 | MONGODB_URI | MongoDB connection string | "mongodb://localhost:27017/homelab" |
+| MONGO_USERNAME | MongoDB admin username (you create this) | Required |
+| MONGO_PASSWORD | MongoDB admin password (you create this) | Required |
 | PORT | Application port | 5000 |
 | SESSION_SECRET | Secret for express-session | Required |
 | SSL_KEY_PATH | Path to SSL private key file | "./certs/server.key" |
 | SSL_CERT_PATH | Path to SSL certificate file | "./certs/server.crt" |
+| REDIS_PASSWORD | Redis authentication password (you create this) | Required |
 
 Create a `.env` file in the project root with these variables:
 
 ```sh
-JWT_SECRET=your_secret_key_here
-AUTH_TOKEN_EXPIRY=1d
-MONGODB_URI=mongodb://localhost:27017/homelab
+# Application Settings
 PORT=5000
+NODE_ENV=development
+
+# Authentication (generate these using crypto.randomBytes)
+JWT_SECRET=your_secret_key_here
 SESSION_SECRET=your_session_secret_here
+AUTH_TOKEN_EXPIRY=1d
+
+# MongoDB Configuration (you create these credentials)
+MONGODB_URI=mongodb://localhost:27017/homelab
+MONGO_USERNAME=homelab_admin
+MONGO_PASSWORD=your_secure_mongodb_password
+
+# Redis Configuration (you create this password)
+REDIS_HOST=redis
+REDIS_PORT=6379
+REDIS_PASSWORD=your_secure_redis_password
+
+# SSL Configuration (optional for development)
 SSL_KEY_PATH=./certs/server.key
 SSL_CERT_PATH=./certs/server.crt
 ```
@@ -234,6 +252,44 @@ Copy the generated strings to your .env file:
 ```sh
 JWT_SECRET=generated_jwt_secret_from_above_command
 SESSION_SECRET=generated_session_secret_from_above_command
+```
+
+### MongoDB Credentials Setup
+
+The `MONGO_USERNAME` and `MONGO_PASSWORD` variables are **admin credentials that you create** for your MongoDB database. These are NOT existing credentials - you set them to whatever you want.
+
+**How it works:**
+1. **You choose** the username and password in your `.env` file
+2. Docker Compose automatically creates a MongoDB admin user with these credentials
+3. Your application connects to MongoDB using these same credentials
+
+**Setting up MongoDB credentials:**
+
+1. **Choose secure credentials** and add them to your `.env` file:
+   ```sh
+   MONGO_USERNAME=homelab_admin
+   MONGO_PASSWORD=your_secure_mongodb_password_here
+   ```
+
+2. **Docker will automatically create the admin user** when MongoDB starts for the first time using these environment variables:
+   - `MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}`
+   - `MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}`
+
+3. **Your application connects** using the connection string:
+   ```sh
+   MONGODB_URI=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo:27017/homelab?authSource=admin
+   ```
+
+**Important Notes:**
+- Use a **strong password** (mix of letters, numbers, symbols)
+- These credentials are for the MongoDB **root/admin user**
+- The credentials you set in `.env` will become the actual MongoDB admin credentials
+- For production, use even stronger passwords and consider using MongoDB Atlas or managed services
+
+**Example secure setup:**
+```sh
+MONGO_USERNAME=homelab_admin
+MONGO_PASSWORD=MyS3cur3P@ssw0rd!2024
 ```
 
 ### SSL Configuration
