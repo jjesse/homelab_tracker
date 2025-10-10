@@ -1,39 +1,25 @@
-# Build stage
-FROM node:latest AS builder
-
-# Install build dependencies based on architecture
-RUN case "$(arch)" in \
-        x86_64) echo "Installing x86_64 dependencies..." ;; \
-        aarch64) echo "Installing ARM64 dependencies..." ;; \
-        *) echo "Unsupported architecture" && exit 1 ;; \
-    esac
+# Use Node.js LTS version with Ubuntu base for better compatibility
+FROM node:18
 
 WORKDIR /app
+
+# Install dependencies for health checks
+RUN apt-get update && apt-get install -y \
+    curl \
+    netcat-traditional \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy package files and install dependencies
 COPY package*.json ./
 RUN npm install
-
-# Runtime stage
-FROM node:latest
-
-# Install curl and netcat for health checks based on architecture
-RUN apt-get update && \
-    case "$(arch)" in \
-        x86_64) apt-get install -y curl netcat-traditional ;; \
-        aarch64) apt-get install -y curl netcat-traditional ;; \
-        *) echo "Unsupported architecture" && exit 1 ;; \
-    esac
-
-WORKDIR /app
 
 # Create uploads directory with proper permissions
 RUN mkdir -p uploads && \
     chown node:node uploads && \
     chmod 755 uploads
 
-# Copy node modules and other files from builder
-COPY --from=builder /app/node_modules ./node_modules
+# Copy application files
 COPY . .
 
 # Copy and set permissions for wait-for-it script
