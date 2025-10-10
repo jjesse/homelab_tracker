@@ -1,33 +1,27 @@
-import express from 'express';
-import expressLayouts from 'express-ejs-layouts';
-import mongoose from 'mongoose';
-import flash from 'connect-flash';
-import session from 'express-session';
-import passport from 'passport';
-import errorHandler from './middleware/errorHandler.js';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
-import csrf from 'csurf';
-import morgan from 'morgan';
-import http from 'http';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-import compression from 'compression';
-import { apiLimiter, loginLimiter, secureHeaders, sanitize } from './middleware/security.js';
-import { redisClient, sessionStore } from './config/redis.js';
-import cookieParser from 'cookie-parser';
-import dotenv from 'dotenv';
-dotenv.config();
+const express = require('express');
+const expressLayouts = require('express-ejs-layouts');
+const mongoose = require('mongoose');
+const flash = require('connect-flash');
+const session = require('express-session');
+const passport = require('passport');
+const errorHandler = require('./middleware/errorHandler');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const csrf = require('csurf');
+const morgan = require('morgan');
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+const compression = require('compression');
+const { apiLimiter, loginLimiter, secureHeaders, sanitize } = require('./middleware/security');
+const { sessionStore } = require('./config/redis');
+const cookieParser = require('cookie-parser');
+require('dotenv').config();
 
 const app = express();
 
 // Passport Config
-import configurePassport from './config/passport.js';
-configurePassport();
+require('./config/passport')(passport);
 
 // Rate limiting
 const limiter = rateLimit({
@@ -35,9 +29,6 @@ const limiter = rateLimit({
   max: 100, // Limit each IP to 100 requests per windowMs
   message: 'Too many requests from this IP, please try again after 15 minutes'
 });
-
-// CSRF protection
-const csrfProtection = csrf();
 
 // DB Config
 const db = process.env.MONGODB_URI || '';
@@ -49,12 +40,8 @@ const connectWithRetry = () => {
     socketTimeoutMS: 45000,
   })
   .then(() => console.log('MongoDB Connected'))
-  .catch((err: unknown) => {
-    if (err instanceof Error) {
-      console.error('MongoDB connection error:', err.message);
-    } else {
-      console.error('MongoDB connection error:', err);
-    }
+  .catch((err) => {
+    console.error('MongoDB connection error:', err.message);
     console.log('Retrying in 5 seconds...');
     setTimeout(connectWithRetry, 5000);
   });
@@ -64,7 +51,7 @@ connectWithRetry();
 
 // EJS
 app.use(expressLayouts);
-app.set('layout', 'layout'); // add this line
+app.set('layout', 'layout');
 app.set('view engine', 'ejs');
 
 // Static Files
@@ -157,40 +144,27 @@ app.get('/health', async (req, res) => {
     res.status(503).json({ 
       status: 'ERROR',
       mongodb: 'Disconnected',
-      error: error instanceof Error ? error.message : String(error),
+      error: error.message,
       timestamp: new Date().toISOString()
     });
   }
 });
 
 // Routes
-import indexRouter from './routes/index.js';
-import usersRouter from './routes/users.js';
-import devicesRouter from './routes/devices.js';
-
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/devices', devicesRouter);
+app.use('/', require('./routes/index'));
+app.use('/users', require('./routes/users'));
+app.use('/devices', require('./routes/devices'));
 
 // Error handling middleware
 app.use(errorHandler);
 
-// Remove or comment out the HTTP to HTTPS redirect middleware 
-// since we're handling both HTTP and HTTPS at the container level
-/*
-app.use((req, res, next) => {
-  if (!req.secure) {
-    return res.redirect(`https://${req.headers.host}${req.url}`);
-  }
-  next();
-});
-*/
-
 const PORT = Number(process.env.PORT) || 5000;
 
-// Create HTTP server for development
+// Create HTTP server
 const server = http.createServer(app);
 
 server.listen(PORT, () => {
   console.log(`HTTP Server running on port ${PORT}`);
 });
+
+module.exports = app;
