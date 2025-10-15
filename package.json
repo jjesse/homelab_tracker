@@ -57,5 +57,24 @@
     "mongodb-memory-server": "^10.2.1",
     "nodemon": "^2.0.22",
     "supertest": "^6.3.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/homelab.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/homelab/issues"
+  },
+  "homepage": "https://github.com/yourusername/homelab#readme",
+  "keywords": [
+    "homelab",
+    "device-management", 
+    "raspberry-pi",
+    "express",
+    "mongodb",
+    "nodejs",
+    "docker",
+    "https",
+    "ssl"
+  ]
 }

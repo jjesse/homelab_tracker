@@ -1,7 +1,6 @@
 .env
 certs/
 gitup.sh
-.github/copilot-instructions.md
 
 # Keep uploads directory but ignore contents
 /uploads/*
