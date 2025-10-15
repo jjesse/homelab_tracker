@@ -10,6 +10,7 @@ const rateLimit = require('express-rate-limit');
 const csrf = require('csurf');
 const morgan = require('morgan');
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const compression = require('compression');
@@ -160,11 +161,30 @@ app.use(errorHandler);
 
 const PORT = Number(process.env.PORT) || 5000;
 
-// Create HTTP server
-const server = http.createServer(app);
+// Create server (HTTPS if certificates available, HTTP otherwise)
+const server = (() => {
+  if (process.env.SSL_KEY_PATH && process.env.SSL_CERT_PATH) {
+    try {
+      const options = {
+        key: fs.readFileSync(process.env.SSL_KEY_PATH),
+        cert: fs.readFileSync(process.env.SSL_CERT_PATH)
+      };
+      console.log('SSL certificates found, starting HTTPS server...');
+      return https.createServer(options, app);
+    } catch (err) {
+      console.log('SSL certificates not found or invalid, falling back to HTTP');
+      console.log('Error:', err.message);
+      return http.createServer(app);
+    }
+  } else {
+    console.log('No SSL configuration found, starting HTTP server...');
+    return http.createServer(app);
+  }
+})();
 
 server.listen(PORT, () => {
-  console.log(`HTTP Server running on port ${PORT}`);
+  const protocol = server instanceof https.Server ? 'HTTPS' : 'HTTP';
+  console.log(`${protocol} Server running on port ${PORT}`);
 });
 
 module.exports = app;
