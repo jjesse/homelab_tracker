@@ -14,10 +14,12 @@ This web application allows you to store details about your home lab devices. Yo
   - Edit device information
   - Delete devices
   - Responsive table design
-- HTTPS support
-- Docker containerization
-- MongoDB integration
-- CSV export functionality for device data
+- HTTPS/SSL support with automatic HTTP fallback
+- Docker containerization with multi-architecture support
+- MongoDB integration with authentication
+- Redis session storage
+- CSV import/export functionality for device data
+- Raspberry Pi deployment ready
 
 ## Technologies Used
 
@@ -35,7 +37,104 @@ This web application allows you to store details about your home lab devices. Yo
 
 ## Installation
 
-### Local Setup
+### Quick Start (Recommended)
+
+The easiest way to get started is using the hybrid deployment approach:
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/yourusername/homelab.git
+   cd homelab
+   ```
+
+2. **Create environment file:**
+   ```bash
+   cp .env.example .env
+   ```
+
+3. **Edit the .env file** with your desired credentials:
+   ```bash
+   # Generate secure secrets
+   node -e "console.log('JWT_SECRET=' + require('crypto').randomBytes(32).toString('hex'))"
+   node -e "console.log('SESSION_SECRET=' + require('crypto').randomBytes(32).toString('hex'))"
+   
+   # Update .env with generated secrets and your MongoDB/Redis credentials
+   ```
+
+4. **Generate SSL certificates (optional for HTTPS):**
+   ```bash
+   ./generate-ssl.sh
+   ```
+
+5. **Start databases with Docker:**
+   ```bash
+   docker-compose up -d mongo redis
+   ```
+
+6. **Install dependencies and start app:**
+   ```bash
+   npm install
+   npm start
+   ```
+
+7. **Access the application:**
+   - HTTPS: `https://localhost:5000` (if SSL certificates are configured)
+   - HTTP: `http://localhost:5000`
+
+### Raspberry Pi Deployment
+
+This application runs perfectly on Raspberry Pi devices. Follow these steps:
+
+1. **Prerequisites:**
+   - Raspberry Pi with Raspberry Pi OS
+   - Git and Docker installed
+   - Node.js 18+ installed
+
+2. **Clone and setup:**
+   ```bash
+   git clone https://github.com/yourusername/homelab.git
+   cd homelab
+   cp .env.example .env
+   ```
+
+3. **Generate secure credentials:**
+   ```bash
+   # Generate secrets
+   node -e "console.log('JWT_SECRET=' + require('crypto').randomBytes(32).toString('hex'))"
+   node -e "console.log('SESSION_SECRET=' + require('crypto').randomBytes(32).toString('hex'))"
+   
+   # Edit .env file with your credentials
+   nano .env
+   ```
+
+4. **Generate SSL certificates:**
+   ```bash
+   chmod +x generate-ssl.sh
+   ./generate-ssl.sh
+   ```
+
+5. **Start Docker services:**
+   ```bash
+   docker-compose up -d mongo redis
+   ```
+
+6. **Install and start app:**
+   ```bash
+   npm install
+   npm start
+   ```
+
+7. **Access your Pi homelab app:**
+   - From same network: `https://[PI_IP_ADDRESS]:5000`
+   - If you have local DNS: `https://pi.local:5000`
+
+**Pi-specific notes:**
+- Uses ARM-compatible MongoDB 4.4.18 (configured in docker-compose.yml)
+- Resource limits optimized for Pi hardware
+- HTTPS works out of the box with self-signed certificates
+- No Zscaler required - runs independently
+
+### Local Setup (Development)
 
 1. Clone the repository:
 

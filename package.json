@@ -1,7 +1,7 @@
 {
   "name": "homelab",
-  "version": "1.0.0",
-  "description": "Home Lab Management Application",
+  "version": "1.3.0",
+  "description": "Home Lab Management Application - Raspberry Pi Ready",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",

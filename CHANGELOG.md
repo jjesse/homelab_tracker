@@ -5,6 +5,49 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3] - 2025-10-15
+
+### Added
+
+- **Raspberry Pi deployment support** - Full ARM64 compatibility confirmed
+- **HTTPS/SSL certificate generation** - Automated self-signed certificate creation with `generate-ssl.sh`
+- **Hybrid deployment mode** - Run app locally with Docker databases for optimal development experience
+- **Multi-protocol server support** - Automatic HTTPS with HTTP fallback based on certificate availability
+- **Production-ready SSL configuration** - Environment variable driven SSL certificate paths
+- **ARM-optimized Docker configuration** - MongoDB 4.4.18 for Raspberry Pi compatibility
+- **Quick start documentation** - Simplified setup instructions for immediate deployment
+- **Pi-specific deployment guide** - Step-by-step Raspberry Pi installation instructions
+
+### Changed
+
+- **Server architecture** - Modified `app.js` to support both HTTP and HTTPS servers dynamically
+- **Environment configuration** - Enhanced `.env.example` with SSL certificate paths
+- **Docker deployment strategy** - Recommended hybrid approach (local app + Docker databases)
+- **Documentation structure** - Reorganized README with Quick Start and Pi deployment sections
+- **SSL implementation** - Automatic certificate detection with graceful fallback
+
+### Fixed
+
+- **MongoDB authentication on Raspberry Pi** - Resolved container credential synchronization
+- **HTTPS certificate handling** - Fixed SSL certificate file reading and error handling
+- **Docker node_modules persistence** - Addressed container volume mounting issues
+- **Redis session storage** - Confirmed working session management without authentication
+- **Cross-platform compatibility** - Verified ARM64 deployment on Raspberry Pi
+
+### Verified
+
+- **Full Raspberry Pi deployment** - Complete login, device management, and logout functionality
+- **HTTPS operation** - SSL certificates working with browser acceptance
+- **Device CRUD operations** - Add, edit, delete, and view devices confirmed working
+- **Session persistence** - User authentication and session management verified
+- **Database connectivity** - MongoDB and Redis connections stable on Pi hardware
+
+### Security
+
+- **Enhanced HTTPS implementation** - Proper SSL certificate generation and management
+- **Production SSL readiness** - Support for Let's Encrypt and commercial certificates
+- **Secure session handling** - Redis-backed sessions with proper configuration
+
 ## [1.2]
 
 ### Added
