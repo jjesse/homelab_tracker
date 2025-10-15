@@ -1,40 +1,39 @@
-# Use Node.js LTS version with Ubuntu base for better compatibility
+# Use Node.js LTS version
 FROM node:18
 
 WORKDIR /app
 
-# Install dependencies for health checks
+# Install system dependencies for health checks
 RUN apt-get update && apt-get install -y \
     curl \
     netcat-traditional \
     wget \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy package files and install dependencies
+# Copy package files first
 COPY package*.json ./
-RUN npm install
 
-# Create uploads directory with proper permissions
-RUN mkdir -p uploads && \
-    chown node:node uploads && \
-    chmod 755 uploads
+# Install ALL dependencies (including dev dependencies for now)
+RUN npm install && npm cache clean --force
 
-# Copy application files
+# Copy wait-for-it.sh script first
+COPY wait-for-it.sh ./
+RUN chmod +x wait-for-it.sh
+
+# Copy application code (node_modules is excluded by .dockerignore)
 COPY . .
 
-# Copy and set permissions for wait-for-it script
+# Create uploads directory
+RUN mkdir -p uploads
+
+# Copy wait-for-it.sh to system location (in case the previous copy was overwritten)
 COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
 RUN chmod +x /usr/local/bin/wait-for-it.sh
 
-# Set proper permissions for copied files
-RUN chown -R node:node /app
-
-# Switch to non-root user
-USER node
-
-ENV NODE_ENV=production
+ENV NODE_ENV=development
 ENV PORT=5000
 
 EXPOSE 5000
 
+# Start the application
 CMD ["npm", "start"]

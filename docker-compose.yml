@@ -119,12 +119,12 @@ services:
 volumes:
   mongodb_data:
     name: homelab_mongodb_data
+    driver: local
   redis_data:
     name: homelab_redis_data
-  uploads_data:             # Define the uploads volume
-    name: homelab_uploads   # Give it a specific name
-    driver: local          # Use local driver
-  uploads:
+    driver: local
+  uploads_data:
+    name: homelab_uploads
     driver: local
 
 networks:
