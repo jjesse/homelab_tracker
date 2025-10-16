@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JavaScript Test</title>
+</head>
+<body>
+    <h1>JavaScript Test Page</h1>
+    <button onclick="alert('JavaScript works!');">Test Button</button>
+    
+    <script>
+        console.log('Script is loading...');
+        
+        function testFunction() {
+            console.log('Function called');
+            alert('Function works!');
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM is ready');
+        });
+        
+        console.log('Script loaded successfully');
+    </script>
+    
+    <button onclick="testFunction();">Test Function</button>
+</body>
+</html>

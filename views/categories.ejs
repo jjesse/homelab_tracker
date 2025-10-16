@@ -1,0 +1,322 @@
+<div class="container">
+  <div class="header-section">
+    <h2>📂 Category Management</h2>
+          <button type="button" onclick="showAddModal();" class="add-btn" id="addCategoryBtn">
+        Add Category
+      </button>
+  </div>
+
+  <!-- Flash Messages -->
+  <% if (typeof success_msg !== 'undefined' && success_msg.length > 0) { %>
+    <div class="alert success">
+      <%= success_msg %>
+    </div>
+  <% } %>
+  
+  <% if (typeof error_msg !== 'undefined' && error_msg.length > 0) { %>
+    <div class="alert error">
+      <%= error_msg %>
+    </div>
+  <% } %>
+
+  <!-- Categories Table -->
+  <div class="categories-section">
+    <h3>Device Categories</h3>
+    <% if (categories && categories.length > 0) { %>
+      <table class="device-table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Color</th>
+            <th>Description</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% categories.forEach(category => { %>
+            <tr>
+              <td>
+                <span class="badge" style="background-color: <%= category.color %>; color: white; padding: 4px 8px; border-radius: 4px;">
+                  <%= category.name %>
+                </span>
+              </td>
+              <td>
+                <div style="background-color: <%= category.color %>; width: 30px; height: 20px; border-radius: 4px; border: 1px solid #ddd; display: inline-block;"></div>
+              </td>
+              <td><%= category.description || 'No description' %></td>
+              <td><%= new Date(category.createdAt).toLocaleDateString() %></td>
+              <td>
+                <button onclick="editCategory('<%= category._id %>', '<%= category.name %>', '<%= category.color %>', '<%= category.description %>')" class="btn btn-sm">Edit</button>
+                <% if (!category.isDefault) { %>
+                  <button onclick="deleteCategory('<%= category._id %>', '<%= category.name %>')" class="btn btn-danger btn-sm">Delete</button>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="empty-state">
+        <h4>No Categories Yet</h4>
+        <p>Create your first device category to get started organizing your devices.</p>
+        <button onclick="showAddModal()" class="btn">Add Your First Category</button>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<!-- Add Category Modal -->
+<div id="addCategoryModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <h3>Add New Category</h3>
+    <form action="/categories" method="POST">
+      <input type="hidden" name="_token" value="<%= locals.csrfToken %>">
+      
+      <div class="form-group">
+        <label for="categoryName">Category Name *</label>
+        <input type="text" id="categoryName" name="name" required maxlength="50" placeholder="e.g., Database Servers">
+      </div>
+      
+      <div class="form-group">
+        <label for="categoryColor">Badge Color *</label>
+        <input type="color" id="categoryColor" name="color" value="#6c757d" required>
+        <small>Choose a color for the category badge</small>
+      </div>
+      
+      <div class="form-group">
+        <label for="categoryDescription">Description</label>
+        <textarea id="categoryDescription" name="description" rows="3" maxlength="200" placeholder="Optional description for this category"></textarea>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" onclick="hideAddModal()">Cancel</button>
+        <button type="submit" class="btn">Create Category</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Category Modal -->
+<div id="editCategoryModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <h3>Edit Category</h3>
+    <form id="editCategoryForm" method="POST">
+      <input type="hidden" name="_token" value="<%= locals.csrfToken %>">
+      <input type="hidden" name="_method" value="PUT">
+      
+      <div class="form-group">
+        <label for="editCategoryName">Category Name *</label>
+        <input type="text" id="editCategoryName" name="name" required maxlength="50">
+      </div>
+      
+      <div class="form-group">
+        <label for="editCategoryColor">Badge Color *</label>
+        <input type="color" id="editCategoryColor" name="color" required>
+        <small>Choose a color for the category badge</small>
+      </div>
+      
+      <div class="form-group">
+        <label for="editCategoryDescription">Description</label>
+        <textarea id="editCategoryDescription" name="description" rows="3" maxlength="200"></textarea>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" onclick="hideEditModal()">Cancel</button>
+        <button type="submit" class="btn">Update Category</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.categories-section {
+  margin-top: 20px;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.form-group small {
+  color: #666;
+  font-size: 12px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.btn-sm {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+</style>
+
+<script>
+// Simple test script
+console.log('JavaScript is loading...');
+
+// Test basic functionality
+function testAlert() {
+  alert('Test alert works!');
+  console.log('Alert function executed');
+}
+
+// Original showAddModal function
+function showAddModal() {
+  console.log('showAddModal called');
+  const modal = document.getElementById('addCategoryModal');
+  if (modal) {
+    modal.style.display = 'block';
+    console.log('Modal should be visible now');
+  } else {
+    console.error('Modal element not found');
+  }
+}
+
+function hideAddModal() {
+  console.log('hideAddModal called');
+  const modal = document.getElementById('addCategoryModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+function showEditModal() {
+  const modal = document.getElementById('editCategoryModal');
+  if (modal) {
+    modal.style.display = 'block';
+  }
+}
+
+function hideEditModal() {
+  const modal = document.getElementById('editCategoryModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+function editCategory(id, name, color, description) {
+  console.log('editCategory called:', id, name, color);
+  document.getElementById('editCategoryForm').action = `/categories/${id}`;
+  document.getElementById('editCategoryName').value = name;
+  document.getElementById('editCategoryColor').value = color;
+  document.getElementById('editCategoryDescription').value = description || '';
+  showEditModal();
+}
+
+function deleteCategory(id, name) {
+  if (confirm(`Are you sure you want to delete the category "${name}"?\n\nThis action cannot be undone and will only work if no devices are using this category.`)) {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/categories/${id}`;
+    form.style.display = 'none';
+    
+    const methodInput = document.createElement('input');
+    methodInput.type = 'hidden';
+    methodInput.name = '_method';
+    methodInput.value = 'DELETE';
+    
+    const tokenInput = document.createElement('input');
+    tokenInput.type = 'hidden';
+    tokenInput.name = '_token';
+    tokenInput.value = 'disabled';
+    
+    form.appendChild(methodInput);
+    form.appendChild(tokenInput);
+    document.body.appendChild(form);
+    form.submit();
+  }
+}
+
+// Close modals when clicking outside
+window.onclick = function(event) {
+  const addModal = document.getElementById('addCategoryModal');
+  const editModal = document.getElementById('editCategoryModal');
+  
+  if (event.target === addModal) {
+    hideAddModal();
+  }
+  if (event.target === editModal) {
+    hideEditModal();
+  }
+}
+
+// Test the modal on page load
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded, testing modal element...');
+  const modal = document.getElementById('addCategoryModal');
+  console.log('Modal element exists:', !!modal);
+  if (modal) {
+    console.log('Modal found, id:', modal.id);
+  } else {
+    console.error('Modal not found!');
+  }
+});
+
+console.log('Script loaded successfully');
+</script>

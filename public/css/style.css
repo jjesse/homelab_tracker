@@ -442,3 +442,65 @@ th[data-sort].sort-desc .sort-arrow:after {
   margin-top: 0.25rem;
   color: #dc3545;
 }
+
+/* Category Badge Styles */
+.category-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: white;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.category-server { background-color: #007bff; }
+.category-workstation { background-color: #28a745; }
+.category-network { background-color: #6f42c1; }
+.category-iot { background-color: #fd7e14; }
+.category-storage { background-color: #20c997; }
+.category-security { background-color: #dc3545; }
+.category-development { background-color: #ffc107; color: #212529; text-shadow: none; }
+.category-testing { background-color: #e83e8c; }
+.category-other { background-color: #6c757d; }
+
+/* Tag Badge Styles */
+.tags-cell {
+  max-width: 150px;
+}
+
+.tag-badge {
+  display: inline-block;
+  padding: 0.2rem 0.4rem;
+  margin: 0.1rem;
+  background-color: #e9ecef;
+  color: #495057;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  border: 1px solid #ced4da;
+}
+
+.tag-badge:hover {
+  background-color: #dee2e6;
+  cursor: default;
+}
+
+/* Form styling for new fields */
+.device-form select,
+.device-form input[type="text"] {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.device-form small {
+  display: block;
+  margin-top: 0.25rem;
+  color: #6c757d;
+  font-size: 0.875rem;
+}

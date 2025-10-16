@@ -44,6 +44,17 @@ const DeviceSchema = new mongoose.Schema({
   notes: {
     type: String
   },
+  category: {
+    type: String,
+    required: true,
+    default: 'Other'
+    // Removed enum to allow dynamic categories
+  },
+  tags: [{
+    type: String,
+    trim: true,
+    lowercase: true
+  }],
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'

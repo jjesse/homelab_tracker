@@ -1,6 +1,7 @@
 .env
 certs/
 gitup.sh
+sync-to-github.sh
 
 # Keep uploads directory but ignore contents
 /uploads/*

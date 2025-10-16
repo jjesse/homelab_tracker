@@ -6,7 +6,7 @@
     <% }) %>
   <% } %>
   <form action="/users/register" method="POST" class="form-group">
-    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <input type="hidden" name="_token" value="<%= csrfToken %>">
     <div class="form-field">
       <label for="name">Name:</label>
       <input type="text" name="name" id="name" pattern="[A-Za-z ]{2,}" title="Name must be at least 2 characters long and contain only letters" required>

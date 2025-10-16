@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { ensureAuthenticated } = require('../config/auth');
-const User = require('../models/User');  // Add this line
+const User = require('../models/User');
+const Category = require('../models/Category');
 
 // Welcome Page
 router.get('/', (req, res) => res.render('index'));
@@ -24,12 +25,16 @@ router.get('/dashboard', ensureAuthenticated, async (req, res) => {
       return res.redirect('/users/login');
     }
 
+    // Get user's categories for the device form
+    const categories = await Category.find({ user: req.user.id }).sort({ name: 1 });
+
     // Get flash messages for CSV import
     const success_msg = req.flash('success_msg');
     const error_msg = req.flash('error_msg');
 
     res.render('dashboard', {
       user: user,
+      categories: categories,
       success_msg,
       error_msg,
       reloadCharts: req.session.reloadCharts || false

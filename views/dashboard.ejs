@@ -69,6 +69,8 @@
               <th data-sort="operatingSystem">OS <span class="sort-arrow">↕</span></th>
               <th data-sort="network">Network <span class="sort-arrow">↕</span></th>
               <th data-sort="systemRole">Role <span class="sort-arrow">↕</span></th>
+              <th data-sort="category">Category <span class="sort-arrow">↕</span></th>
+              <th>Tags</th>
               <th data-sort="hypervisor">Hypervisor <span class="sort-arrow">↕</span></th>
               <th data-sort="domainUser">Domain User <span class="sort-arrow">↕</span></th>
               <th data-sort="zscalerUser">Zscaler User <span class="sort-arrow">↕</span></th>
@@ -89,6 +91,23 @@
                   <td><%= device.operatingSystem %></td>
                   <td><%= device.network %></td>
                   <td><%= device.systemRole %></td>
+                  <td>
+                    <% 
+                      // Find the category object to get the color
+                      var categoryObj = categories ? categories.find(cat => cat.name === device.category) : null;
+                      var categoryColor = categoryObj ? categoryObj.color : '#6c757d';
+                    %>
+                    <span class="badge" style="background-color: <%= categoryColor %>; color: white;">
+                      <%= device.category || 'Other' %>
+                    </span>
+                  </td>
+                  <td class="tags-cell">
+                    <% if (device.tags && device.tags.length > 0) { %>
+                      <% device.tags.forEach(function(tag) { %>
+                        <span class="tag-badge"><%= tag %></span>
+                      <% }); %>
+                    <% } %>
+                  </td>
                   <td><%= device.hypervisorInstalledOn %></td>
                   <td><%= device.domainUserSignedIn %></td>
                   <td><%= device.zscalerUserSignedIn %></td>
@@ -155,6 +174,26 @@
       <div>
         <label for="notes">Notes:</label>
         <textarea id="notes" name="notes"></textarea>
+      </div>
+      <div>
+        <label for="category">Category:</label>
+        <select id="category" name="category" required>
+          <% if (categories && categories.length > 0) { %>
+            <% categories.forEach(function(category) { %>
+              <option value="<%= category.name %>" <%= category.name === 'Other' ? 'selected' : '' %>><%= category.name %></option>
+            <% }); %>
+          <% } else { %>
+            <option value="Other" selected>Other</option>
+          <% } %>
+        </select>
+        <% if (categories && categories.length > 0) { %>
+          <small><a href="/categories" class="text-primary">Manage Categories</a></small>
+        <% } %>
+      </div>
+      <div>
+        <label for="tags">Tags (comma-separated):</label>
+        <input type="text" id="tags" name="tags" placeholder="e.g., production, critical, backup">
+        <small>Enter tags separated by commas. They will help organize and filter your devices.</small>
       </div>
       <button type="submit" id="submitButton" class="btn btn-primary">Add Device</button>
       <button type="button" id="cancelEdit" class="btn btn-secondary" style="display: none;">Cancel</button>

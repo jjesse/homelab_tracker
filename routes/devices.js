@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { ensureAuthenticated } = require('../config/auth');
 const Device = require('../models/Device');
+const Category = require('../models/Category');
 const User = require('../models/User');
 const multer = require('multer');
 const csv = require('fast-csv');
@@ -114,6 +115,15 @@ router.get('/:id', ensureAuthenticated, async (req, res) => {
 router.post('/add', ensureAuthenticated, async (req, res) => {
   try {
     console.log('Request Body:', req.body); // Log the request body for debugging
+    
+    // Process tags - split by comma and clean up
+    let tags = [];
+    if (req.body.tags && req.body.tags.trim()) {
+      tags = req.body.tags.split(',')
+        .map(tag => tag.trim().toLowerCase())
+        .filter(tag => tag.length > 0);
+    }
+    
     const newDevice = new Device({
       name: req.body.name,
       ipAddress: req.body.ipAddress,
@@ -126,6 +136,8 @@ router.post('/add', ensureAuthenticated, async (req, res) => {
       zscalerUserSignedIn: req.body.zscalerUserSignedIn,
       zscalerAppSegment: req.body.zscalerAppSegment,
       notes: req.body.notes,
+      category: req.body.category || 'Other',
+      tags: tags,
       user: req.user.id
     });
 

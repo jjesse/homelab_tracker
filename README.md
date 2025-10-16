@@ -6,20 +6,38 @@ This web application allows you to store details about your home lab devices. Yo
 
 ## Features
 
-- User authentication (login and registration)
-- Device Management:
-  - Sortable device table
-  - Real-time device search
-  - View device details
-  - Edit device information
-  - Delete devices
-  - Responsive table design
-- HTTPS/SSL support with automatic HTTP fallback
-- Docker containerization with multi-architecture support
-- MongoDB integration with authentication
-- Redis session storage
-- CSV import/export functionality for device data
-- Raspberry Pi deployment ready
+- **User Authentication:**
+  - Secure login and registration system
+  - Passport.js integration with session management
+  - User-specific data isolation
+
+- **Device Management:**
+  - Sortable device table with real-time search
+  - Add, view, edit, and delete devices
+  - Dynamic device categorization with custom colors
+  - Comprehensive device fields (IP, OS, hostname, network, etc.)
+  - CSV import/export functionality for bulk operations
+  - Responsive table design for mobile and desktop
+
+- **Category Management System:** ⭐ **NEW**
+  - Create custom device categories with color coding
+  - Visual category badges and color indicators  
+  - Edit and delete categories with usage validation
+  - User-specific categories with default system categories
+  - Modal-based category management interface
+
+- **Security & Performance:**
+  - HTTPS/SSL support with automatic HTTP fallback
+  - Rate limiting and CSRF protection
+  - Input sanitization and validation
+  - Helmet security headers
+  - Session-based authentication with Redis storage
+
+- **Deployment Ready:**
+  - Docker containerization with multi-architecture support (AMD64/ARM64)
+  - Raspberry Pi deployment optimized
+  - MongoDB integration with health checks
+  - Environment-based configuration
 
 ## Technologies Used
 
@@ -80,6 +98,24 @@ The easiest way to get started is using the hybrid deployment approach:
 7. **Access the application:**
    - HTTPS: `https://localhost:5000` (if SSL certificates are configured)
    - HTTP: `http://localhost:5000`
+
+### 🍓 Raspberry Pi Quick Start
+
+For Raspberry Pi deployment, use the automated setup scripts:
+
+```bash
+# Clone repository on your Raspberry Pi
+git clone https://github.com/yourusername/homelab.git
+cd homelab
+
+# Option 1: Full automated setup (recommended)
+./setup-pi.sh
+
+# Option 2: Docker-only quick start
+./quick-start-pi.sh
+```
+
+The `setup-pi.sh` script will handle prerequisites, ARM-compatible MongoDB, SSL certificates, and optional systemd service installation.
 
 ### Raspberry Pi Deployment
 
@@ -758,6 +794,39 @@ Use the search box above the device table to filter devices by any field:
 - Improved password hashing using `bcryptjs`.
 - Enhanced session security with `httpOnly`, `secure`, and `sameSite` options.
 - Utilized `morgan` for logging.
+
+## Recent Updates & Changelog
+
+### Version 1.3.0 - Category Management System 🎉
+**Date: October 2025**
+
+**🆕 Major New Features:**
+- **Dynamic Category Management**: Complete overhaul of device categorization
+  - Custom category creation with user-defined names, colors, and descriptions
+  - Visual color-coded category badges throughout the interface
+  - Modal-based category management with full CRUD operations
+  - User-specific categories with default system categories
+
+**🔧 Technical Improvements:**
+- Replaced hard-coded device category enums with flexible MongoDB-based system
+- Added comprehensive category validation and duplicate prevention
+- Implemented method override middleware for RESTful category operations
+- Enhanced UI with inline CSS and JavaScript for category modals
+- Added category usage validation (prevents deletion of categories in use)
+
+**🛠️ Infrastructure & Security:**
+- Resolved JavaScript execution issues with security middleware configuration
+- Improved CSRF token handling and error messaging
+- Enhanced session management and authentication flow
+- Added comprehensive error handling and user feedback systems
+
+**📊 Database Enhancements:**
+- New Category model with user association and color validation
+- Category seeding script for default system categories
+- Updated Device model to support dynamic categorization
+- Added proper indexing and relationships between Users, Categories, and Devices
+
+---
 
 ## Troubleshooting
 

@@ -4,9 +4,11 @@ const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const { ensureGuest } = require('../config/auth');
 const { check, validationResult } = require('express-validator');
+const { defaultCategories } = require('../scripts/seedCategories');
 
 // User model
 const User = require('../models/User');
+const Category = require('../models/Category');
 
 // Register
 router.get('/register', ensureGuest, (req, res) => {
@@ -66,7 +68,22 @@ router.post('/register', [
             if (err) throw err;
             newUser.password = hash;
             newUser.save()
-              .then(user => {
+              .then(async user => {
+                // Automatically create default categories for new user
+                try {
+                  const categoriesToCreate = defaultCategories.map(cat => ({
+                    ...cat,
+                    user: user._id,
+                    isDefault: true
+                  }));
+
+                  await Category.insertMany(categoriesToCreate);
+                  console.log(`Created ${categoriesToCreate.length} default categories for new user: ${user.email}`);
+                } catch (error) {
+                  console.error('Error creating default categories for new user:', error);
+                  // Don't fail registration if category creation fails
+                }
+
                 req.flash('success_msg', 'You are now registered and can log in');
                 res.redirect('/users/login');
               })

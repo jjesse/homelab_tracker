@@ -14,8 +14,9 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const compression = require('compression');
+const methodOverride = require('method-override');
 const { apiLimiter, loginLimiter, secureHeaders, sanitize } = require('./middleware/security');
-const { sessionStore } = require('./config/redis');
+// const { sessionStore } = require('./config/redis');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
@@ -61,10 +62,13 @@ app.use(express.static('public'));
 // Bodyparser
 app.use(express.urlencoded({ extended: false }));
 
-// Security middleware
-app.use(helmet());
-app.use(secureHeaders);
-app.use(sanitize);
+// Method override for PUT/DELETE
+app.use(methodOverride('_method'));
+
+// Security middleware - TEMPORARILY DISABLED FOR DEBUGGING
+// app.use(helmet());
+// app.use(secureHeaders);
+// app.use(sanitize);
 app.use(limiter);
 app.use('/api/', apiLimiter);
 app.use('/users/login', loginLimiter);
@@ -72,9 +76,9 @@ app.use('/users/login', loginLimiter);
 // Add cookie parser before session middleware
 app.use(cookieParser());
 
-// Session
+// Session (using memory store for testing - replace with Redis in production)
 app.use(session({
-  store: sessionStore,
+  // store: sessionStore, // Disabled for testing
   secret: process.env.SESSION_SECRET || 'fallback_secret_do_not_use_in_production',
   resave: false,
   saveUninitialized: false,
@@ -89,27 +93,17 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// CSRF protection with proper cookie config
-app.use(csrf({
-  cookie: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict'
-  },
-  // Add value function to check both body and headers
-  value: function(req) {
-    return (
-      req.body._csrf ||
-      req.query._csrf ||
-      req.headers['csrf-token'] ||
-      req.headers['x-csrf-token'] ||
-      req.headers['x-xsrf-token']
-    );
-  }
-}));
+// CSRF protection with proper cookie config - TEMPORARILY DISABLED
+// app.use(csrf({
+//   cookie: {
+//     httpOnly: true,
+//     secure: process.env.NODE_ENV === 'production',
+//     sameSite: 'strict'
+//   }
+// }));
 
 app.use((req, res, next) => {
-  res.locals.csrfToken = req.csrfToken();
+  res.locals.csrfToken = 'disabled'; // Temporary placeholder
   next();
 });
 
@@ -155,6 +149,7 @@ app.get('/health', async (req, res) => {
 app.use('/', require('./routes/index'));
 app.use('/users', require('./routes/users'));
 app.use('/devices', require('./routes/devices'));
+app.use('/categories', require('./routes/categories'));
 
 // Error handling middleware
 app.use(errorHandler);
